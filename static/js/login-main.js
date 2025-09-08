@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             });
             const result = await response.json();
             if (result.success) {
-                localStorage.setItem('usr', usrName);
+                localStorage.setItem(LocalStorage_DataName, usrName);
                 alert(result.message);
                 window.location.replace('./index.html');
             } else {

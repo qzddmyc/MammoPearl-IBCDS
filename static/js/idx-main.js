@@ -151,10 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
         logouts: document.querySelectorAll('.logout-door'),
     };
 
-    console.log(doms);
-
-
-    const usrInfo = localStorage.getItem('usr');
+    let usrInfo = localStorage.getItem(LocalStorage_DataName);
     const classNameForHide = 'hide-me';
 
     function showLogin_hideLogout() {
@@ -175,16 +172,27 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    if (usrInfo) { showLogout_hideLogin(); }
-    else { showLogin_hideLogout(); }
+    function refreshLoginButtons() {
+        if (usrInfo) { showLogout_hideLogin(); }
+        else { showLogin_hideLogout(); }
+    }
+
+    refreshLoginButtons();
+
+    function clearLocalUsrInfo() {
+        /* 清除用户登录信息，包含了二次确认与刷新页面的按钮操作。 */
+        const check = confirm("确认退出账号？");
+        if (!check) return;
+        localStorage.removeItem(LocalStorage_DataName);
+        usrInfo = null;
+        alert('账户已退出。');
+        refreshLoginButtons();
+    }
 
     doms.logouts.forEach(item => {
         item.addEventListener('click', () => {
             if (item.classList.contains(classNameForHide)) return;
-            console.log('清除个人信息。');
+            clearLocalUsrInfo();
         });
     });
-
-
-
 });

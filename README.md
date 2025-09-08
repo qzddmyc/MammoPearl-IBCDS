@@ -52,6 +52,18 @@ python -m Admin-Operation.cleardata
 vim ./config/config.yaml
 ```
 
+#### 3. 设置页面为仅访问，禁止所有与服务器相关的操作
+将 /static/assets/data/vars.js 中的 `DISABLE_INTERACTION_global` 设置为 `true` 即可。
+
+该操作会禁止用户注册、提交检测相关的操作，并隐藏需要开启服务器的提示。
+
+当然，如果服务器并没有开启，该值会自动被设置为 `true`。
+
+参考命令：
+```shell
+vim ./static/assets/data/vars.js
+```
+
 
 
 ### 文件说明
