@@ -1,0 +1,6 @@
+CREATE TABLE Users
+(
+    UserID   VARCHAR(64) PRIMARY KEY,
+    UserName NVARCHAR(10) NOT NULL,
+    UserPwd  VARBINARY(60) NOT NULL
+);

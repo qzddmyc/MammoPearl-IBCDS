@@ -1,0 +1,46 @@
+/* 提取的Font Awesome CSS部分 */
+@font-face {
+    font-family: "FontAwesome";
+    src: url("https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/fonts/fontawesome-webfont.eot?v=4.7.0");
+    src: url("https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0")
+            format("embedded-opentype"),
+        url("https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/fonts/fontawesome-webfont.woff2?v=4.7.0")
+            format("woff2"),
+        url("https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/fonts/fontawesome-webfont.woff?v=4.7.0")
+            format("woff"),
+        url("https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/fonts/fontawesome-webfont.ttf?v=4.7.0")
+            format("truetype"),
+        url("https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular")
+            format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+.fa {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 具体使用的图标 */
+.fa-image:before {
+    content: "\f03e";
+}
+.fa-cloud-upload:before {
+    content: "\f0ee";
+}
+.fa-picture-o:before {
+    content: "\f03e";
+}
+.fa-times:before {
+    content: "\f00d";
+}
+.fa-exclamation-circle:before {
+    content: "\f06a";
+}
+.fa-check-circle:before {
+    content: "\f058";
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乳此侦析 - 智能检测</title>
+    <link rel="icon" href="../static/assets/img/favicon.ico" type="image/x-icon">
+
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- <link rel="stylesheet" href="../static/css/loading.css"> -->
+    <link rel="stylesheet" href="../static/css/detect-main.css">
+    <link rel="stylesheet" href="../static/css/star.css">
+</head>
+
+<body>
+    <div class="star-container">
+        <div class="layer1"></div>
+        <div class="layer2"></div>
+        <div class="layer3"></div>
+        <div class="layer4"></div>
+        <div class="layer5"></div>
+    </div>
+
+    <div class="form-container">
+        <div class="upload-container">
+            <button class="btn-back" data-action="page-skip" data-msg="./index.html">返回</button>
+
+            <h3 class="upload-title">
+                <i class="fa fa-image"></i>
+                <span class="txt color-text">图片上传</span>
+            </h3>
+
+            <div class="drop-area" id="drop-area">
+                <form id="form" style="display: none;">
+                    <input type="file" id="image-upload" name="pic" class="file-input"
+                        accept="image/jpg,image/jpeg,image/png">
+                </form>
+                <div class="upload-content">
+                    <div class="upload-content-upper">
+                        <div class="upload-icon-container">
+                            <i class="fa fa-cloud-upload upload-icon"></i>
+                        </div>
+                        <div>
+                            <h4 class="upload-text">拖放图片到此处</h4>
+                            <p class="upload-subtext">或点击下方按钮上传<br>支持 JPG, PNG 格式</p>
+                        </div>
+                    </div>
+                    <button type="button" class="upload-btn" id="upload-btn">
+                        <i class="fa fa-picture-o"></i>选择图片
+                    </button>
+                </div>
+
+                <!-- 图片预览区域 -->
+                <div class="image-preview-container">
+                    <!-- 未上传状态 -->
+                    <div id="no-image-state" class="no-image-state">
+                        未上传图片
+                    </div>
+
+                    <!-- 已上传状态 -->
+                    <div id="image-preview" class="image-preview">
+                        <img id="preview-image" src="" alt="预览图片" class="preview-img">
+                        <button type="button" id="remove-image" class="remove-img">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 文件名显示 -->
+                <div id="file-info" class="file-info">
+                    <h4 id="image-filename" class="file-name placeholder">传入图片后显示图片名...</h4>
+                </div>
+            </div>
+            <button class="submit-btn" id="submit-btn">提交</button>
+        </div>
+    </div>
+
+    <!-- 错误提示弹窗 -->
+    <div id="error-modal" class="error-modal">
+        <div class="error-content">
+            <div class="error-title">
+                <i class="fa fa-exclamation-circle"></i>上传错误
+            </div>
+            <div id="error-message" class="error-message">
+                请上传JPG、JPEG或PNG格式的图片！
+            </div>
+            <div class="error-actions">
+                <button id="close-error" class="error-btn">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 检测结果弹窗 -->
+    <div id="result-modal" class="result-modal">
+        <div class="result-content">
+            <div class="result-title">
+                <i class="fa fa-check-circle"></i>检测完成
+            </div>
+            <div class="result-info">
+                <p class="result-item">检测结果：<span id="detection-result">阴性</span></p>
+                <p class="result-item">结果可信度：<span id="detection-confidence">86.8%</span></p>
+            </div>
+            <div class="result-actions">
+                <button id="open-md" class="result-btn">打开报告文件（md格式）</button>
+                <button id="open-txt" class="result-btn">打开报告文件（txt格式）</button>
+                <button id="close-result" class="result-btn">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../static/js/buttons.js"></script>
+    <script src="../static/assets/data/canisubmit.js"></script>
+    <script src="../static/js/detect-main.js"></script>
+</body>
+
+</html>

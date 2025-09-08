@@ -1,0 +1,26 @@
+# Yaml files are read by configs.py, and then you can import like 'from config.configs import BASE_CONFIG'.
+
+PORT: 8080
+
+# the saved file's fileName
+RESULT_FILE_NAME: result
+
+COLORS:
+  red: '\033[91m'
+  green: '\033[92m'
+  yellow: '\033[93m'
+  blue: '\033[94m'
+  purple: '\033[95m'
+  cyan: '\033[96m'
+  reset: '\033[0m'
+
+# template for result's path, without DOTS and fileName
+TEMPLATE_PATH:
+  - static
+  - assets
+  - ResultTemplates
+
+TEMPLATE_FILE_NAME_MD: template.md
+TEMPLATE_FILE_NAME_TXT: template.txt
+
+DEFAULT_USER: default0

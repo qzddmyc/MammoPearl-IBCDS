@@ -1,0 +1,79 @@
+from typing import Tuple
+import os
+from src.utils import generate_short_unique_time_str, get_current_time, write_to_file
+from config.configs import BASE_CONFIG
+
+DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
+
+
+# 处理函数。True: 阳性，有概率是; False: 阴性，无事
+def v1_inner(pic: bytes) -> Tuple[bool, float]:
+    base_path = "../static/assets/pth"
+    return False, 0.869
+
+
+# Pass in a binary image file and the name (with suffix) of the image.
+# Return the detection result formatted [True/False(to string), accuracy, the relative path of the directory].
+def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple[str, str, str]:
+    folder_path = os.path.join(DOTS, "logs", usr, generate_short_unique_time_str())
+    try:
+        os.makedirs(folder_path, exist_ok=True)
+        print(f"文件夹创建成功：{folder_path}")
+    except Exception as e:
+        print(f"文件夹创建时失败：{e}")
+
+    output_path = os.path.join(folder_path, picName)
+    try:
+        with open(output_path, 'wb') as f:
+            f.write(pic)
+        print(f"图片已成功保存至: {output_path}")
+    except Exception as e:
+        print(f"保存图片时出错: {e}")
+
+    RES_TF, RES_ACC = v1_inner(pic)
+
+    # be careful that func showResultModal() in detect-main.js also uses name "阴性".
+    res_A = '阳性' if RES_TF else '阴性'
+    res_B = f"{(round(RES_ACC * 1000) / 10)}%"
+
+    now = get_current_time()
+    absolute_path_of_folder = os.path.abspath(folder_path)
+    absolute_path_of_pic = os.path.abspath(output_path)
+
+    corresponding_color = 'red' if RES_TF else 'blue'
+
+    change_items_for_md = {
+        '${usr}': usr,
+        '${time}': now,
+        '${imgNameWithSuffix}': picName,
+        '${color}': corresponding_color,
+        '${result}': res_A,
+        '${accuracy}': res_B,
+        '${folder}': absolute_path_of_folder
+    }
+
+    change_items_for_txt = {
+        '${usr}': usr,
+        '${time}': now,
+        '${imgFullPath}': absolute_path_of_pic,
+        '${result}': res_A,
+        '${accuracy}': res_B,
+        '${folder}': absolute_path_of_folder
+    }
+
+    template_path_md = os.path.join(DOTS, *BASE_CONFIG['TEMPLATE_PATH'], BASE_CONFIG['TEMPLATE_FILE_NAME_MD'])
+    template_path_txt = os.path.join(DOTS, *BASE_CONFIG['TEMPLATE_PATH'], BASE_CONFIG['TEMPLATE_FILE_NAME_TXT'])
+
+    with open(template_path_md, 'r', encoding='utf-8') as f_md:
+        md_content = f_md.read()
+        for k, v in change_items_for_md.items():
+            md_content = md_content.replace(k, v)
+        write_to_file(os.path.join(folder_path, f'{BASE_CONFIG['RESULT_FILE_NAME']}.md'), md_content)
+
+    with open(template_path_txt, 'r', encoding='utf-8') as f_txt:
+        txt_content = f_txt.read()
+        for k, v in change_items_for_txt.items():
+            txt_content = txt_content.replace(k, v)
+        write_to_file(os.path.join(folder_path, f'{BASE_CONFIG['RESULT_FILE_NAME']}.txt'), txt_content)
+
+    return res_A, res_B, folder_path

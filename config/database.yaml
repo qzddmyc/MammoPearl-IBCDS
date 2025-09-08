@@ -1,0 +1,23 @@
+# Yaml files are read by configs.py, and then you can import configs as var 'DATABASE_CONFIG'.
+
+DB_NAME: IBCDS
+
+DRIVER: "{ODBC Driver 17 for SQL Server}"
+
+SERVER: localhost
+
+# Without quotes will be parsed as 'True', crazy yaml!
+trusted_connection: 'yes'
+
+# Paths(the sql files for db initialization) starts from root.
+# And this is an array. You can add items after it. They will be executed together.
+initial_file_paths:
+  - - init
+    - sql
+    - init.sql
+
+# 与/init/sql/init.sql一致即可
+TableName_U: Users
+ColName_ID: UserID
+ColName_NAME: UserName
+ColName_PWD: UserPwd

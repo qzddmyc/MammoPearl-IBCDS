@@ -1,0 +1,51 @@
+/* 完全隐藏原生滚动条（保持功能） */
+::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* 自定义滚动指示器 */
+.scroll-indicator {
+    position: fixed;
+    top: 120px; /* 避开header */
+    right: 15px;
+    width: 4px;
+    height: calc(100vh - 240px); /* 视口高度减去header和footer */
+    background: rgba(15, 30, 45, 0.5);
+    border-radius: 2px;
+    border: 0.5px solid #333;
+    z-index: 10000;
+    /* opacity: 0; */
+    transition: opacity 0.3s;
+}
+
+.scroll-indicator-thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to bottom, #0099ff88, #00e1ff88);
+    border-radius: 2px;
+    transition: height 0.2s, background 0.2s;
+    min-height: 10px;
+}
+
+/* 交互效果 */
+body:hover .scroll-indicator,
+.scroll-indicator:hover {
+    opacity: 1;
+}
+
+/* .scroll-indicator:hover .scroll-indicator-thumb {
+  background: linear-gradient(to bottom, #333, #fff);
+} */
+
+@media (max-width: 500px) {
+    .scroll-indicator {
+        opacity: 0 !important;
+    }
+}

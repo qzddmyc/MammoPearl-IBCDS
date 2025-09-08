@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乳此侦析 - 用户登录</title>
+    <link rel="icon" href="../static/assets/img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="../static/css/star.css">
+    <style>
+        /* 全局样式继承原页面 */
+        * {
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            color: #e0f0ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 登录容器：左右分栏布局 */
+        .login-container {
+            --h: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* 左侧装饰区（仅桌面端显示） */
+        .left-decoration {
+            width: 5%;
+            height: var(--h);
+            position: relative;
+            border-radius: 15px 0 0 15px;
+            overflow: hidden;
+            background: linear-gradient(135deg, rgba(12, 34, 51, 0.8), rgba(23, 64, 95, 0.9));
+        }
+
+        /* 左侧背景设计 - 科技感网格与渐变 */
+        .left-decoration::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(41, 182, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(41, 182, 246, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: 1;
+        }
+
+        .left-decoration::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(41, 182, 246, 0.3) 0%, rgba(41, 182, 246, 0) 70%);
+            z-index: 2;
+            animation: pulse 6s infinite ease-in-out;
+        }
+
+        /* 右侧表单区 */
+        .right-form {
+            height: var(--h);
+            width: 70%;
+            max-width: 600px;
+            padding: 50px;
+            background: rgba(12, 34, 51, 0.3);
+            backdrop-filter: blur(15px);
+            border-radius: 0 15px 15px 0;
+            border: 1px solid rgba(41, 182, 246, 0.2);
+            border-left: none;
+            box-shadow: 0 10px 30px rgba(0, 15, 30, 0.5);
+        }
+
+        /* 返回按钮样式 */
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 30px;
+            color: #b3e5fc;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background: rgba(41, 182, 246, 0.1);
+        }
+
+        .back-btn:hover {
+            color: #e0f0ff;
+            background: rgba(41, 182, 246, 0.2);
+            transform: translateX(-3px);
+        }
+
+        .back-btn i {
+            margin-right: 6px;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, #4fc3f7, #29b6f6, #03a9f4);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(41, 182, 246, 0.3);
+        }
+
+        /* 表单输入组样式 */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, #4fc3f7, #29b6f6);
+            transition: width 0.3s ease;
+        }
+
+        .form-group:focus-within::after {
+            width: 100%;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b3e5fc;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(15, 30, 45, 0.2);
+            border: 1px solid rgba(41, 182, 246, 0.2);
+            border-radius: 8px;
+            color: #e0f0ff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #29b6f6;
+            box-shadow: 0 0 15px rgba(41, 182, 246, 0.2);
+            background: rgba(15, 30, 45, 0.3);
+        }
+
+        /* 提交按钮样式（继承原页面按钮风格） */
+        .submit-btn {
+            width: 100%;
+            padding: 14px 0;
+            background: rgba(41, 182, 246, 0.1);
+            border: 1px solid #29b6f6;
+            border-radius: 50px;
+            color: #29b6f6;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(5px);
+        }
+
+        .submit-btn:hover {
+            background: rgba(41, 182, 246, 0.2);
+            box-shadow: 0 0 20px rgba(41, 182, 246, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* 动画效果 */
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6;
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.9;
+            }
+        }
+
+        /* 响应式适配（移动端仅显示表单） */
+        @media (max-width: 768px) {
+            .left-decoration {
+                display: none;
+            }
+
+            .login-container {
+                padding: 20px 15px;
+            }
+
+            .right-form {
+                width: 100%;
+                max-width: 400px;
+                padding: 30px 20px;
+                border-radius: 15px;
+                border: 1px solid rgba(41, 182, 246, 0.2);
+                margin-top: 60px;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+                margin-bottom: 30px;
+            }
+
+            .submit-btn {
+                padding: 12px 0;
+                font-size: 1rem;
+            }
+
+            .back-btn {
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 425px) {
+            .right-form {
+                width: 100%;
+                padding: 25px 15px;
+                border-radius: 10px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-input {
+                padding: 10px 14px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 背景星空（复用star.css） -->
+    <div class="star-container">
+        <div class="layer1"></div>
+        <div class="layer2"></div>
+        <div class="layer3"></div>
+        <div class="layer4"></div>
+        <div class="layer5"></div>
+    </div>
+
+    <!-- 登录主容器 -->
+    <div class="login-container">
+        <!-- 左侧装饰区（桌面端显示） -->
+        <div class="left-decoration"></div>
+
+        <!-- 右侧登录表单区 -->
+        <div class="right-form">
+            <!-- 返回按钮 -->
+            <a href="./index.html" class="back-btn">
+                <i>←</i> 返回首页
+            </a>
+
+            <h2 class="form-title">用户登录</h2>
+            <form>
+                <!-- 用户名输入组 -->
+                <div class="form-group">
+                    <label class="form-label" for="username">用户姓名</label>
+                    <input type="text" id="username" class="form-input" placeholder="请输入您的姓名" required>
+                </div>
+
+                <!-- 密码输入组 -->
+                <div class="form-group">
+                    <label class="form-label" for="password">用户密码</label>
+                    <input type="password" id="password" class="form-input" placeholder="请输入您的密码" required>
+                </div>
+
+                <!-- 提交按钮 -->
+                <button type="submit" class="submit-btn">登录</button>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

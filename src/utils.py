@@ -1,0 +1,75 @@
+import hashlib
+import time
+import os
+import sys
+import subprocess
+import uuid
+from typing import Tuple
+from datetime import datetime
+from config.configs import BASE_CONFIG
+
+
+def generate_short_unique_time_str():
+    timestamp_ns = time.time_ns()
+    hex_str = hex(timestamp_ns)[2:]
+    return hex_str
+
+
+def open_file_with_explorer(relative_path: str) -> Tuple[bool, str]:
+    try:
+        absolute_path = os.path.abspath(relative_path)
+
+        if not os.path.exists(absolute_path):
+            return False, f"打开失败: 文件不存在 - {absolute_path}"
+
+        if sys.platform.startswith('win'):
+            # Windows系统
+            os.startfile(absolute_path)
+        elif sys.platform.startswith('darwin'):
+            # macOS系统
+            subprocess.run(['open', absolute_path], check=True)
+        elif sys.platform.startswith('linux'):
+            # Linux系统
+            subprocess.run(['xdg-open', absolute_path], check=True)
+        else:
+            return False, f"打开失败: 不支持的操作系统 - {sys.platform}"
+
+        return True, "打开成功"
+
+    except Exception as e:
+        return False, f"打开失败: {str(e)}"
+
+
+def write_to_file(file_path: str, content: str) -> Tuple[bool, str]:
+    try:
+        # 去掉文件名部分，获取目录路径
+        directory = os.path.dirname(file_path)
+
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+            print(
+                f'{BASE_CONFIG['COLORS']['red']}Warning: {BASE_CONFIG['COLORS']['cyan']}The directory(ies) for your wanted file does not exist.{BASE_CONFIG['COLORS']["reset"]}')
+
+        # 写入文件
+        with open(file_path, 'w', encoding='utf-8') as file:
+            file.write(content)
+
+        return True, f"成功将内容写入文件: {os.path.abspath(file_path)}"
+
+    except Exception as e:
+        return False, f"写入文件失败: {str(e)}"
+
+
+def get_current_time() -> str:
+    current_time = datetime.now()
+    formatted_time = current_time.strftime("%Y年%m月%d日 %H:%M:%S")
+    return formatted_time
+
+
+# generate a VARCHAR(64) (relatively) unique id for users
+def generate_user_id() -> str:
+    timestamp = str(int(time.time() * 1000))
+    uuid_str = str(uuid.uuid4()).replace('-', '')
+    combined = timestamp + uuid_str
+    hash_obj = hashlib.sha256(combined.encode())
+    return hash_obj.hexdigest()[:64]

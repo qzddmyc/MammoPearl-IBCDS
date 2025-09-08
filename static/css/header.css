@@ -1,0 +1,223 @@
+.main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 7vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    background: rgba(12, 34, 51, 0.5);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(41, 182, 246, 0.2);
+    transition: 0.6s ease-out;
+    box-sizing: border-box;
+}
+
+.main-header.scroll-out {
+    top: -100px;
+    opacity: 0;
+}
+
+.main-header-left {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 15px;
+    transform-origin: 0% 50%;
+}
+
+.main-header-logo {
+    fill: #29b6f6;
+}
+
+.main-header-logo-g {
+    transform: translate(-4px, 9px) scale(0.1);
+}
+
+.main-header-title-group {
+    white-space: nowrap;
+}
+
+.main-header-main-title {
+    font-size: 1.5rem;
+    margin: 0;
+    color: #e0f0ff;
+}
+
+.main-header-sub-title {
+    font-size: 0.8rem;
+    margin: 0;
+    color: #b3e5fc;
+}
+
+.main-header-right {
+    display: flex;
+    gap: 20px;
+    justify-content: end;
+    align-items: center;
+}
+
+.normal-btn {
+    padding: 0px 20px;
+    border: 1px solid #4fc3f7;
+    border-radius: 20px;
+    height: 37px;
+    line-height: 37px;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.disappear {
+    display: none !important;
+}
+
+/* 聚集菜单 */
+
+.mobile-menu-container {
+    position: absolute;
+    z-index: 200;
+    top: 21px;
+    right: 7vw;
+}
+
+/* 汉堡按钮样式 - 初始圆形 */
+.mobile-menu-btn {
+    --size: 50px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 50%;
+    background-color: rgba(12, 34, 51, 0.6);
+    border: 1px solid #0099ff88;
+    backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 汉堡按钮中的三条杠 */
+.mobile-menu-btn .bar {
+    /* width: 22px;
+    height: 3px; */
+    width: 18px;
+    height: 2px;
+    background-color: #4fc3f7;
+    border-radius: 3px;
+    margin: 2px 0;
+    transition: all 0.3s ease;
+}
+
+/* 菜单内容样式 - 默认隐藏 */
+.mobile-menu-content {
+    --border-color: rgba(41, 182, 246, 0.3);
+    position: absolute;
+    top: 60px; /* 位于按钮下方 */
+    right: 0;
+    width: 200px;
+    background-color: rgba(12, 34, 51, 0.95);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    transform: scale(0.8);
+    transform-origin: top right;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+
+/* 菜单项样式, 颜色的设置在color-txt类 */
+.mobile-menu-item {
+    width: 85%;
+    padding: 3px;
+    height: 50px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    font-size: 15px;
+    position: relative;
+}
+
+.mobile-menu-content .mobile-menu-item:last-child {
+    border-bottom: none;
+}
+
+.mobile-menu-container.active .mobile-menu-item::before {
+    content: ">";
+    position: absolute;
+    top: 32%;
+    --right: 17%;
+    right: var(--right);
+    font-size: 18px;
+    background: inherit;
+    background-clip: inherit;
+    -webkit-background-clip: inherit;
+    color: inherit;
+    animation: arrowMove 1.6s infinite ease-in-out;
+    opacity: 0;
+    transition: 0.2s linear;
+}
+
+.mobile-menu-container.active .mobile-menu-item:hover::before{
+    opacity: 1;
+}
+
+@keyframes arrowMove {
+    50% {
+        right: 12%;
+    }
+    100% {
+        right: var(--right);
+    }
+}
+
+/* 菜单展开状态 */
+.mobile-menu-container.active .mobile-menu-btn {
+    border-radius: 8px; /* 变成圆角矩形 */
+    background-color: rgba(12, 34, 51, 0.95);
+}
+
+.mobile-menu-container.active .mobile-menu-btn .bar {
+    width: 22px;
+    height: 2px;
+}
+
+.mobile-menu-container.active .mobile-menu-btn .bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+}
+
+.mobile-menu-container.active .mobile-menu-btn .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-container.active .mobile-menu-btn .bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+}
+
+.mobile-menu-container.active .mobile-menu-content {
+    transform: scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.menu-open {
+    overflow: hidden;
+}

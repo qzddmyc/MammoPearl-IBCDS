@@ -1,0 +1,305 @@
+.loading {
+    position: fixed;
+    top: 0;
+    left: 100%;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(
+        to bottom,
+        #020617 0%,
+        #0f172a 50%,
+        #1e293b 100%
+    );
+    overflow: hidden;
+    z-index: 999999;
+    transition: 1s ease-in;
+    view-transition-name: shared-container;
+}
+
+.loading.show {
+    left: 0;
+}
+
+.loading.onleft {
+    left: -100%;
+}
+
+/* 网格背景 */
+.loading .grid-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(
+            rgba(25, 118, 210, 0.1) 1px,
+            transparent 1px
+        ),
+        linear-gradient(90deg, rgba(25, 118, 210, 0.1) 1px, transparent 1px),
+        radial-gradient(
+            circle at 25% 25%,
+            rgba(79, 195, 247, 0.05) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 75% 75%,
+            rgba(79, 195, 247, 0.05) 0%,
+            transparent 50%
+        );
+    background-size: 40px 40px, 40px 40px, 300px 300px, 300px 300px;
+    z-index: 1;
+}
+
+/* 装饰性元素 */
+.loading .decor-element {
+    position: absolute;
+    opacity: 0.4;
+    z-index: 1;
+}
+
+.loading .circle {
+    border: 1px solid rgba(41, 182, 246, 0.3);
+    border-radius: 50%;
+}
+
+.loading .circle1 {
+    width: 350px;
+    height: 350px;
+    top: 15%;
+    right: 15%;
+}
+
+.loading .circle2 {
+    width: 250px;
+    height: 250px;
+    bottom: 15%;
+    left: 10%;
+}
+
+.loading .circle3 {
+    width: 180px;
+    height: 180px;
+    top: 40%;
+    left: 20%;
+}
+
+.loading .circle4 {
+    width: 220px;
+    height: 220px;
+    bottom: 30%;
+    right: 18%;
+}
+
+/* 随机角度斜线 */
+.loading .line {
+    position: absolute;
+    background: linear-gradient(
+        90deg,
+        rgba(41, 182, 246, 0) 0%,
+        rgba(41, 182, 246, 0.5) 50%,
+        rgba(41, 182, 246, 0) 100%
+    );
+    height: 1px;
+    transform-origin: 0 0;
+}
+
+.loading .line1 {
+    width: 140%;
+    top: 15%;
+    left: -20%;
+    transform: rotate(15deg);
+}
+
+.loading .line2 {
+    width: 160%;
+    top: 173%;
+    left: -30%;
+    transform: rotate(333deg);
+}
+
+.loading .line3 {
+    width: 170%;
+    top: 52%;
+    left: -35%;
+    transform: rotate(18deg);
+}
+
+.loading .line4 {
+    width: 140%;
+    top: 75%;
+    left: -20%;
+    transform: rotate(-15deg);
+}
+
+.loading .line5 {
+    width: 150%;
+    top: 25%;
+    left: -25%;
+    transform: rotate(35deg);
+}
+
+.loading .line6 {
+    width: 160%;
+    top: 65%;
+    left: -30%;
+    transform: rotate(-30deg);
+}
+
+/* 随机点 */
+.loading .dot {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background-color: rgba(79, 195, 247, 0.8);
+}
+
+/* 第一象限点 */
+.loading .dot1 {
+    top: 10%;
+    left: 10%;
+}
+.loading .dot2 {
+    top: 15%;
+    left: 15%;
+}
+.loading .dot3 {
+    top: 20%;
+    left: 5%;
+}
+.loading .dot4 {
+    top: 5%;
+    left: 18%;
+}
+.loading .dot5 {
+    top: 12%;
+    left: 25%;
+}
+
+/* 第二象限点 */
+.loading .dot6 {
+    top: 10%;
+    right: 10%;
+}
+.loading .dot7 {
+    top: 15%;
+    right: 15%;
+}
+.loading .dot8 {
+    top: 20%;
+    right: 5%;
+}
+.loading .dot9 {
+    top: 5%;
+    right: 18%;
+}
+.loading .dot10 {
+    top: 12%;
+    right: 25%;
+}
+
+/* 第三象限点 */
+.loading .dot11 {
+    bottom: 10%;
+    left: 10%;
+}
+.loading .dot12 {
+    bottom: 15%;
+    left: 15%;
+}
+.loading .dot13 {
+    bottom: 20%;
+    left: 5%;
+}
+.loading .dot14 {
+    bottom: 5%;
+    left: 18%;
+}
+.loading .dot15 {
+    bottom: 12%;
+    left: 25%;
+}
+
+/* 第四象限点 */
+.loading .dot16 {
+    bottom: 10%;
+    right: 10%;
+}
+.loading .dot17 {
+    bottom: 15%;
+    right: 15%;
+}
+.loading .dot18 {
+    bottom: 20%;
+    right: 5%;
+}
+.loading .dot19 {
+    bottom: 5%;
+    right: 18%;
+}
+.loading .dot20 {
+    bottom: 12%;
+    right: 25%;
+}
+
+/* 中心点 */
+.loading .dot21 {
+    top: 45%;
+    left: 45%;
+}
+.loading .dot22 {
+    top: 48%;
+    left: 52%;
+}
+.loading .dot23 {
+    top: 52%;
+    left: 48%;
+}
+.loading .dot24 {
+    top: 55%;
+    left: 55%;
+}
+.loading .dot25 {
+    top: 50%;
+    left: 50%;
+}
+
+/* 其他随机点 */
+.loading .dot26 {
+    top: 30%;
+    left: 30%;
+}
+.loading .dot27 {
+    top: 35%;
+    left: 70%;
+}
+.loading .dot28 {
+    top: 65%;
+    left: 30%;
+}
+.loading .dot29 {
+    top: 70%;
+    left: 70%;
+}
+.loading .dot30 {
+    top: 25%;
+    left: 50%;
+}
+.loading .dot31 {
+    top: 50%;
+    left: 25%;
+}
+.loading .dot32 {
+    top: 50%;
+    left: 75%;
+}
+.loading .dot33 {
+    top: 75%;
+    left: 50%;
+}
+.loading .dot34 {
+    top: 40%;
+    left: 60%;
+}
+.loading .dot35 {
+    top: 60%;
+    left: 40%;
+}
