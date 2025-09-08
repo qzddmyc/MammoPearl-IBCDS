@@ -20,14 +20,14 @@ def delete_table(table_name) -> bool:
     return execute_non_query(query)
 
 
-if __name__ == "__main__":
+def main():
     t = DATABASE_CONFIG['TableName_U']
     print(f"警告：此脚本用于清空或删除{t}表，请谨慎操作！")
     print(f"""
-    1. 清除表{t}中所有存储的信息。
-    2. 直接删除表{t}。此后，你需要重新运行初始化程序。
-    *. 退出。
-    """)
+        1. 清除表{t}中所有存储的信息。
+        2. 直接删除表{t}。此后，你需要重新运行初始化程序。
+        *. 退出。
+        """)
     choice = input("Your choice: ")
     if choice == '1':
         r = truncate_table(t)
@@ -40,3 +40,7 @@ if __name__ == "__main__":
     else:
         print('无事发生。')
     print("执行完成。")
+
+
+if __name__ == "__main__":
+    main()
