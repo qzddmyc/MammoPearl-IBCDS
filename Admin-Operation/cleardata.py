@@ -26,16 +26,17 @@ if __name__ == "__main__":
     print(f"""
     1. 清除表{t}中所有存储的信息。
     2. 直接删除表{t}。此后，你需要重新运行初始化程序。
+    *. 退出。
     """)
-    choice = int(input("Your choice: "))
-    if choice == 1:
+    choice = input("Your choice: ")
+    if choice == '1':
         r = truncate_table(t)
         if r:
             print(f'清除表{t}的数据完成。')
-    elif choice == 2:
+    elif choice == '2':
         r = delete_table(t)
         if r:
             print(f'删除表{t}成功。')
     else:
-        print('Exit.')
+        print('无事发生。')
     print("执行完成。")

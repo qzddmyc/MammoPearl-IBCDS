@@ -24,7 +24,7 @@ def execute_sql_file(file_path):
             cursor.execute(sql_script)
             conn.commit()
 
-        print(f"成功执行: {file_path}")
+        # print(f"成功执行: {file_path}")
         return True
     except Exception as e:
         print(f"执行SQL文件失败 ({file_path}): {e}")
@@ -60,3 +60,5 @@ if __name__ == "__main__":
     check = input(f'确定初始化你的{DATABASE_CONFIG['DB_NAME']}数据库吗？你需要保证该数据库已存在。(y/n) :')
     if check == 'y' or check == 'Y':
         main()
+    else:
+        print('取消执行。')
