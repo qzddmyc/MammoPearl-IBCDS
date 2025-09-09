@@ -18,7 +18,7 @@ def printUsers(table, item):
     # 查询所有用户名
     usernames = execute_query(f"SELECT {item} FROM {table}")
 
-    print("\n查询到存在的用户信息如下：")
+    print("查询到存在的用户信息如下：")
     if usernames is None:
         print("Error: Query failure in func printUsers.")
         return False, []
@@ -67,6 +67,7 @@ def main():
     *. 退出。
     """)
     choice = input('Your choice: ')
+    print()
 
     def func_in_1_3():
         # 输出用户列表并获取用户的输入索引。返回格式为: (是否错误, 被选中的用户名)
@@ -79,7 +80,7 @@ def main():
             if _idx <= 0 or _idx > len(_usrList):
                 raise ValueError
         except ValueError:
-            print("索引值错误。")
+            print("\n索引值错误。")
             return False, None
         _uname = re.match(r'^\d+\. (.+)$', _usrList[_idx - 1]).group(1)
         return True, _uname
@@ -89,6 +90,7 @@ def main():
         if not isOk:
             return
         new_pwd = input('Enter your new password: ')
+        print()
         if not is_usrPwd_ok(new_pwd):
             print("密码格式错误。需要6-18位的英文、数字、下划线。")
             return
@@ -101,12 +103,13 @@ def main():
     elif choice == '2':
         uname = input('User name: ')
         if not is_usrName_ok(uname):
-            print('用户名格式错误。需要至多10位的中文、英文、数字、下划线、减号。')
+            print('\n用户名格式错误。需要至多10位的中文、英文、数字、下划线、减号。')
             return
         pwd = input('User password: ')
         if not is_usrPwd_ok(pwd):
-            print("密码格式错误。需要6-18位的英文、数字、下划线。")
+            print("\n密码格式错误。需要6-18位的英文、数字、下划线。")
             return
+        print()
         idid = generate_user_id()
         info = save_User(idid, uname, pwd)
         if not info['success']:
@@ -116,9 +119,11 @@ def main():
         return
     elif choice == '3':
         isOk, uname = func_in_1_3()
+        print()
         if not isOk:
             return
         tf = input(f"确认删除用户: \"{uname}\"? (y/n): ")
+        print()
         if tf == 'y' or tf == 'Y':
             isDeleted = delete_user_by_username(uname)
             if not isDeleted:
