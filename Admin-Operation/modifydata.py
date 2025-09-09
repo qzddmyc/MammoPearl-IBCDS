@@ -19,6 +19,8 @@ def printUsers(table, item) -> bool:
     # 查询所有用户名
     usernames = execute_query(f"SELECT {item} FROM {table}")
 
+    print()
+    print("查询到存在的用户信息如下：")
     if usernames is None:
         print("Error: Query failure in func printUsers.")
         return False
@@ -33,7 +35,7 @@ def printUsers(table, item) -> bool:
 
     # tablefmt: grid/fancy_grid/pipe/simple
     print(tabulate(table_data, headers=headers, tablefmt="grid", colalign=("left",)))
-
+    print()
     return True
 
 
