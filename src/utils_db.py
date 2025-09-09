@@ -193,3 +193,10 @@ def update_UserAccount_password(UserName: str, new_password: str) -> bool:
 
 def check_if_usr_exist(uname: str) -> bool:
     return check_value_exists(DATABASE_CONFIG['TableName_U'], DATABASE_CONFIG['ColName_NAME'], uname)
+
+
+def delete_user_by_username(username: str) -> bool:
+    """根据用户名删除用户记录"""
+    delete_query = f"DELETE FROM {DATABASE_CONFIG['TableName_U']} WHERE {DATABASE_CONFIG['ColName_NAME']} = ?"
+    result = execute_non_query(delete_query, (username,))
+    return result

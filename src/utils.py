@@ -1,3 +1,4 @@
+import re
 import hashlib
 import time
 import os
@@ -73,3 +74,13 @@ def generate_user_id() -> str:
     combined = timestamp + uuid_str
     hash_obj = hashlib.sha256(combined.encode())
     return hash_obj.hexdigest()[:64]
+
+
+def is_usrName_ok(name: str) -> bool:
+    pattern = r'^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,10}$'
+    return bool(re.match(pattern, name))
+
+
+def is_usrPwd_ok(pwd: str) -> bool:
+    pattern = r'^[a-zA-Z0-9_]{6,18}$'
+    return bool(re.match(pattern, pwd))
