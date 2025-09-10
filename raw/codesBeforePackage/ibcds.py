@@ -50,8 +50,10 @@ class CustomHelpFormatter(argparse.HelpFormatter):
         else:
             return self.get_general_help()
 
-    def get_general_help(self):
-        return """ibcds 命令行工具
+    @staticmethod
+    def get_general_help():
+        return """
+★  ibcds 命令行工具
 
 使用方法:
   ibcds <command> [选项]
@@ -60,31 +62,37 @@ class CustomHelpFormatter(argparse.HelpFormatter):
   rm      执行删除操作
   add     添加用户
   modify  修改用户密码
-  ls      列出信息（无参数）
+  ls      列出信息
 
 查看命令详情:
   ibcds <command> -h
+
 """
 
-    def get_rm_help(self):
-        return """ibcds rm - 执行删除操作
+    @staticmethod
+    def get_rm_help():
+        return """
+★  ibcds rm - 执行删除操作
 
 使用方法:
   ibcds rm [选项]
 
 选项:
-  --data       删除数据（不可与其他选项同时使用）
-  --table      删除表（不可与其他选项同时使用）
-  -u, --user   指定要删除的用户（不可与其他选项同时使用）
+  --data       删除表内所有数据
+  --table      删除表（执行该操作后需要重新初始化数据库）
+  -u, --user   指定要删除的用户
 
 示例:
   ibcds rm --data
   ibcds rm --table
-  ibcds rm -u admin
+  ibcds rm -u username
+
 """
 
-    def get_add_help(self):
-        return """ibcds add - 添加用户
+    @staticmethod
+    def get_add_help():
+        return """
+★  ibcds add - 添加用户
 
 使用方法:
   ibcds add -u <用户名> -p <密码>
@@ -94,12 +102,15 @@ class CustomHelpFormatter(argparse.HelpFormatter):
   -p, --pwd    密码（必填）
 
 示例:
-  ibcds add -u admin -p 123456
-  ibcds add --user guest --pwd password
+  ibcds add -u usr1 -p 12345678
+  ibcds add --user usr2 --pwd password
+
 """
 
-    def get_modify_help(self):
-        return """ibcds modify - 修改用户密码
+    @staticmethod
+    def get_modify_help():
+        return """
+★  ibcds modify - 修改用户密码
 
 使用方法:
   ibcds modify -u <用户名> -n <新密码>
@@ -109,22 +120,40 @@ class CustomHelpFormatter(argparse.HelpFormatter):
   -n, --newpwd 新密码（必填）
 
 示例:
-  ibcds modify -u admin -n 654321
-  ibcds modify --user guest --newpwd newpass
+  ibcds modify -u usr1 -n 87654321
+  ibcds modify --user usr2 --newpwd newpassword
+
 """
 
-    def get_ls_help(self):
-        return """ibcds ls - 列出信息
+    @staticmethod
+    def get_ls_help():
+        return """
+★  ibcds ls - 列出所有用户信息
 
 使用方法:
   ibcds ls
 
 说明:
-  该命令无需任何参数，直接执行即可列出相关信息。
+  该命令无需任何参数，直接执行即可列出信息。
 
 示例:
   ibcds ls
+
 """
+
+
+def check_excess_arguments(args, command):
+    """检查是否有多余的参数"""
+    # 根据不同命令定义最大允许的参数数量
+    max_args = {
+        'rm': 3,  # ibcds rm [--data|--table|-u <user>]
+        'add': 5,  # ibcds add -u <user> -p <pwd>
+        'modify': 5,  # ibcds modify -u <user> -n <newpwd>
+        'ls': 2  # ibcds ls
+    }.get(command, 1)
+
+    if len(sys.argv) > max_args:
+        raise argparse.ArgumentError(None, f"错误: 命令 '{command}' 包含过多参数")
 
 
 def main():
@@ -141,12 +170,16 @@ def main():
             print(formatter.format_help())
             sys.exit(0)
 
+    # 当没有传入任何参数时，显示全局帮助信息
+    if len(sys.argv) == 1:
+        print(CustomHelpFormatter(None).get_general_help())
+        sys.exit(0)
+
     # 创建主解析器
     parser = argparse.ArgumentParser(
         prog='ibcds',
         add_help=False,
-        formatter_class=lambda prog: CustomHelpFormatter(prog)
-    )
+        formatter_class=lambda prog: CustomHelpFormatter(prog))
 
     # 创建子命令解析器
     subparsers = parser.add_subparsers(dest='command', required=True)
@@ -155,8 +188,7 @@ def main():
     rm_parser = subparsers.add_parser(
         'rm',
         add_help=False,
-        formatter_class=lambda prog: CustomHelpFormatter(prog, 'rm')
-    )
+        formatter_class=lambda prog: CustomHelpFormatter(prog, 'rm'))
     rm_group = rm_parser.add_mutually_exclusive_group(required=True)
     rm_group.add_argument('--data', action='store_true')
     rm_group.add_argument('--table', action='store_true')
@@ -166,8 +198,7 @@ def main():
     add_parser = subparsers.add_parser(
         'add',
         add_help=False,
-        formatter_class=lambda prog: CustomHelpFormatter(prog, 'add')
-    )
+        formatter_class=lambda prog: CustomHelpFormatter(prog, 'add'))
     add_parser.add_argument('-u', '--user', required=True)
     add_parser.add_argument('-p', '--pwd', required=True)
 
@@ -175,8 +206,7 @@ def main():
     modify_parser = subparsers.add_parser(
         'modify',
         add_help=False,
-        formatter_class=lambda prog: CustomHelpFormatter(prog, 'modify')
-    )
+        formatter_class=lambda prog: CustomHelpFormatter(prog, 'modify'))
     modify_parser.add_argument('-u', '--user', required=True)
     modify_parser.add_argument('-n', '--newpwd', required=True)
 
@@ -184,19 +214,22 @@ def main():
     ls_parser = subparsers.add_parser(
         'ls',
         add_help=False,
-        formatter_class=lambda prog: CustomHelpFormatter(prog, 'ls')
-    )
-
-    # 当没有传入任何参数时，显示全局帮助信息
-    if len(sys.argv) == 1:
-        print(CustomHelpFormatter(parser).get_general_help())
-        sys.exit(0)
+        formatter_class=lambda prog: CustomHelpFormatter(prog, 'ls'))
 
     # 解析命令行参数
     try:
+        # 先解析出命令以进行参数数量检查
+        command = sys.argv[1]
+        check_excess_arguments(sys.argv, command)
+
+        # 解析所有参数
         args = parser.parse_args()
-    except argparse.ArgumentError:
-        print(CustomHelpFormatter(parser).get_general_help())
+    except argparse.ArgumentError as e:
+        # 参数错误时只显示错误信息，不显示帮助内容
+        print(f"错误: {e.message}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"错误: 发生未知错误 - {str(e)}")
         sys.exit(1)
 
     # 执行相应的函数
@@ -217,4 +250,5 @@ def main():
 
 if __name__ == '__main__':
     # https://www.doubao.com/thread/we59ced4036910591
+    # python ibcds.py rm 2
     main()
