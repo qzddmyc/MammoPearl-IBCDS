@@ -71,8 +71,6 @@ vim ./static/assets/data/vars.js
 #### 1. Admin-Operation
 存放清除数据库所使用的文件，可以选择性清空表的数据，或删除整张表。
 
-使用方法见[清除数据库数据](#1. 清除数据库数据)。
-
 #### 2. config
 项目配置文件夹。
 
