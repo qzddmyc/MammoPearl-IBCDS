@@ -32,6 +32,13 @@ def func6():
     print("执行 func6: 处理 ls 操作（列出信息）")
 
 
+class NoHelpOnErrorParser(argparse.ArgumentParser):
+    def error(self, message):
+        # 只输出错误原因，不输出任何帮助信息
+        print(f"错误: {message}", file=sys.stderr)  # 用sys.stderr输出错误（符合命令行规范）
+        sys.exit(1)
+
+
 # 自定义帮助信息格式化器
 class CustomHelpFormatter(argparse.HelpFormatter):
     def __init__(self, parser, command=None):
@@ -250,5 +257,6 @@ def main():
 
 if __name__ == '__main__':
     # https://www.doubao.com/thread/we59ced4036910591
+    # doc: https://docs.python.org/zh-cn/3.13/library/argparse.html
     # python ibcds.py rm 2
     main()
