@@ -129,11 +129,12 @@ def save_User(UserID: str, UserName: str, UserPwd: str) -> dict:
     if check_value_exists(DATABASE_CONFIG['TableName_U'], DATABASE_CONFIG['ColName_ID'], UserID):
         return {
             'success': False,
-            'info': 'Odd Event: generated userId repeated.'
+            'info': 'Odd Event: generated userId repeated.',
+            'code': 1
         }
 
     if check_if_usr_exist(UserName):
-        return {'success': False, 'info': '用户名重复！'}
+        return {'success': False, 'info': '用户名重复！', 'code': 2}
 
     def hash_password(password: str) -> bytes:
         """将明文密码转换为哈希值"""
@@ -149,8 +150,8 @@ def save_User(UserID: str, UserName: str, UserPwd: str) -> dict:
 
     success = execute_non_query(query, values)
     if not success:
-        return {'success': False, 'info': '向数据库添加密码信息错误！'}
-    return {'success': True, 'info': 'ok'}
+        return {'success': False, 'info': '向数据库添加密码信息错误！', 'code': 3}
+    return {'success': True, 'info': 'ok', 'code': 0}
 
 
 def verify_UserAccount_password(UserName: str, UserPwd: str) -> bool:
