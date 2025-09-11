@@ -1,5 +1,9 @@
-import argparse
 import sys
+import argparse
+
+
+class ExecException(Exception):
+    pass
 
 
 def func1():
@@ -78,7 +82,7 @@ ibcds 命令行工具
   rm      执行删除操作
   add     添加用户
   modify  修改用户密码
-  ls      列出信息
+  ls      列出所有用户信息
 
 查看命令详情:
   ibcds <command> -h
@@ -129,8 +133,8 @@ ibcds modify - 修改用户密码
   ibcds modify -u <用户名> -n <新密码>
 
 选项:
-  -u, --user   用户名（必填）
-  -n, --newpwd 新密码（必填）
+  -u, --user   用户名
+  -n, --newpwd 新密码
 
 示例:
   ibcds modify -u usr1 -n 87654321
@@ -254,23 +258,26 @@ def main():
         print(f"错误: 发生未知错误 - {str(e)}")
         sys.exit(1)
 
-    if args.command == 'rm':
-        if args.data:
-            func1()
-        elif args.table:
-            func2()
-        elif args.user:
-            func4(args.user)
-    elif args.command == 'add':
-        func3(args.user, args.pwd)
-    elif args.command == 'modify':
-        func5(args.user, args.newpwd)
-    elif args.command == 'ls':
-        func6()
+    try:
+        if args.command == 'rm':
+            if args.data:
+                func1()
+            elif args.table:
+                func2()
+            elif args.user:
+                func4(args.user)
+        elif args.command == 'add':
+            func3(args.user, args.pwd)
+        elif args.command == 'modify':
+            func5(args.user, args.newpwd)
+        elif args.command == 'ls':
+            func6()
+    except ExecException as e:
+        print(e)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
     # https://www.doubao.com/thread/we59ced4036910591
     # doc: https://docs.python.org/zh-cn/3.13/library/argparse.html
-    # python ibcds.py rm 2
     main()
