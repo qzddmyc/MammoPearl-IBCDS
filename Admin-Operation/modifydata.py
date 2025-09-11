@@ -1,7 +1,8 @@
 import re
 from config.configs import DATABASE_CONFIG
 from src.utils import generate_user_id, is_usrPwd_ok, is_usrName_ok
-from src.utils_db import if_table_exists, execute_query, save_User, update_UserAccount_password, delete_user_by_username
+from src.utils_db import if_table_exists, execute_query, save_User, update_UserAccount_password, \
+    delete_user_by_username, check_if_server_started
 from tabulate import tabulate
 import wcwidth
 
@@ -140,5 +141,9 @@ def main():
 
 if __name__ == '__main__':
     # python -m Admin-Operation.modifydata
-    main()
-    print('执行完成。')
+    print("检测数据库服务中...")
+    if check_if_server_started():
+        main()
+        print('执行完成。')
+    else:
+        print("数据库服务未开启。")

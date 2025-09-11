@@ -1,5 +1,5 @@
 from config.configs import DATABASE_CONFIG
-from src.utils_db import execute_non_query, if_table_exists
+from src.utils_db import execute_non_query, if_table_exists, check_if_server_started
 
 
 def truncate_table(table_name) -> bool:
@@ -43,4 +43,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # python -m Admin-Operation.cleardata
+    print("检测数据库服务中...")
+    if check_if_server_started():
+        main()
+    else:
+        print("数据库服务未开启。")

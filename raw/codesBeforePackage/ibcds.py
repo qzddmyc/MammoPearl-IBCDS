@@ -1,6 +1,8 @@
 import sys
 import argparse
 
+from src.utils_db import check_if_server_started
+
 
 class ExecException(Exception):
     pass
@@ -280,4 +282,7 @@ def main():
 if __name__ == '__main__':
     # https://www.doubao.com/thread/we59ced4036910591
     # doc: https://docs.python.org/zh-cn/3.13/library/argparse.html
+    if not check_if_server_started():
+        print('数据库服务未开启')
+        sys.exit(1)
     main()

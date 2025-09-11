@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, request, jsonify
 from src.v1 import detect_if_Breast_Cancer_picture
 from src.utils import open_file_with_explorer, generate_user_id
-from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User
+from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User, check_if_server_started
 from config.configs import BASE_CONFIG
 
 app = Flask(__name__)
@@ -116,4 +116,8 @@ def api_login():
 
 
 if __name__ == '__main__':
-    app.run(debug=False, port=BASE_CONFIG['PORT'])
+    print("检测数据库服务中...")
+    if check_if_server_started():
+        app.run(debug=False, port=BASE_CONFIG['PORT'])
+    else:
+        print("数据库服务未开启。")

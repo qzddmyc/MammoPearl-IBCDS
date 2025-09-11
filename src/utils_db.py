@@ -3,7 +3,7 @@ import pyodbc
 from config.configs import DATABASE_CONFIG
 
 
-def get_db_connection():
+def get_db_connection(printError=True):
     try:
         connection = pyodbc.connect(
             f"DRIVER={DATABASE_CONFIG['DRIVER']};"
@@ -12,8 +12,18 @@ def get_db_connection():
             f"Trusted_Connection={DATABASE_CONFIG['trusted_connection']}")
         return connection
     except Exception as e:
-        print(f"数据库连接错误: {e}")
+        if printError:
+            print(f"数据库连接错误: {e}")
         return None
+
+
+def check_if_server_started() -> bool:
+    """检查数据库服务是否开启，不会额外输出任何信息"""
+    connection = get_db_connection(False)
+    if connection:
+        connection.close()
+        return True
+    return False
 
 
 def execute_query(query, params=None):

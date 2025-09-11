@@ -1,5 +1,6 @@
 import os
-from src.utils_db import execute_query, get_db_connection
+import sys
+from src.utils_db import execute_query, get_db_connection, check_if_server_started
 from config.configs import DATABASE_CONFIG
 
 
@@ -37,7 +38,7 @@ def main():
     db_exists = check_database_exists()
     if not db_exists:
         print(f"错误：数据库 '{DATABASE_CONFIG['DB_NAME']}' 不存在，无法继续初始化")
-        return
+        sys.exit(1)
 
     # 项目根目录
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -48,15 +49,20 @@ def main():
         if os.path.exists(init_sql_path):
             if not execute_sql_file(init_sql_path):
                 print("执行初始化脚本失败，初始化终止")
-                return
+                sys.exit(1)
         else:
             print(f"未找到初始化脚本: {init_sql_path}，初始化终止")
-            return
+            sys.exit(1)
         print(f'- 文件：{init_sql_path} 执行完成')
     print("数据库初始化完成!")
+    sys.exit(0)
 
 
 if __name__ == "__main__":
+    print("检测数据库服务中...")
+    if not check_if_server_started():
+        print("数据库服务未开启。")
+        sys.exit(1)
     check = input(f'确定初始化你的{DATABASE_CONFIG['DB_NAME']}数据库吗？你需要保证该数据库已存在。(y/n) :')
     if check == 'y' or check == 'Y':
         main()
