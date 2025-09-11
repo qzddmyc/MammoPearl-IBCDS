@@ -357,6 +357,21 @@ if __name__ == '__main__':
     # https://www.doubao.com/thread/we59ced4036910591
     # doc: https://docs.python.org/zh-cn/3.13/library/argparse.html
     # to test, run: python -m raw.codesBeforePackage.ibcds
+
+    """
+    package:
+    
+    cp raw/codesBeforePackage/ibcds.py ibcds.py
+    pyinstaller -F ibcds.py
+    rm ibcds.spec
+    rm -rf build
+    rm ibcds.py
+    mkdir -p bin
+    mv dist/* bin/
+    rmdir dist
+
+    """
+
     if not check_if_server_started():
         print('数据库服务未开启')
         sys.exit(1)
