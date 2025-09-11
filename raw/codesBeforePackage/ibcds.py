@@ -32,11 +32,18 @@ def func6():
     print("执行 func6: 处理 ls 操作（列出信息）")
 
 
+def global_error(message):
+    print(f'\nError: {message}', file=sys.stderr)
+    info = ("\nTips: 'ibcds -h' list available subcommands and some concept guides."
+            "\n      See 'ibcds <command> -h' to read about a specific subcommand.")
+    print(info, file=sys.stderr)
+    sys.exit(1)
+
+
 class NoHelpOnErrorParser(argparse.ArgumentParser):
     def error(self, message):
-        # 只输出错误原因，不输出任何帮助信息
-        print(f"错误: {message}", file=sys.stderr)  # 用sys.stderr输出错误（符合命令行规范）
-        sys.exit(1)
+        # sys.stderr.write(f'{self.prog}: error: {message}\n')
+        global_error(message)
 
 
 # 自定义帮助信息格式化器
@@ -54,13 +61,15 @@ class CustomHelpFormatter(argparse.HelpFormatter):
             return self.get_modify_help()
         elif self.command == 'ls':
             return self.get_ls_help()
-        else:
+        elif self.command is None:
             return self.get_general_help()
+        else:
+            global_error(f"Unknown command in getting help: {self.command}")
 
     @staticmethod
     def get_general_help():
         return """
-★  ibcds 命令行工具
+ibcds 命令行工具
 
 使用方法:
   ibcds <command> [选项]
@@ -73,13 +82,12 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 
 查看命令详情:
   ibcds <command> -h
-
 """
 
     @staticmethod
     def get_rm_help():
         return """
-★  ibcds rm - 执行删除操作
+ibcds rm - 执行删除操作
 
 使用方法:
   ibcds rm [选项]
@@ -93,13 +101,12 @@ class CustomHelpFormatter(argparse.HelpFormatter):
   ibcds rm --data
   ibcds rm --table
   ibcds rm -u username
-
 """
 
     @staticmethod
     def get_add_help():
         return """
-★  ibcds add - 添加用户
+ibcds add - 添加用户
 
 使用方法:
   ibcds add -u <用户名> -p <密码>
@@ -111,13 +118,12 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 示例:
   ibcds add -u usr1 -p 12345678
   ibcds add --user usr2 --pwd password
-
 """
 
     @staticmethod
     def get_modify_help():
         return """
-★  ibcds modify - 修改用户密码
+ibcds modify - 修改用户密码
 
 使用方法:
   ibcds modify -u <用户名> -n <新密码>
@@ -129,13 +135,12 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 示例:
   ibcds modify -u usr1 -n 87654321
   ibcds modify --user usr2 --newpwd newpassword
-
 """
 
     @staticmethod
     def get_ls_help():
         return """
-★  ibcds ls - 列出所有用户信息
+ibcds ls - 列出所有用户信息
 
 使用方法:
   ibcds ls
@@ -145,22 +150,31 @@ class CustomHelpFormatter(argparse.HelpFormatter):
 
 示例:
   ibcds ls
-
 """
 
 
-def check_excess_arguments(args, command):
-    """检查是否有多余的参数"""
-    # 根据不同命令定义最大允许的参数数量
-    max_args = {
-        'rm': 3,  # ibcds rm [--data|--table|-u <user>]
-        'add': 5,  # ibcds add -u <user> -p <pwd>
-        'modify': 5,  # ibcds modify -u <user> -n <newpwd>
-        'ls': 2  # ibcds ls
-    }.get(command, 1)
-
-    if len(sys.argv) > max_args:
-        raise argparse.ArgumentError(None, f"错误: 命令 '{command}' 包含过多参数")
+# def check_excess_arguments(args, command):
+#     """检查是否有多余的参数。不再使用，采用argparse库自带的错误分析机制"""
+#     # 根据不同命令定义最大允许的参数数量
+#     len_args = {
+#         'rm': 3,  # ibcds rm [--data|--table|-u <user>]
+#         'add': 6,  # ibcds add -u <user> -p <pwd>
+#         'modify': 6,  # ibcds modify -u <user> -n <newpwd>
+#         'ls': 2  # ibcds ls
+#     }.get(command, -1)
+#
+#     if command == 'rm' and len(args) > 2 and (args[2] == '-u' or args[2] == '--user'):
+#         len_args += 1
+#
+#     if len_args == -1:
+#         if len(args) == 2:
+#             raise argparse.ArgumentError(None, f"Unexpected command: {command}")
+#         raise argparse.ArgumentError(None,
+#                                      f"Unexpected command: {command}, unexpected arguments: {' '.join(args[2:])}")
+#
+#     if len(sys.argv) > len_args:
+#         raise argparse.ArgumentError(None, f"Command '{command}' contains more arguments than expected")
+#     return
 
 
 def main():
@@ -169,10 +183,14 @@ def main():
         command = sys.argv[1]
         # 检查全局帮助
         if command in ['-h', '--help']:
+            if len(sys.argv) > 2:
+                global_error(f"Unexpected argument(s): {' '.join(sys.argv[2:])}")
             print(CustomHelpFormatter(None).get_general_help())
             sys.exit(0)
         # 检查子命令帮助
         if len(sys.argv) >= 3 and sys.argv[2] in ['-h', '--help']:
+            if len(sys.argv) > 3:
+                global_error(f"Unexpected argument(s): {' '.join(sys.argv[3:])}")
             formatter = CustomHelpFormatter(None, command)
             print(formatter.format_help())
             sys.exit(0)
@@ -183,13 +201,15 @@ def main():
         sys.exit(0)
 
     # 创建主解析器
-    parser = argparse.ArgumentParser(
+    parser = NoHelpOnErrorParser(
         prog='ibcds',
         add_help=False,
         formatter_class=lambda prog: CustomHelpFormatter(prog))
 
     # 创建子命令解析器
-    subparsers = parser.add_subparsers(dest='command', required=True)
+    subparsers = parser.add_subparsers(dest='command',
+                                       required=True,
+                                       parser_class=NoHelpOnErrorParser)
 
     # 处理 rm 子命令
     rm_parser = subparsers.add_parser(
@@ -223,23 +243,17 @@ def main():
         add_help=False,
         formatter_class=lambda prog: CustomHelpFormatter(prog, 'ls'))
 
-    # 解析命令行参数
+    args = None
     try:
-        # 先解析出命令以进行参数数量检查
-        command = sys.argv[1]
-        check_excess_arguments(sys.argv, command)
-
-        # 解析所有参数
+        # command = sys.argv[1]
+        # check_excess_arguments(sys.argv, command)
         args = parser.parse_args()
     except argparse.ArgumentError as e:
-        # 参数错误时只显示错误信息，不显示帮助内容
-        print(f"错误: {e.message}")
-        sys.exit(1)
+        global_error(e)
     except Exception as e:
         print(f"错误: 发生未知错误 - {str(e)}")
         sys.exit(1)
 
-    # 执行相应的函数
     if args.command == 'rm':
         if args.data:
             func1()
