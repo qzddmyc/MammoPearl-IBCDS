@@ -3,5 +3,5 @@ x 将用户名加入模版
 x 登录页面 + 登录、登出按钮变化。使用localStorage.getItem('usr');存取
 - 技术优势页面
 - docker打包
-- 封装Admin-Operation为二进制文件
+x 封装Admin-Operation为二进制文件
 - 集成ai功能至页面

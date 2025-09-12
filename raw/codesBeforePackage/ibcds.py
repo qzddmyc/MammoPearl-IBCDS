@@ -340,7 +340,7 @@ def main():
     modify_parser.add_argument('-n', '--newpwd', required=True)
 
     # 处理 ls 子命令
-    ls_parser = subparsers.add_parser(
+    subparsers.add_parser(
         'ls',
         add_help=False,
         formatter_class=lambda prog: CustomHelpFormatter(prog, 'ls'))
@@ -350,10 +350,10 @@ def main():
         # command = sys.argv[1]
         # check_excess_arguments(sys.argv, command)
         args = parser.parse_args()
-    except argparse.ArgumentError as e:
-        global_error(e)
-    except Exception as e:
-        print(f"错误: 发生未知错误 - {str(e)}")
+    except argparse.ArgumentError as err:
+        global_error(err)
+    except Exception as err:
+        print(f"错误: 发生未知错误 - {str(err)}")
         sys.exit(1)
 
     try:
@@ -370,11 +370,11 @@ def main():
             func5(args.user, args.newpwd)
         elif args.command == 'ls':
             func6()
-    except ExecException as e:
-        print(e, file=sys.stderr)
+    except ExecException as err:
+        print(err, file=sys.stderr)
         sys.exit(1)
-    except Exception as e:
-        print(f'Unexpected error: {e}', file=sys.stderr)
+    except Exception as err:
+        print(f'Unexpected error: {err}', file=sys.stderr)
         sys.exit(1)
 
 

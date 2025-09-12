@@ -126,7 +126,10 @@ vim ./static/assets/data/vars.js
 #### 1. Admin-Operation
 存放清除数据库所使用的文件，可以选择性清空表的数据，或删除整张表。
 
-#### 2. config
+#### 2. bin
+存放二进制文件。
+
+#### 3. config
 项目配置文件夹。
 
 包含：
@@ -134,17 +137,15 @@ vim ./static/assets/data/vars.js
 - database.yaml：数据库配置文件。导入方式：`from config.configs import DATABASE_CONFIG`
 - configs.py：用于解析yaml文件并生成字典
 
-#### 3. init
-用于数据库的初始化。
+#### 4. init
+数据库初始化文件夹。包含了初始化程序与sql语句。
 
-使用方法见[项目初始化第4条](#项目初始化)。
-
-#### 4. logs
+#### 5. logs
 在页面中使用了检测服务后自动生成。
 
 会按照页面中使用的用户名自动分组；每组内文件夹的索引为基于该文件夹创建时间纳秒时间戳的十六进制数。
 
-#### 5. src
+#### 6. src
 Python主代码。
 
 包含：
@@ -152,7 +153,7 @@ Python主代码。
 - utils_db.py：数据库所依赖的所有接口
 - v1.py：检测与结果保存流程需要的所有函数
 
-#### 6. static
+#### 7. static
 项目静态文件。
 
 包含：
@@ -164,5 +165,5 @@ Python主代码。
 - css：所有css文件
 - js：所有js文件
 
-#### 7. templates
+#### 8. templates
 Flask框架用于存放模版文件的文件夹。包含了所有的html文件。

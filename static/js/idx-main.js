@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         doms.logouts.forEach(item => {
             item.classList.remove(classNameForHide);
+            item.title = `当前用户：${usrInfo}`;
         });
     }
 
