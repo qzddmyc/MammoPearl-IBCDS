@@ -3,10 +3,21 @@ import argparse
 import wcwidth
 from tabulate import tabulate
 
-from config.configs import DATABASE_CONFIG
-from src.utils import is_usrName_ok, is_usrPwd_ok, generate_user_id
-from src.utils_db import check_if_server_started, if_table_exists, execute_non_query, save_User, check_if_usr_exist, \
-    delete_user_by_username, update_UserAccount_password, execute_query
+try:
+    from config.configs import DATABASE_CONFIG
+    from src.utils import is_usrName_ok, is_usrPwd_ok, generate_user_id
+    from src.utils_db import check_if_server_started, if_table_exists, execute_non_query, save_User, \
+        check_if_usr_exist, delete_user_by_username, update_UserAccount_password, execute_query
+except ImportError as e:
+    print(f'ImportError: {e}\nPlease check your way in packing or the root you run this command.', file=sys.stderr)
+    sys.exit(1)
+except FileNotFoundError as e:
+    print(f'FileNotFoundError: {e}\nPlease check your way in packing or the root you run this command.',
+          file=sys.stderr)
+    sys.exit(1)
+except Exception as e:
+    print(f'Unexpected exception: {e} in imports.', file=sys.stderr)
+    sys.exit(1)
 
 
 class ExecException(Exception):
@@ -361,6 +372,9 @@ def main():
             func6()
     except ExecException as e:
         print(e, file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f'Unexpected error: {e}', file=sys.stderr)
         sys.exit(1)
 
 

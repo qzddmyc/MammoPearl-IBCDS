@@ -36,15 +36,70 @@ http://127.0.0.1:8080
 
 
 
-### 特殊操作
+### 管理员行为指南
 
-#### 1. 清除数据库数据
+> 该项目提供了两份供管理员管理用户信息的接口：一份为python文件，包含基于控制台的交互式UI操作；另一份为二进制可执行文件，可以在终端通过命令行使用。
+
+#### 1. UI 操作
+
+1. 清除数据库数据
+
+> 包含了清空表内数据与删除整张表的操作。
+
 使用以下命令运行模块，并按照提示操作即可。
 ```shell
 python -m Admin-Operation.cleardata
 ```
 
-#### 2. 修改项目端口
+2. 操作用户信息
+
+> 包含修改密码、新增用户、删除用户操作。
+
+使用以下命令运行模块，并按照提示操作即可。
+```shell
+python -m Admin-Operation.modifydata
+```
+
+#### 2. 命令行操作
+
+1. 使用方式
+
+可以按以下示例使用该命令行工具（该指令会输出帮助信息）：
+```shell
+bin/ibcds -h
+```
+
+当然，也可以将"**项目路径/bin**"添加至环境变量并重启设备，即可在**项目根目录下（终端位置）**直接使用`ibcds -h`执行该命令。
+值得注意的是，`ibcds`并不是一个全局可用的命令，它依赖本项目中的部分文件。
+
+2. 源代码及打包方式
+
+该文件打包前的源代码位于raw/codesBeforePackage/ibcds.py，打包方式如下：
+
+- 前置条件（请根据命令自行检查）：
+```shell
+pip install pyinstaller
+rm -r bin
+```
+
+- 打包并放入bin文件夹下：
+```shell
+cp raw/codesBeforePackage/ibcds.py ibcds.py
+pyinstaller -F ibcds.py
+rm ibcds.spec
+rm -r build
+rm ibcds.py
+mkdir -p bin
+mv dist/* bin/
+rmdir dist
+```
+注意，打包时的.py文件必须位于项目根目录下，否则会无法执行。
+
+
+
+### 特殊操作
+
+#### 1. 修改项目端口
 修改config.yaml中的PORT值即可。
 
 参考命令：
@@ -52,7 +107,7 @@ python -m Admin-Operation.cleardata
 vim ./config/config.yaml
 ```
 
-#### 3. 设置页面为仅访问，禁止所有与服务器相关的操作
+#### 2. 设置页面为仅访问，禁止所有与服务器相关的操作
 将 /static/assets/data/vars.js 中的 `DISABLE_INTERACTION_global` 设置为 `true` 即可。
 
 该操作会禁止用户注册、提交检测相关的操作，并隐藏需要开启服务器的提示。
@@ -110,4 +165,4 @@ Python主代码。
 - js：所有js文件
 
 #### 7. templates
-Flase框架用于存放模版文件的文件夹。包含了所有的html文件。
+Flask框架用于存放模版文件的文件夹。包含了所有的html文件。
