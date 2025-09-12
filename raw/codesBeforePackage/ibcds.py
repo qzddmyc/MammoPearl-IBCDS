@@ -10,7 +10,7 @@ from src.utils_db import check_if_server_started, if_table_exists, execute_non_q
 
 
 class ExecException(Exception):
-    """执行异常时raise该错误即可，程序自动退出"""
+    """执行异常时raise该错误即可，会被捕获并使程序异常退出"""
     pass
 
 
@@ -46,6 +46,9 @@ def func2():
 
 def func3(user, pwd):
     """处理 ibcds.exe add -u/--user 和 -p/--pwd 命令"""
+    t = DATABASE_CONFIG['TableName_U']
+    if not if_table_exists(t):
+        raise ExecException(f'Error: Table "{t}" does not exist.')
     if not is_usrName_ok(user):
         raise ExecException(
             f'User name "{user}" is invalid, it should match ' + r'"^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,10}$"')
@@ -68,6 +71,9 @@ def func3(user, pwd):
 
 def func4(user):
     """处理 ibcds.exe rm -u/--user 命令"""
+    t = DATABASE_CONFIG['TableName_U']
+    if not if_table_exists(t):
+        raise ExecException(f'Error: Table "{t}" does not exist.')
     if not check_if_usr_exist(user):
         raise ExecException(f'Error: user "{user}" does not exist.')
     if not delete_user_by_username(user):
@@ -77,6 +83,9 @@ def func4(user):
 
 def func5(user, newpwd):
     """处理 ibcds.exe modify -u/--user 和 -n/--newpwd 命令"""
+    t = DATABASE_CONFIG['TableName_U']
+    if not if_table_exists(t):
+        raise ExecException(f'Error: Table "{t}" does not exist.')
     if not check_if_usr_exist(user):
         raise ExecException(f'Error: user "{user}" does not exist.')
     if not is_usrPwd_ok(newpwd):
@@ -88,15 +97,17 @@ def func5(user, newpwd):
 
 def func6():
     """处理 ibcds.exe ls 命令"""
+    table = DATABASE_CONFIG['TableName_U']
+    item = DATABASE_CONFIG['ColName_NAME']
+
+    if not if_table_exists(table):
+        raise ExecException(f'Error: Table "{table}" does not exist.')
 
     def chinese_aware_ljust(s, width):
         """中文-aware的左对齐函数"""
         str_width = wcwidth.wcswidth(str(s))
         spaces_needed = max(0, width - str_width)
         return str(s) + ' ' * spaces_needed
-
-    table = DATABASE_CONFIG['TableName_U']
-    item = DATABASE_CONFIG['ColName_NAME']
 
     usernames = execute_query(f"SELECT {item} FROM {table}")
 
@@ -357,14 +368,14 @@ if __name__ == '__main__':
     # https://www.doubao.com/thread/we59ced4036910591
     # doc: https://docs.python.org/zh-cn/3.13/library/argparse.html
     # to test, run: python -m raw.codesBeforePackage.ibcds
-
     """
     package:
     
+    rm -r bin
     cp raw/codesBeforePackage/ibcds.py ibcds.py
     pyinstaller -F ibcds.py
     rm ibcds.spec
-    rm -rf build
+    rm -r build
     rm ibcds.py
     mkdir -p bin
     mv dist/* bin/
@@ -373,6 +384,6 @@ if __name__ == '__main__':
     """
 
     if not check_if_server_started():
-        print('数据库服务未开启')
+        print('数据库服务未开启', file=sys.stderr)
         sys.exit(1)
     main()
