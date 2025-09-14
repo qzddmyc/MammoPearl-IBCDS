@@ -1,7 +1,8 @@
-x 将logs按userName分类
-x 将用户名加入模版
-x 登录页面 + 登录、登出按钮变化。使用localStorage.getItem('usr');存取
+o 将logs按userName分类
+o 将用户名加入模版
+o 登录页面 + 登录、登出按钮变化。使用localStorage.getItem('usr');存取
 - 技术优势页面
 - docker打包
-x 封装Admin-Operation为二进制文件
+o 封装Admin-Operation为二进制文件
 - 集成ai功能至页面
+x 优化数据库服务未开启时的超长延时 --无法实现
