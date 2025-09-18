@@ -27,40 +27,44 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     qa_container.innerHTML = html;
+
+    if (window.updateScrollIndicator) window.updateScrollIndicator();
+    else updateScrollIndicator();
 });
 
-
+// 该函数存放至：ques-ai.js - function: initNormalQaAnimation
+//
 // 滚动触发动画效果
-document.addEventListener('DOMContentLoaded', function () {
-    // 获取所有问答项并转换为数组
-    const qaItems = Array.from(document.querySelectorAll('.qa-item'));
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px 0px 100px 0px', // 底部额外100px触发区域
-        threshold: 0.1
-    };
+// document.addEventListener('DOMContentLoaded', function () {
+//     // 获取所有问答项并转换为数组
+//     const qaItems = Array.from(document.querySelectorAll('.qa-item'));
+//     const observerOptions = {
+//         root: null,
+//         rootMargin: '0px 0px 100px 0px', // 底部额外100px触发区域
+//         threshold: 0.1
+//     };
 
-    // 使用IntersectionObserver监测元素可见性
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting && !entry.target.classList.contains('visible')) {
-                // 为每个可见元素添加延迟，创建顺序动画
-                const index = qaItems.indexOf(entry.target);
-                setTimeout(() => {
-                    entry.target.classList.add('visible');
-                }, index * 50);
+//     // 使用IntersectionObserver监测元素可见性
+//     const observer = new IntersectionObserver((entries) => {
+//         entries.forEach(entry => {
+//             if (entry.isIntersecting && !entry.target.classList.contains('visible')) {
+//                 // 为每个可见元素添加延迟，创建顺序动画
+//                 const index = qaItems.indexOf(entry.target);
+//                 setTimeout(() => {
+//                     entry.target.classList.add('visible');
+//                 }, index * 50);
 
-                // 只观察一次
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
+//                 // 只观察一次
+//                 observer.unobserve(entry.target);
+//             }
+//         });
+//     }, observerOptions);
 
-    // 观察所有问答项
-    qaItems.forEach(item => {
-        observer.observe(item);
-    });
-});
+//     // 观察所有问答项
+//     qaItems.forEach(item => {
+//         observer.observe(item);
+//     });
+// });
 
 // container随着header的缩小而缩小
 document.addEventListener('DOMContentLoaded', function () {

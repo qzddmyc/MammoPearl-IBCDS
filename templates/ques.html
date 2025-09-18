@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../static/css/scrollbar.css">
     <link rel="stylesheet" href="../static/css/star.css">
     <link rel="stylesheet" href="../static/css/header.css">
+    <link rel="stylesheet" href="../static/css/ques-ai.css">
     <style>
         /* 基础样式复用原页面风格 */
         * {
@@ -749,9 +750,9 @@
         </div>
 
         <div class="main-header-right">
+            <button class="normal-btn qa-ai">AI 问答</button>
+            <button class="normal-btn qa-normal hide">常见问答</button>
             <button class="normal-btn" data-action="page-skip" data-msg="./index.html">返回</button>
-            <button class="normal-btn qa-ai">AI问答</button>
-            <button class="normal-btn qa-normal hide">普通问答</button>
         </div>
 
         <!-- 压缩菜单栏 -->
@@ -765,9 +766,9 @@
 
             <!-- 菜单内容 -->
             <div class="mobile-menu-content">
+                <button class="mobile-menu-item color-text qa-ai">AI 问答</button>
+                <button class="mobile-menu-item color-text qa-normal hide">常见问答</button>
                 <button class="mobile-menu-item color-text" data-action="page-skip" data-msg="./index.html">返回</button>
-                <button class="mobile-menu-item color-text qa-ai">AI问答</button>
-                <button class="mobile-menu-item color-text qa-normal hide">普通问答</button>
             </div>
         </div>
     </header>
@@ -800,17 +801,32 @@
                 </div>
             </div>
         </div>
+
+        <div class="ai-qa-container hide">
+            <div class="question-input-container hide">
+                <textarea class="question-input" placeholder="请输入与乳腺癌相关的问题..."></textarea>
+                <div class="button-group">
+                    <button class="cancel-btn">取消</button>
+                    <button class="confirm-btn">确定</button>
+                </div>
+            </div>
+
+            <button class="add-conversation-btn">+ 添加对话</button>
+
+        </div>
     </div>
 
     <!-- <script src="../static/js/idx-loading.js"></script> -->
     <script src="../static/js/main.js"></script>
     <script src="../static/js/header.js"></script>
+    
+    <script src="../static/js/buttons.js"></script>
+    <script src="../static/js/scrollbar.js"></script>
 
     <script src="../static/assets/data/qa_doc.js"></script>
     <script src="../static/js/ques-init.js"></script>
+    <script src="../static/js/ques-ai.js"></script>
 
-    <script src="../static/js/buttons.js"></script>
-    <script src="../static/js/scrollbar.js"></script>
 </body>
 
 </html>

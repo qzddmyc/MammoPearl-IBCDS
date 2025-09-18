@@ -1,0 +1,231 @@
+.ai-qa-container {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+    padding: 20px 0;
+}
+
+.add-conversation-btn {
+    align-self: flex-end;
+    padding: 8px 16px;
+    background: rgba(66, 165, 245, 0.7);
+    border: 1px solid rgba(66, 165, 245, 0.5);
+    border-radius: 20px;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.add-conversation-btn:hover {
+    background: rgba(66, 165, 245, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 20, 40, 0.3);
+}
+
+.question-input-container {
+    width: 80%;
+    max-width: 100%;
+    margin-right: 15px;
+    margin-left: auto;
+    margin-bottom: 20px;
+}
+
+.question-input {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 25px;
+    background: rgba(28, 75, 125, 0.6);
+    border: 1px solid rgba(66, 165, 245, 0.4);
+    color: #e6f2ff;
+    font-size: 1rem;
+    resize: none;
+    margin-bottom: 10px;
+    min-height: 100px;
+}
+
+.question-input:focus {
+    outline: none;
+    border-color: rgba(66, 165, 245, 0.8);
+    box-shadow: 0 0 10px rgba(66, 165, 245, 0.3);
+}
+
+.question-input::placeholder {
+    color: #a7d7f5;
+    opacity: 0.7;
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.confirm-btn,
+.cancel-btn {
+    padding: 6px 14px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.confirm-btn {
+    background: #2196f3;
+    color: white;
+}
+
+.cancel-btn {
+    background: rgba(255, 255, 255, 0.15);
+    color: #e0f0ff;
+    border: 1px solid rgba(66, 165, 245, 0.3);
+}
+
+.confirm-btn:hover {
+    background: #1976d2;
+}
+
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.ai-qa-item {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    will-change: opacity, transform;
+}
+
+.ai-qa-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.ai-question,
+.ai-answer {
+    max-width: 60%;
+    padding: 22px 25px;
+    border-radius: 30px;
+    backdrop-filter: blur(10px);
+    line-height: 1.7;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.ai-question {
+    background: rgba(28, 75, 125, 0.6);
+    border: 1px solid rgba(66, 165, 245, 0.4);
+    margin-right: 15px;
+    margin-left: auto;
+    border-top-right-radius: 3px;
+    box-shadow: 0 4px 15px rgba(0, 20, 40, 0.3);
+}
+
+.ai-answer {
+    background: rgba(15, 90, 160, 0.55);
+    border: 1px solid rgba(66, 165, 245, 0.5);
+    margin-left: 15px;
+    margin-right: auto;
+    border-top-left-radius: 3px;
+    box-shadow: 0 4px 15px rgba(0, 20, 40, 0.3);
+}
+
+.ai-question h3 {
+    color: #a7d7f5;
+    margin-bottom: 12px;
+    font-size: 1.25rem;
+}
+
+.ai-question p,
+.ai-answer p {
+    color: #e6f2ff;
+    font-size: 1.05rem;
+}
+
+.ai-avatar {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1rem;
+    box-shadow: 0 0 10px rgba(66, 165, 245, 0.4);
+    flex-shrink: 0;
+}
+
+.ai-q-avatar {
+    background: #42a5f5;
+}
+
+.ai-a-avatar {
+    background: #00acc1;
+}
+
+.ai-avatar,
+.avatar {
+    white-space: nowrap;
+}
+
+.ai-qa-item.answer-item {
+    margin-bottom: 40px;
+}
+
+.ai-qa-item.answer-item:last-child {
+    margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .ai-question,
+    .ai-answer {
+        max-width: 80%;
+        padding: 18px 20px;
+    }
+
+    .ai-avatar {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 0.9rem;
+    }
+
+    .ai-question h3 {
+        font-size: 1.15rem;
+    }
+
+    .ai-question p,
+    .ai-answer p {
+        font-size: 1rem;
+    }
+
+    .question-input-container {
+        max-width: 80%;
+    }
+    .question-input {
+        padding: 15px 18px;
+        font-size: 1rem;
+    }
+
+    .confirm-btn,
+    .cancel-btn {
+        font-size: 0.85rem;
+        padding: 5px 12px;
+    }
+}
+
+@media (max-width: 450px) {
+    .ai-qa-container {
+        zoom: 0.8;
+    }
+
+    .button-group {
+        gap: 8px;
+    }
+}

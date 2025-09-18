@@ -1,42 +1,6 @@
-// // 监听页面滚动并更新指示器
-// function updateScrollIndicator() {
-//     const thumb = document.getElementById('scroll-thumb');
-//     if (!thumb) return;
-
-//     // 获取页面总高度和视口高度
-//     const html = document.documentElement;
-//     const body = document.body;
-
-//     const scrollTop = html.scrollTop || body.scrollTop;
-//     const scrollHeight = html.scrollHeight || body.scrollHeight;
-//     const clientHeight = html.clientHeight || body.clientHeight;
-
-//     // 计算滚动百分比
-//     const scrollPercent = scrollTop / (scrollHeight - clientHeight);
-
-//     // 设置指示器高度和位置
-//     const indicatorHeight = (clientHeight / scrollHeight) * 100;
-//     const thumbPosition = scrollPercent * (100 - indicatorHeight);
-
-//     thumb.style.height = `${Math.max(30, indicatorHeight)}%`; // 最小高度限制
-//     thumb.style.top = `${thumbPosition}%`;
-// }
-
-// // 初始化并绑定事件
-// document.addEventListener('DOMContentLoaded', () => {
-//     // 创建滚动指示器元素
-//     const indicator = document.createElement('div');
-//     indicator.className = 'scroll-indicator';
-//     indicator.innerHTML = '<div class="scroll-indicator-thumb" id="scroll-thumb"></div>';
-//     document.body.appendChild(indicator);
-
-//     // 更新指示器
-//     updateScrollIndicator();
-
-//     // 监听滚动和调整事件
-//     window.addEventListener('scroll', updateScrollIndicator);
-//     window.addEventListener('resize', updateScrollIndicator);
-// });
+// 尽量在html最后引入，如需要手动调用updateScrollIndicator而提前引用，需要在最后一个修改过页面内容的的文件中使用：
+// if (window.updateScrollIndicator) window.updateScrollIndicator();
+// else updateScrollIndicator();
 
 function updateScrollIndicator() {
     const thumb = document.getElementById('scroll-thumb');
