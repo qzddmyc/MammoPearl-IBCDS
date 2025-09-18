@@ -179,6 +179,10 @@
             box-shadow: 0 6px 20px rgba(0, 20, 40, 0.4);
         }
 
+        .hide {
+            display: none !important;
+        }
+
         /* 响应式调整 */
         @media (max-width: 768px) {
 
@@ -746,7 +750,8 @@
 
         <div class="main-header-right">
             <button class="normal-btn" data-action="page-skip" data-msg="./index.html">返回</button>
-            <!-- <button class="normal-btn">按钮</button> -->
+            <button class="normal-btn qa-ai">AI问答</button>
+            <button class="normal-btn qa-normal hide">普通问答</button>
         </div>
 
         <!-- 压缩菜单栏 -->
@@ -761,6 +766,8 @@
             <!-- 菜单内容 -->
             <div class="mobile-menu-content">
                 <button class="mobile-menu-item color-text" data-action="page-skip" data-msg="./index.html">返回</button>
+                <button class="mobile-menu-item color-text qa-ai">AI问答</button>
+                <button class="mobile-menu-item color-text qa-normal hide">普通问答</button>
             </div>
         </div>
     </header>
@@ -801,8 +808,8 @@
 
     <script src="../static/assets/data/qa_doc.js"></script>
     <script src="../static/js/ques-init.js"></script>
-    <script src="../static/js/buttons.js"></script>
 
+    <script src="../static/js/buttons.js"></script>
     <script src="../static/js/scrollbar.js"></script>
 </body>
 
