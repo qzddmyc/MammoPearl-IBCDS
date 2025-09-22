@@ -15,7 +15,7 @@ def v1_inner(pic: bytes) -> Tuple[bool, float]:
 # Pass in a binary image file and the name (with suffix) of the image.
 # Return the detection result formatted [True/False(to string), accuracy, the relative path of the directory].
 def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple[str, str, str]:
-    folder_path = os.path.join(DOTS, "logs", usr, generate_short_unique_time_str())
+    folder_path = os.path.join(DOTS, "logs", 'results', usr, generate_short_unique_time_str())
     try:
         os.makedirs(folder_path, exist_ok=True)
         print(f"文件夹创建成功：{folder_path}")
@@ -77,3 +77,7 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple
         write_to_file(os.path.join(folder_path, f'{BASE_CONFIG['RESULT_FILE_NAME']}.txt'), txt_content)
 
     return res_A, res_B, folder_path
+
+
+def get_reply_in_ques_by_ai(usr_ipt):
+    ...

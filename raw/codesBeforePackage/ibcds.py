@@ -379,9 +379,8 @@ def main():
 
 
 if __name__ == '__main__':
-    # https://www.doubao.com/thread/we59ced4036910591
-    # doc: https://docs.python.org/zh-cn/3.13/library/argparse.html
-    # to test, run: python -m raw.codesBeforePackage.ibcds
+    # Doc: https://docs.python.org/zh-cn/3.13/library/argparse.html
+    # To test, run in root: python -m raw.codesBeforePackage.ibcds
     """
     package:
     

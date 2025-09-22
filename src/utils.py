@@ -41,6 +41,7 @@ def open_file_with_explorer(relative_path: str) -> Tuple[bool, str]:
         return False, f"打开失败: {str(e)}"
 
 
+# save content to normal file, if the file or its dir not exist, this func will create it and give a Warning.
 def write_to_file(file_path: str, content: str) -> Tuple[bool, str]:
     try:
         # 去掉文件名部分，获取目录路径
