@@ -6,3 +6,4 @@ o 登录页面 + 登录、登出按钮变化。使用localStorage.getItem('usr')
 o 封装Admin-Operation为二进制文件
 - 集成ai功能至页面
 x 优化数据库服务未开启时的超长延时 --无法实现
+- ai-qa-container & qa-container 在平板宽度时，右侧贴合 scrollbar 过紧的样式问题

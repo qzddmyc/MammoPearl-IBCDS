@@ -17,6 +17,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // 初始化AI问答内容
     function initAIQAs() {
         let html = '';
+        if (ai_qas.length === 0) {
+            html += '<h3>暂无内容，请点击“添加对话”进行添加</h3>';
+        }
         ai_qas.forEach(qa => {
             html += `
                 <div class="ai-qa-item question-item">
