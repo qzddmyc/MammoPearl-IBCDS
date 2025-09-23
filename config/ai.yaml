@@ -13,3 +13,6 @@ HISTORY_PATH:
   - logs
   - historical_dialogue
   - history.json
+
+# while the question is not resolved, the placeholder shown in 'answer', in history.json
+PLACEHOLDER_FOR_UNRESOLVED_QUESTION: 'UNRESOLVED'

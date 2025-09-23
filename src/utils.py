@@ -3,9 +3,10 @@ import hashlib
 import time
 import os
 import sys
+import json
 import subprocess
 import uuid
-from typing import Tuple
+from typing import Tuple, Union, Dict, List
 from datetime import datetime
 from config.configs import BASE_CONFIG
 
@@ -85,3 +86,34 @@ def is_usrName_ok(name: str) -> bool:
 def is_usrPwd_ok(pwd: str) -> bool:
     pattern = r'^[a-zA-Z0-9_]{6,18}$'
     return bool(re.match(pattern, pwd))
+
+
+def save_json(data: Union[Dict, List, str], file_path: str) -> Tuple[bool, str]:
+    if not re.match(r'^.+\.json$', file_path):
+        return False, f'Path does not reflect a json file.'
+    try:
+        directory = os.path.dirname(file_path)
+        if directory and not os.path.exists(directory):
+            os.makedirs(directory, exist_ok=True)
+            print(
+                f'{BASE_CONFIG['COLORS']['red']}Warning: {BASE_CONFIG['COLORS']['cyan']}The directory in func utils.save_json does not exist.{BASE_CONFIG['COLORS']["reset"]}')
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=4)
+        return True, 'ok'
+    except Exception as e:
+        return False, f"Save JSON file error: {str(e)}."
+
+
+def read_json(file_path: str) -> Tuple[bool, Union[Dict, List, str]]:
+    if not re.match(r'^.+\.json$', file_path):
+        return False, f'Path does not reflect a json file.'
+    try:
+        if not os.path.exists(file_path):
+            return False, f'File not exist: {file_path}.'
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return True, data
+    except json.JSONDecodeError:
+        return False, 'JSON decode error.'
+    except Exception as e:
+        return False, f'Read JSON file error: {str(e)}.'

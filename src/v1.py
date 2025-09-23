@@ -1,7 +1,8 @@
 from typing import Tuple
 import os
 from src.utils import generate_short_unique_time_str, get_current_time, write_to_file
-from config.configs import BASE_CONFIG
+from src.utils_ai import get_reply_from_ai_and_save_json
+from config.configs import BASE_CONFIG, AI_CONFIG
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
 
@@ -79,5 +80,16 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple
     return res_A, res_B, folder_path
 
 
+# 注意，这个函数只会返回bool作为是否将内容成功提交至AI，并不会返回AI的回复内容。原因是AI的回复需要时间，所以调用此函数后，不会及时返回回答。
+# 调用该函数后，
+#   若返回值为True，前端需要setInterval持续查询json中任务的完成状态。
+#   若返回值为False，表示用户的问题处于未提交状态，不需更新页面。
 def get_reply_in_ques_by_ai(usr_ipt):
-    ...
+    file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
+    folder_path = os.path.dirname(file_path)
+    if folder_path and not os.path.exists(folder_path):
+        try:
+            os.makedirs(folder_path, exist_ok=True)
+            print(f"文件夹创建成功：{folder_path}")
+        except Exception as e:
+            print(f"文件夹创建时失败：{e}")
