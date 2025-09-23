@@ -104,6 +104,7 @@ def save_json(data: Union[Dict, List, str], file_path: str) -> Tuple[bool, str]:
         return False, f"Save JSON file error: {str(e)}."
 
 
+# 包含路径存在性与合理性的检查
 def read_json(file_path: str) -> Tuple[bool, Union[Dict, List, str]]:
     if not re.match(r'^.+\.json$', file_path):
         return False, f'Path does not reflect a json file.'
