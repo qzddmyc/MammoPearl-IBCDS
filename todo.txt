@@ -9,3 +9,5 @@ x 优化数据库服务未开启时的超长延时 --无法实现
 - ai-qa-container & qa-container 在平板宽度时，右侧贴合 scrollbar 过紧的样式问题
 - logs.results路径更新，同步至README (?)
 - json数据存储工作
+- 对于AI工作，注意未等待AI回复就被强制中断的情况
+- ai页面添加链接确认

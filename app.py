@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, jsonify
-from src.v1 import detect_if_Breast_Cancer_picture
+from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai
 from src.utils import open_file_with_explorer, generate_user_id
 from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User, check_if_server_started
 from config.configs import BASE_CONFIG
@@ -113,6 +113,20 @@ def api_login():
             'success': True,
             'message': '注册成功，已自动登录。即将跳转至主页'
         })
+
+
+@app.route('/api/t1', methods=['POST'])
+def api_t1():
+    text_data = request.data.decode('utf-8')
+    a, b = get_reply_in_ques_by_ai(text_data)
+    return jsonify({
+        'success': str(a) + str(b)
+    })
+
+
+@app.route('/test.html')
+def t():
+    return render_template('test.html')
 
 
 if __name__ == '__main__':

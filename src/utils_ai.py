@@ -2,10 +2,13 @@
 
 import os
 import json
+import atexit
 # import requests
 import aiohttp
 import asyncio
 from typing import Tuple
+import threading
+from concurrent.futures import ThreadPoolExecutor
 
 from config.configs import AI_CONFIG
 from src.utils import read_json
@@ -24,6 +27,17 @@ class __F:
 
 
 Flags = __F()
+
+_thread_pool = ThreadPoolExecutor(max_workers=5)
+
+
+def _shutdown_thread_pool():
+    print("正在关闭线程池，等待所有任务完成...")
+    _thread_pool.shutdown(wait=True)
+    print("线程池已关闭")
+
+
+atexit.register(_shutdown_thread_pool)
 
 
 # END CONSTS
@@ -154,26 +168,48 @@ async def __async_ai(ipt: str) -> Tuple[bool, str]:
 #   1. 将用户发出的问题保存至json文件中，并设定该问答为“未完成”状态。
 #   2. 创建一个任务对象并让其异步执行，在该异步操作完成后，会将执行结果写入json文件。
 # 因此，在src.v1调用该函数后，需要使用一个定时器持续查询任务完成状态。
-async def get_reply_from_ai_and_save_json(ipt: str) -> Tuple[bool, str]:
+def get_reply_from_ai_and_save_json(ipt: str) -> Tuple[bool, str]:
     if not check_if_environ_created():
         return False, f'You should create your private api key first. Check if "{AI_CONFIG['ENV_NAME']}" exits in environment variables.'
-    ...
+
+    # task = asyncio.create_task(__async_ai(ipt))
+    # def handle_result(future):
+    #     success, reply = future.result()
+    #     if not success:
+    #         print(reply)
+    #         return
+    #     print(reply)
+    #
+    # task.add_done_callback(handle_result)
+
+    def run_async_task(input_text):
+        success, reply = asyncio.run(__async_ai(input_text))
+        if success:
+            print(f"回复: {reply}")
+        else:
+            print(f"AI调用失败: {reply}")
+
+    # 使用线程池提交任务
+    _thread_pool.submit(run_async_task, ipt)
+    return True, 'ok'
 
 
 if __name__ == '__main__':
     # To test, run: python -m src.utils_ai
 
-    async def abc():
-        a, b = await __async_ai(input('>'))
-        print(a)
-        print(b)
-
-
-    asyncio.run(abc())
+    # async def abc():
+    #     a, b = await __async_ai(input('>'))
+    #     print(a)
+    #     print(b)
+    #
+    #
+    # asyncio.run(abc())
+    a, b = get_reply_from_ai_and_save_json(input('> '))
+    print(a, b)
 
 # async def your_function():
 #     # 保存任务对象
-#     task = asyncio.create_task(get_reply_from_ai("Hello AI!"))
+#     task = asyncio.create_task(__async_ai("Hello AI!"))
 #
 #     # 注册回调函数（任务完成后触发）
 #     def handle_result(future):
