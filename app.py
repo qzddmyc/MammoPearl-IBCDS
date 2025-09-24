@@ -115,20 +115,6 @@ def api_login():
         })
 
 
-@app.route('/api/t1', methods=['POST'])
-def api_t1():
-    text_data = request.data.decode('utf-8')
-    a, b = get_reply_in_ques_by_ai(text_data)
-    return jsonify({
-        'success': str(a) + str(b)
-    })
-
-
-@app.route('/test.html')
-def t():
-    return render_template('test.html')
-
-
 if __name__ == '__main__':
     print("检测数据库服务中...")
     if check_if_server_started():

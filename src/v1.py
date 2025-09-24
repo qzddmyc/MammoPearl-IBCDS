@@ -93,5 +93,5 @@ def get_reply_in_ques_by_ai(usr_ipt):
             print(f"文件夹创建成功：{folder_path}")
         except Exception as e:
             print(f"文件夹创建时失败：{e}")
-    a, b = get_reply_from_ai_and_save_json(usr_ipt)
-    return a, b
+    # a, b = get_reply_from_ai_and_save_json(usr_ipt)
+    # return a, b
