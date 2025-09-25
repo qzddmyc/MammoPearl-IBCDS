@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, jsonify
-from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai
+from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, init_for_AI_model
 from src.utils import open_file_with_explorer, generate_user_id
 from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User, check_if_server_started
 from config.configs import BASE_CONFIG
@@ -118,7 +118,6 @@ def api_login():
 @app.route('/api/send_msg_to_ai', methods=['POST'])
 def send_msg_to_ai():
     usrIpt = request.data.decode('utf-8')
-    print(usrIpt)
     success, msg = get_reply_in_ques_by_ai(usrIpt)
     return jsonify({
         'success': success,
@@ -129,6 +128,9 @@ def send_msg_to_ai():
 if __name__ == '__main__':
     print("检测数据库服务中...")
     if check_if_server_started():
-        app.run(debug=False, port=BASE_CONFIG['PORT'])
+        if init_for_AI_model():
+            app.run(debug=False, port=BASE_CONFIG['PORT'])
+        else:
+            print("AI的文件相关功能初始化异常，请根据输出信息自行检查。")
     else:
         print("数据库服务未开启。")

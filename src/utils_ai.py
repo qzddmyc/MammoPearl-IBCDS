@@ -284,65 +284,26 @@ def get_reply_from_ai_and_save_json(ipt: str, pth: str) -> Tuple[bool, str]:
     if not check_if_environ_created():
         return False, f'You should create your private api key first. Check if "{AI_CONFIG['ENV_NAME']}" exits in environment variables.'
 
-    # task = asyncio.create_task(__async_ai(ipt))
-    # def handle_result(future):
-    #     success, reply = future.result()
-    #     if not success:
-    #         print(reply)
-    #         return
-    #     print(reply)
-    #
-    # task.add_done_callback(handle_result)
-
     def run_async_task(input_text, path):
         success, reply = asyncio.run(__async_ai(input_text))
         # 原先的json第一项应当是Flags.unresolved对象，现在应当替换relpy与flag字段
         new_flag = Flags.finish if success else Flags.wrong
-        isOK, msg = change_the_first_msg_in_json(path, reply, new_flag)
+        isOK, msg_change = change_the_first_msg_in_json(path, reply, new_flag)
         if isOK:
             print('AI reply got, and saved successfully.')
             if not success:
                 print(f'But AI replied something wrong: {reply}')
         else:
-            print(f'Warning: Error happened while saving reply: {msg}')
+            print(f'Warning: Error happened while saving reply: {msg_change}')
         return
 
-    add_msg_to_json(pth, ipt, AI_CONFIG['PLACEHOLDER_FOR_UNRESOLVED_QUESTION'], Flags.unresolved)
-    _thread_pool.submit(run_async_task, ipt, pth)
-
+    try:
+        isAdded, msg = add_msg_to_json(pth, ipt, AI_CONFIG['PLACEHOLDER_FOR_UNRESOLVED_QUESTION'], Flags.unresolved)
+        _thread_pool.submit(run_async_task, ipt, pth)
+        if not isAdded:
+            return False, msg
+    except Exception as e:
+        return False, str(e)
     return True, 'ok'
 
-
-if __name__ == '__main__':
-    # To test, run: python -m src.utils_ai
-
-    # async def abc():
-    #     a, b = await __async_ai(input('>'))
-    #     print(a)
-    #     print(b)
-    #
-    #
-    # asyncio.run(abc())
-
-    # a, b = get_reply_from_ai_and_save_json(input('> '), './logs/historical_dialogue/history.json')
-    # print(a, b)
-    a = get_reply_from_ai_and_save_json(input("> "), './logs/historical_dialogue/history.json')
-    print(a)
-
-# async def your_function():
-#     # 保存任务对象
-#     task = asyncio.create_task(__async_ai("Hello AI!"))
-#
-#     # 注册回调函数（任务完成后触发）
-#     def handle_result(future):
-#         try:
-#             success, reply = future.result()  # 获取任务结果
-#             if not success:
-#                 print(f"任务执行失败: {reply}")
-#         except Exception as e:
-#             print(f"任务抛出异常: {e}")
-#
-#     task.add_done_callback(handle_result)
-#
-#     # 直接返回True
-#     return True
+# You can't test this with: python -m src.utils_ai

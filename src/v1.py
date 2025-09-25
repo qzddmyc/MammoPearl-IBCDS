@@ -1,7 +1,7 @@
 from typing import Tuple
 import os
 from src.utils import generate_short_unique_time_str, get_current_time, write_to_file
-from src.utils_ai import get_reply_from_ai_and_save_json
+from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available
 from config.configs import BASE_CONFIG, AI_CONFIG
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
@@ -96,3 +96,9 @@ def get_reply_in_ques_by_ai(usr_ipt):
             print(f"文件夹创建时失败：{e}")
     isOK, msg = get_reply_from_ai_and_save_json(usr_ipt, file_path)
     return isOK, msg
+
+
+def init_for_AI_model():
+    file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
+    IfCanContinue = INIT_check_if_json_available(file_path)
+    return IfCanContinue

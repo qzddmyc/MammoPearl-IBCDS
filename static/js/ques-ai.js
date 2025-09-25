@@ -204,6 +204,9 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
         const reply = await sendUsrIptToAI(usrInput);
+        if (reply.success) {
+            textarea.value = '';
+        }
         console.log(reply);
         console.log(reply.success, reply.data);
     })
