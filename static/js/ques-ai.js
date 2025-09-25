@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const questionInputContainer = document.querySelector('.question-input-container');
     const cancelBtn = document.querySelector('.cancel-btn');
     const pageTitle = document.querySelector('.page-title h1');
+    const textarea = document.querySelector('.question-input');
 
     const initialPageTitle = pageTitle.innerHTML;
     let observer = null;    // normal-observer
@@ -176,6 +177,36 @@ document.addEventListener('DOMContentLoaded', function () {
     if (normalBtn) normalBtn.forEach(e => e.addEventListener('click', switchToNormalQA));
     if (addConversationBtn) addConversationBtn.addEventListener('click', showQuestionInput);
     if (cancelBtn) cancelBtn.addEventListener('click', hideQuestionInput);
+
+    document.getElementById('ai-confirm-btn').addEventListener('click', async function (e) {
+        e.preventDefault();
+        const usrInput = textarea.value;
+        async function sendUsrIptToAI(msg) {
+            try {
+                const response = await fetch('api/send_msg_to_ai', {
+                    method: 'POST',
+                    body: msg,
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    }
+                });
+                const result = await response.json();
+                return {
+                    success: result.success,
+                    data: result.data,
+                }
+
+            } catch (error) {
+                return {
+                    success: false,
+                    data: error
+                };
+            }
+        }
+        const reply = await sendUsrIptToAI(usrInput);
+        console.log(reply);
+        console.log(reply.success, reply.data);
+    })
 
     initNormalQaAnimation();
     initAIQAs();

@@ -115,6 +115,17 @@ def api_login():
         })
 
 
+@app.route('/api/send_msg_to_ai', methods=['POST'])
+def send_msg_to_ai():
+    usrIpt = request.data.decode('utf-8')
+    print(usrIpt)
+    success, msg = get_reply_in_ques_by_ai(usrIpt)
+    return jsonify({
+        'success': success,
+        'data': msg
+    })
+
+
 if __name__ == '__main__':
     print("检测数据库服务中...")
     if check_if_server_started():

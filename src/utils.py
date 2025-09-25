@@ -89,6 +89,7 @@ def is_usrPwd_ok(pwd: str) -> bool:
 
 
 def save_json(data: Union[Dict, List, str], file_path: str) -> Tuple[bool, str]:
+    # 你不需要保证数据被json化
     if not re.match(r'^.+\.json$', file_path):
         return False, f'Path does not reflect a json file.'
     try:
