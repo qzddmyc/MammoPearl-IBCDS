@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, jsonify
-from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, init_for_AI_model
+from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, init_for_AI_model, get_all_json_data
 from src.utils import open_file_with_explorer, generate_user_id
 from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User, check_if_server_started
 from config.configs import BASE_CONFIG
@@ -122,6 +122,25 @@ def send_msg_to_ai():
     return jsonify({
         'success': success,
         'data': msg
+    })
+
+
+@app.route('/api/get_full_json', methods=['GET'])
+def get_full_json():
+    success, data, containUnresolved = get_all_json_data()
+    # print(success)
+    # print(data)
+    # print(containUnresolved)
+    if not success:
+        return jsonify({
+            'success': False,
+            'data': data,
+            'unresolved': False
+        })
+    return jsonify({
+        'success': True,
+        'data': data,
+        'unresolved': containUnresolved
     })
 
 

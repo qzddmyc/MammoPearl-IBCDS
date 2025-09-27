@@ -19,6 +19,7 @@ from src.utils import read_json, save_json
 # 预定义flags类型
 # 需要与check_if_match_format_of_history_json函数的以下语句同步种类：
 # ... or item["flag"] not in (Flags.finish, Flags.wrong, Flags.unresolved)
+# const Flags in /static/assets/data/qa_doc.js
 class __F:
     def __init__(self):
         self.finish = 0  # AI已返回回答
@@ -186,7 +187,7 @@ def add_msg_to_json(path: str, ask: str, reply: str, flag: int) -> Tuple[bool, s
     return True, 'ok'
 
 
-def change_the_first_msg_in_json(path: str, reply: str, flag: int):
+def change_the_first_msg_in_json(path: str, reply: str, flag: int) -> Tuple[bool, str]:
     if flag not in (Flags.finish, Flags.wrong):
         return False, 'You can only modify msg to finished or wrong'
     isCheckOK, msg, IsFirstDataUnresolved = check_number_of_unresolved_msg(path)
@@ -299,11 +300,26 @@ def get_reply_from_ai_and_save_json(ipt: str, pth: str) -> Tuple[bool, str]:
 
     try:
         isAdded, msg = add_msg_to_json(pth, ipt, AI_CONFIG['PLACEHOLDER_FOR_UNRESOLVED_QUESTION'], Flags.unresolved)
-        _thread_pool.submit(run_async_task, ipt, pth)
         if not isAdded:
             return False, msg
+        _thread_pool.submit(run_async_task, ipt, pth)
     except Exception as e:
         return False, str(e)
     return True, 'ok'
+
+
+# 该函数仅允许：至多第一项内容为Flags.unresolved状态，其他情况会判定不合法
+# 返回值: [合法性(不出意外肯定为True), json数据/不合法原因, 第一条数据是否为unresolved]
+# 当合法性为False时，第三个返回值无意义
+def check_and_get_full_json_by_v1(path: str) -> Tuple[bool, Union[list, str], bool]:
+    isCheckOk, data1, isFirstUnresolved = check_number_of_unresolved_msg(path)
+    if not isCheckOk:
+        return False, data1, False
+    if data1 not in (0, 1):
+        return False, 'Error: unexpected number of unresolved datas', False
+    isReadOk, data2 = read_json(path)
+    if not isReadOk:
+        return False, data2, False
+    return True, data2, isFirstUnresolved
 
 # You can't test this with: python -m src.utils_ai

@@ -1,6 +1,6 @@
 // 需要在 scrollbar.js 之后引入
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', async function () {
     const qaContainer = document.querySelector('.qa-container');
     const aiQaContainer = document.querySelector('.ai-qa-container');
     const aiBtn = document.querySelectorAll('.qa-ai');
@@ -16,7 +16,23 @@ document.addEventListener('DOMContentLoaded', function () {
     let observerAI = null;
 
     // 初始化AI问答内容
-    function initAIQAs() {
+    async function initAIQAs() {
+        let ai_qas = [];
+        try {
+            const response = await fetch('api/get_full_json');
+            const result = await response.json();
+            if (!result.success) {
+                alert("获取初始问答列表失败: " + result.data);
+            } else {
+                ai_qas = result.data;
+            }
+        } catch (error) {
+            alert("获取初始问答列表失败: " + error);
+        }
+
+        // 清除掉发生错误的问答
+        ai_qas = Array.from(ai_qas).filter(each => each.flag === Flags.finish);
+
         let html = '';
         if (ai_qas.length === 0) {
             html += '<h3>暂无内容，请点击“添加对话”进行添加</h3>';
@@ -26,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="ai-qa-item question-item">
                     <div class="ai-question">
                         <div class="message-content">
-                            <p>${qa.q_content}</p>
+                            <p>${qa.ask}</p>
                         </div>
                     </div>
                     <div class="ai-avatar ai-q-avatar">You</div>
@@ -36,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <div class="ai-avatar ai-a-avatar">AI</div>
                     <div class="ai-answer">
                         <div class="message-content">
-                            <p>${qa.a_content}</p>
+                            <p>${qa.reply}</p>
                         </div>
                     </div>
                 </div>
@@ -211,6 +227,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log(reply.success, reply.data);
     })
 
+    await initAIQAs();
     initNormalQaAnimation();
-    initAIQAs();
 });

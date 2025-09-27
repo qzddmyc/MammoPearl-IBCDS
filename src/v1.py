@@ -1,7 +1,7 @@
-from typing import Tuple
+from typing import Tuple, Union
 import os
 from src.utils import generate_short_unique_time_str, get_current_time, write_to_file
-from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available
+from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available, check_and_get_full_json_by_v1
 from config.configs import BASE_CONFIG, AI_CONFIG
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
@@ -10,6 +10,7 @@ DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
 # 处理函数。True: 阳性，有概率是; False: 阴性，无事
 def v1_inner(pic: bytes) -> Tuple[bool, float]:
     base_path = "../static/assets/pth"
+    ...
     return False, 0.869
 
 
@@ -98,7 +99,15 @@ def get_reply_in_ques_by_ai(usr_ipt):
     return isOK, msg
 
 
-def init_for_AI_model():
+def init_for_AI_model() -> bool:
     file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
-    IfCanContinue = INIT_check_if_json_available(file_path)
-    return IfCanContinue
+    canContinue = INIT_check_if_json_available(file_path)
+    return canContinue
+
+
+def get_all_json_data() -> Tuple[bool, Union[str, list], bool]:
+    file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
+    isOK, data, containUnresolved = check_and_get_full_json_by_v1(file_path)
+    if not isOK:
+        return False, data, False
+    return isOK, data, containUnresolved
