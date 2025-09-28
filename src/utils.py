@@ -51,7 +51,8 @@ def write_to_file(file_path: str, content: str) -> Tuple[bool, str]:
         if directory and not os.path.exists(directory):
             os.makedirs(directory, exist_ok=True)
             print(
-                f'{BASE_CONFIG['COLORS']['red']}Warning: {BASE_CONFIG['COLORS']['cyan']}The directory(ies) for your wanted file does not exist.{BASE_CONFIG['COLORS']["reset"]}')
+                f'{BASE_CONFIG['COLORS']['red']}Warning: {BASE_CONFIG['COLORS']['cyan']}'
+                f'The directory(ies) for your wanted file does not exist.{BASE_CONFIG['COLORS']["reset"]}')
 
         # 写入文件
         with open(file_path, 'w', encoding='utf-8') as file:
@@ -97,7 +98,8 @@ def save_json(data: Union[Dict, List, str], file_path: str) -> Tuple[bool, str]:
         if directory and not os.path.exists(directory):
             os.makedirs(directory, exist_ok=True)
             print(
-                f'{BASE_CONFIG['COLORS']['red']}Warning: {BASE_CONFIG['COLORS']['cyan']}The directory in func utils.save_json does not exist.{BASE_CONFIG['COLORS']["reset"]}')
+                f'{BASE_CONFIG['COLORS']['red']}Warning: {BASE_CONFIG['COLORS']['cyan']}'
+                f'The directory in func utils.save_json does not exist.{BASE_CONFIG['COLORS']["reset"]}')
         with open(file_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         return True, 'ok'

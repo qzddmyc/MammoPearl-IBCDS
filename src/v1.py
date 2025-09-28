@@ -1,5 +1,6 @@
-from typing import Tuple, Union
 import os
+from typing import Tuple, Union
+
 from src.utils import generate_short_unique_time_str, get_current_time, write_to_file
 from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available, check_and_get_full_json_by_v1
 from config.configs import BASE_CONFIG, AI_CONFIG

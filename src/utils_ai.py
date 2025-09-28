@@ -3,11 +3,9 @@
 import os
 import json
 import atexit
-# import requests
 import aiohttp
 import asyncio
 from typing import Tuple, Union
-# import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from config.configs import AI_CONFIG
@@ -250,7 +248,7 @@ async def __async_ai(ipt: str) -> Tuple[bool, str]:
     #     return False, data.get('message')
     # if response.status_code == 200:
     #     return True, data["choices"][0]["message"]["content"].strip()
-    # return False, f'Unknown response code: {response.status_code}.'
+    # return False, 'Unknown response code.'
 
     try:
         async with aiohttp.ClientSession() as session:
@@ -260,7 +258,6 @@ async def __async_ai(ipt: str) -> Tuple[bool, str]:
                     headers=headers
             ) as response:
                 data = await response.json()
-
                 if response.status in (401, 404, 504):
                     return False, data
                 if response.status in (400, 429, 503):
@@ -283,7 +280,8 @@ async def __async_ai(ipt: str) -> Tuple[bool, str]:
 # 参数pth路径为.json结尾的文件路径
 def get_reply_from_ai_and_save_json(ipt: str, pth: str) -> Tuple[bool, str]:
     if not check_if_environ_created():
-        return False, f'You should create your private api key first. Check if "{AI_CONFIG['ENV_NAME']}" exits in environment variables.'
+        return False, (f'You should create your private api key first. '
+                       f'Check if "{AI_CONFIG['ENV_NAME']}" exits in environment variables.')
 
     def run_async_task(input_text, path):
         success, reply = asyncio.run(__async_ai(input_text))
@@ -321,5 +319,6 @@ def check_and_get_full_json_by_v1(path: str) -> Tuple[bool, Union[list, str], bo
     if not isReadOk:
         return False, data2, False
     return True, data2, isFirstUnresolved
+
 
 # You can't test this with: python -m src.utils_ai

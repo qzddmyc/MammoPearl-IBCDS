@@ -1,5 +1,6 @@
 import os
 from flask import Flask, render_template, request, jsonify
+
 from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, init_for_AI_model, get_all_json_data
 from src.utils import open_file_with_explorer, generate_user_id
 from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User, check_if_server_started

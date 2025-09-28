@@ -3,7 +3,7 @@ import time
 
 import requests
 
-# doc: https://docs.siliconflow.cn/cn/api-reference/chat-completions/chat-completions#llm
+# doc: https://docs.siliconflow.cn/cn/api-reference/chat-completions/chat-completions
 
 silicon_cloud_api = os.environ.get('SiliconCloudApi')
 if not silicon_cloud_api:

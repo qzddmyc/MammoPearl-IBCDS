@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             alert("获取初始问答列表失败: " + error);
         }
 
-        // 清除掉发生错误的问答
         ai_qas = Array.from(ai_qas).filter(each => each.flag === Flags.finish);
 
         let html = '';
