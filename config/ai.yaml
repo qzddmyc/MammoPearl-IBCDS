@@ -16,3 +16,5 @@ HISTORY_PATH:
 
 # while the question is not resolved, the placeholder shown in 'answer', in history.json
 PLACEHOLDER_FOR_UNRESOLVED_QUESTION: 'UNRESOLVED'
+
+LOCK_SUFFIX: '.lock'

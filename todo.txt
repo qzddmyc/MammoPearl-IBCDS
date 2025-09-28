@@ -13,7 +13,7 @@ o 对于AI工作，注意未等待AI回复就被强制中断的情况
 - ai页面添加后端是否开启的确认
 o INIT_check_if_json_available添加进app.run()之前
 - 添加AI页面的渲染
-- python对同一文件同时读写时可能存在的问题
+o python对同一文件同时读写时可能存在的问题
 o 写入json时报错则发送post请求至ai页面
 - 存在未执行操作时，禁止二次问答
 - /api/get_full_json的链式调用中，不需要判断unresolved。或者说，在初始化调用时，不需要使用该参数（暂不修改）

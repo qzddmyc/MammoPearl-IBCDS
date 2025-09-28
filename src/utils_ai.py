@@ -5,14 +5,15 @@ import json
 import atexit
 import aiohttp
 import asyncio
+from filelock import FileLock
 from typing import Tuple, Union
 from concurrent.futures import ThreadPoolExecutor
 
 from config.configs import AI_CONFIG
 from src.utils import read_json, save_json
 
+"""BEGIN CONSTS"""
 
-# BEGIN CONSTS
 
 # 预定义flags类型
 # 需要与check_if_match_format_of_history_json函数的以下语句同步种类：
@@ -38,8 +39,12 @@ def _shutdown_thread_pool():
 
 atexit.register(_shutdown_thread_pool)
 
+# 文件锁对象，在初始化时被赋值
+__LOCK = None
+# 文件锁对象的后缀名，使用配置确保与utils.py文件统一
+__lock_suffix = AI_CONFIG['LOCK_SUFFIX']
 
-# END CONSTS
+"""END CONSTS"""
 
 
 # Do not use it for checking, function get_reply_from_ai_and_save_json already did that.
@@ -55,6 +60,12 @@ def check_if_environ_created():
 # 需要传入的是.json结尾的文件路径
 # This func can be used in v1.py in app.py, generate path in v1.py
 def INIT_check_if_json_available(path):
+    global __LOCK
+    if __LOCK is None:
+        __LOCK = FileLock(path + __lock_suffix)
+    else:
+        print(f'初始化__LOCK对象异常: __LOCK存在初始值 = {__LOCK}')
+        return False
     folder_path = os.path.dirname(path)
     if folder_path and not os.path.exists(folder_path):
         try:
@@ -65,7 +76,7 @@ def INIT_check_if_json_available(path):
             return False
     if not os.path.isfile(path):
         # 文件不存在，则初始化为空列表
-        save_json([], path)
+        save_json([], path, __LOCK)
         print(f'INIT: 初始化 {path} 文件成功')
         return True
     isFormatOK, msg = check_if_match_format_of_history_json(path)
@@ -78,12 +89,12 @@ def INIT_check_if_json_available(path):
         return False
     if msgOrNum != 0:
         # 异常，初始时不应该存在unresolved信息
-        isReadOk, data = read_json(path)
+        isReadOk, data = read_json(path, __LOCK)
         if not isReadOk or not isinstance(data, list):
             print(f"INIT: Unexpected Error in reading json file: {data}")
             return False
         new_data = [i for i in data if i['flag'] != Flags.unresolved]
-        isSaveOK, msg = save_json(new_data, path)
+        isSaveOK, msg = save_json(new_data, path, __LOCK)
         if not isSaveOK:
             print(f"INIT: Unexpected Error in saving json file: {msg}")
         print(f"INIT: Warning: 存在{msgOrNum}条unresolved的AI对话信息，已删除。")
@@ -105,8 +116,15 @@ def get_silicon_cloud_api():
 #    { ... }
 # ]
 def check_if_match_format_of_history_json(path):
+    global __LOCK
+    if __LOCK is None:
+        print('Warning: __LOCK is None in check_if_match_format_of_history_json')
+        return False, 'ERROR: __LOCK is None in check_if_match_format_of_history_json'
+    if __LOCK and __LOCK.lock_file != path + __lock_suffix:
+        __LOCK = FileLock(path + __lock_suffix)
+        print('Warning: __LOCK target is not the same in check_if_match_format_of_history_json')
     try:
-        is_ok, data = read_json(path)
+        is_ok, data = read_json(path, __LOCK)
         if not is_ok:
             return is_ok, data
         if not isinstance(data, list):
@@ -142,10 +160,17 @@ def check_if_match_format_of_history_json(path):
 # 检查Flags.unresolved问答的数量，并探测是第一项是未完成项，包含原先json文件格式是否正确的检查
 # 返回值：[是否发生异常, unresolved数量/异常信息, 第一项数据是否为unresolved数据]
 def check_number_of_unresolved_msg(path: str) -> Tuple[bool, Union[int, str], bool]:
+    global __LOCK
+    if __LOCK is None:
+        print('Warning: __LOCK is None in check_number_of_unresolved_msg')
+        return False, 'ERROR: __LOCK is None in check_number_of_unresolved_msg', False
+    if __LOCK and __LOCK.lock_file != path + __lock_suffix:
+        __LOCK = FileLock(path + __lock_suffix)
+        print('Warning: __LOCK target is not the same in check_number_of_unresolved_msg')
     isJsonOk, infoForIsJsonOk = check_if_match_format_of_history_json(path)
     if not isJsonOk:
         return False, infoForIsJsonOk, False  # 返回False表示原先的json文件已经被修改
-    openJsonOk, data = read_json(path)
+    openJsonOk, data = read_json(path, __LOCK)
     if not openJsonOk:
         return False, data, False
     if not isinstance(data, list):
@@ -163,6 +188,13 @@ def check_number_of_unresolved_msg(path: str) -> Tuple[bool, Union[int, str], bo
 # 将一个问题添加至json文件。该问题状态必须为Flags.unresolved
 # 返回是否添加成功，以及对应的信息
 def add_msg_to_json(path: str, ask: str, reply: str, flag: int) -> Tuple[bool, str]:
+    global __LOCK
+    if __LOCK is None:
+        print('Warning: __LOCK is None in add_msg_to_json')
+        return False, 'ERROR: __LOCK is None in add_msg_to_json'
+    if __LOCK and __LOCK.lock_file != path + __lock_suffix:
+        __LOCK = FileLock(path + __lock_suffix)
+        print('Warning: __LOCK target is not the same in add_msg_to_json')
     if not flag == Flags.unresolved:
         return False, 'You can only insert unresolved message directly'
     isCheckOK, msg, IsFirstDataUnresolved = check_number_of_unresolved_msg(path)
@@ -170,7 +202,7 @@ def add_msg_to_json(path: str, ask: str, reply: str, flag: int) -> Tuple[bool, s
         return False, msg
     if msg != 0:
         return False, 'Contains unresolved message, you can not insert a new one'
-    isRead_ok, json_data = read_json(path)
+    isRead_ok, json_data = read_json(path, __LOCK)
     if not isRead_ok:
         return False, f'Read json error: {json_data}, in add_msg_to_json'
     new_single_json = {
@@ -179,20 +211,27 @@ def add_msg_to_json(path: str, ask: str, reply: str, flag: int) -> Tuple[bool, s
         "flag": flag
     }
     json_data.insert(0, new_single_json)
-    isSaveOk, msg = save_json(json_data, path)
+    isSaveOk, msg = save_json(json_data, path, __LOCK)
     if not isSaveOk:
         return False, f'Save json error: {msg}, in add_msg_to_json'
     return True, 'ok'
 
 
 def change_the_first_msg_in_json(path: str, reply: str, flag: int) -> Tuple[bool, str]:
+    global __LOCK
+    if __LOCK is None:
+        print('Warning: __LOCK is None in change_the_first_msg_in_json')
+        return False, 'ERROR: __LOCK is None in change_the_first_msg_in_json'
+    if __LOCK and __LOCK.lock_file != path + __lock_suffix:
+        __LOCK = FileLock(path + __lock_suffix)
+        print('Warning: __LOCK target is not the same in change_the_first_msg_in_json')
     if flag not in (Flags.finish, Flags.wrong):
         return False, 'You can only modify msg to finished or wrong'
     isCheckOK, msg, IsFirstDataUnresolved = check_number_of_unresolved_msg(path)
     if not isCheckOK:
         return False, msg
     if msg == 1 and IsFirstDataUnresolved:
-        isRead_ok, json_data = read_json(path)
+        isRead_ok, json_data = read_json(path, __LOCK)
         if not isRead_ok:
             return False, f'Read json error: {json_data}, in change_the_first_msg_in_json'
         if not isinstance(json_data, list) or len(json_data) == 0:
@@ -204,7 +243,7 @@ def change_the_first_msg_in_json(path: str, reply: str, flag: int) -> Tuple[bool
             "flag": flag
         }
         json_data[0] = new_first_item
-        isSaveOk, msg = save_json(json_data, path)
+        isSaveOk, msg = save_json(json_data, path, __LOCK)
         if not isSaveOk:
             return False, f'Save json error: {msg}, in change_the_first_msg_in_json'
         return True, 'ok'
@@ -310,15 +349,21 @@ def get_reply_from_ai_and_save_json(ipt: str, pth: str) -> Tuple[bool, str]:
 # 返回值: [合法性(不出意外肯定为True), json数据/不合法原因, 第一条数据是否为unresolved]
 # 当合法性为False时，第三个返回值无意义
 def check_and_get_full_json_by_v1(path: str) -> Tuple[bool, Union[list, str], bool]:
+    global __LOCK
+    if __LOCK is None:
+        print('Warning: __LOCK is None in check_and_get_full_json_by_v1')
+        return False, 'ERROR: __LOCK is None in check_and_get_full_json_by_v1', False
+    if __LOCK and __LOCK.lock_file != path + __lock_suffix:
+        __LOCK = FileLock(path + __lock_suffix)
+        print('Warning: __LOCK target is not the same in check_and_get_full_json_by_v1')
     isCheckOk, data1, isFirstUnresolved = check_number_of_unresolved_msg(path)
     if not isCheckOk:
         return False, data1, False
     if data1 not in (0, 1):
         return False, 'Error: unexpected number of unresolved datas', False
-    isReadOk, data2 = read_json(path)
+    isReadOk, data2 = read_json(path, __LOCK)
     if not isReadOk:
         return False, data2, False
     return True, data2, isFirstUnresolved
-
 
 # You can't test this with: python -m src.utils_ai

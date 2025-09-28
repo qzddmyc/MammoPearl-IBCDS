@@ -6,9 +6,10 @@ import sys
 import json
 import subprocess
 import uuid
+from filelock import BaseFileLock
 from typing import Tuple, Union, Dict, List
 from datetime import datetime
-from config.configs import BASE_CONFIG
+from config.configs import BASE_CONFIG, AI_CONFIG
 
 
 def generate_short_unique_time_str():
@@ -89,8 +90,12 @@ def is_usrPwd_ok(pwd: str) -> bool:
     return bool(re.match(pattern, pwd))
 
 
-def save_json(data: Union[Dict, List, str], file_path: str) -> Tuple[bool, str]:
+def save_json(data: Union[Dict, List, str], file_path: str, lock: BaseFileLock) -> Tuple[bool, str]:
     # 你不需要保证数据被json化
+    if lock is None:
+        return False, 'You need to provide a valid file lock'
+    if lock.lock_file != file_path + AI_CONFIG['LOCK_SUFFIX']:
+        return False, 'Lock target in not the same as parameter "file_path" in save_json'
     if not re.match(r'^.+\.json$', file_path):
         return False, f'Path does not reflect a json file.'
     try:
@@ -100,22 +105,28 @@ def save_json(data: Union[Dict, List, str], file_path: str) -> Tuple[bool, str]:
             print(
                 f'{BASE_CONFIG['COLORS']['red']}Warning: {BASE_CONFIG['COLORS']['cyan']}'
                 f'The directory in func utils.save_json does not exist.{BASE_CONFIG['COLORS']["reset"]}')
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False, indent=4)
+        with lock:
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(data, f, ensure_ascii=False, indent=4)
         return True, 'ok'
     except Exception as e:
         return False, f"Save JSON file error: {str(e)}."
 
 
 # 包含路径存在性与合理性的检查
-def read_json(file_path: str) -> Tuple[bool, Union[Dict, List, str]]:
+def read_json(file_path: str, lock: BaseFileLock) -> Tuple[bool, Union[Dict, List, str]]:
+    if lock is None:
+        return False, 'You need to provide a valid file lock'
+    if lock.lock_file != file_path + AI_CONFIG['LOCK_SUFFIX']:
+        return False, 'Lock target in not the same as parameter "file_path" in read_json'
     if not re.match(r'^.+\.json$', file_path):
         return False, f'Path does not reflect a json file.'
     try:
         if not os.path.exists(file_path):
             return False, f'File not exist: {file_path}.'
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        with lock:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
         return True, data
     except json.JSONDecodeError:
         return False, 'JSON decode error.'
