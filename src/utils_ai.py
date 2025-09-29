@@ -278,17 +278,6 @@ async def __async_ai(ipt: str) -> Tuple[bool, str]:
         "Content-Type": "application/json"
     }
 
-    # response = requests.post(AI_CONFIG['URL'], json=payload, headers=headers)
-    # data = response.json()
-    #
-    # if response.status_code in (401, 404, 504):
-    #     return False, data
-    # if response.status_code in (400, 429, 503):
-    #     return False, data.get('message')
-    # if response.status_code == 200:
-    #     return True, data["choices"][0]["message"]["content"].strip()
-    # return False, 'Unknown response code.'
-
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(
@@ -366,4 +355,31 @@ def check_and_get_full_json_by_v1(path: str) -> Tuple[bool, Union[list, str], bo
         return False, data2, False
     return True, data2, isFirstUnresolved
 
-# You can't test this with: python -m src.utils_ai
+
+# 检查第一条消息是否已经被标记为finish状态。实际上，会检查unresolved消息的数量是否为0
+# 当程序发生不应当存在的错误时，第三个返回值会为True，表示应当停止继续的请求。
+# 若已为Flags.finish，第二个返回值为AI回复的值。
+def check_if_unresolved_msg_resolves_and_get_it(path: str) -> Tuple[bool, str, bool]:
+    global __LOCK
+    if __LOCK is None:
+        print('Warning: __LOCK is None in check_if_unresolved_msg_resolves_and_get_it')
+        return False, 'ERROR: __LOCK is None in check_if_unresolved_msg_resolves_and_get_it', True
+    if __LOCK and __LOCK.lock_file != path + __lock_suffix:
+        __LOCK = FileLock(path + __lock_suffix)
+        print('Warning: __LOCK target is not the same in check_if_unresolved_msg_resolves_and_get_it')
+    isCheckOk, data, isFirstUnresolved = check_number_of_unresolved_msg(path)
+    if not isCheckOk:
+        return False, data, True
+    if data not in (0, 1) or (data != 0 and not isFirstUnresolved) or (data == 0 and isFirstUnresolved):
+        return False, 'Error: unexpected number of unresolved', True
+    if data == 0 and not isFirstUnresolved:
+        isReadOK, newContent = read_json(path, __LOCK)
+        if not isReadOK:
+            return False, newContent, True
+        reply = newContent[0].get('reply')
+        return True, reply, False
+    if data == 1 and isFirstUnresolved:
+        return False, 'waiting', False
+    return False, 'untouchable', True
+
+# You can't test this with: python -m src.utils_ai, it needs one async environment.

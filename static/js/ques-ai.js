@@ -15,9 +15,86 @@ document.addEventListener('DOMContentLoaded', async function () {
     let observer = null;    // normal-observer
     let observerAI = null;
 
+    let isQuerying = false; // 判断当前是否正在发送fetch请求, 防止阻塞
+    const SEP = 2000;   // 查询间隔
+
+    /**
+     * 存在unresolved messages时调用该函数即可
+     * 在调用之前，需要确保存在一个id="unresolved"的<div class="ai-qa-item answer-item">标签，
+     * 该标签中的内容允许为任意值，之后会将这个标签初始化为等待回答状态。
+     * 当然，在该过程退出后，会清除div元素的id信息
+     */
+    function touchingReply() {
+        const div = document.getElementById('unresolved');
+        const p = div.querySelector('p');
+        let queryTimer = null;
+
+        p.innerHTML = `<span>等待AI回复中</span><span id="loading-dots"></span>`;
+        const loadingStrings = [".", "..", "...", "....", ".....", "......"];
+        const loadingTyper = new Typed('#unresolved p span#loading-dots', {
+            strings: loadingStrings,
+            typeSpeed: 0,
+            backSpeed: 0,
+            backDelay: 1000,
+            loop: true,
+            showCursor: false,
+        });
+
+        /**
+         * 清除持续发送请求的定时器，清除打字机效果，修改p元素(应答元素)内容，清除应答元素的id
+         * @param {string} s 让p元素展示的新字符串。若为null，则不进行修改。
+         * @param {boolean} clearID 是否清除div的id值
+         */
+        function clearAllRequestAndShowNewMessage(s, clearID = true) {
+            if (queryTimer) {
+                clearInterval(queryTimer);
+            }
+            if (loadingTyper) {
+                loadingTyper.destroy();
+            }
+            if (s) { p.innerHTML = s; }
+            if (clearID) {
+                div.id = null;
+            }
+        }
+
+        queryTimer = setInterval(async () => {
+            if (isQuerying) return;
+            isQuerying = true;
+            try {
+                const response = await fetch('api/get_status');
+                const result = await response.json();
+                if (result.error) {
+                    clearAllRequestAndShowNewMessage(`fatal error: ${result.message}`);
+                }
+                if (result.resolve) {
+                    clearAllRequestAndShowNewMessage('');
+                    const options = {
+                        strings: [result.message],
+                        typeSpeed: 20,
+                        showCursor: false,
+                        loop: false,
+                        onComplete: function (typed) {
+                            typed.destroy();
+                            p.innerHTML = result.message;
+                        }
+                    };
+                    new Typed(p, options);
+                } else {
+                    console.log('请求成功，但AI未完成回答。');
+                }
+            } catch (error) {
+                console.error('fetch 请求(api/get_status)失败', error);
+                clearAllRequestAndShowNewMessage('请求发生错误：' + error);
+            }
+            isQuerying = false;
+        }, SEP);
+    }
+
     // 初始化AI问答内容
     async function initAIQAs() {
         let ai_qas = [];
+        let contianUnresolved = false;
         try {
             const response = await fetch('api/get_full_json');
             const result = await response.json();
@@ -25,12 +102,13 @@ document.addEventListener('DOMContentLoaded', async function () {
                 alert("获取初始问答列表失败: " + result.data);
             } else {
                 ai_qas = result.data;
+                contianUnresolved = result.unresolved;
             }
         } catch (error) {
-            alert("获取初始问答列表失败: " + error);
+            alert("获取初始问答列表失败: ", error);
         }
 
-        ai_qas = Array.from(ai_qas).filter(each => each.flag === Flags.finish);
+        ai_qas = Array.from(ai_qas).filter(each => each.flag !== Flags.wrong);
 
         let html = '';
         if (ai_qas.length === 0) {
@@ -47,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div class="ai-avatar ai-q-avatar">You</div>
                 </div>
 
-                <div class="ai-qa-item answer-item">
+                <div class="ai-qa-item answer-item"${qa.flag === Flags.unresolved ? ' id="unresolved"' : ''}>
                     <div class="ai-avatar ai-a-avatar">AI</div>
                     <div class="ai-answer">
                         <div class="message-content">
@@ -67,6 +145,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         // 为AI问答项添加滚动动画
         initAIQaAnimation();
+
+        if (contianUnresolved) {
+            touchingReply();
+            // 添加：禁用添加事件按钮
+        };
     }
 
     // 初始化AI问答项的滚动动画（保持原逻辑）
@@ -221,9 +304,30 @@ document.addEventListener('DOMContentLoaded', async function () {
         const reply = await sendUsrIptToAI(usrInput);
         if (reply.success) {
             textarea.value = '';
+            html = `
+                <div class="ai-qa-item question-item visible">
+                    <div class="ai-question">
+                        <div class="message-content">
+                            <p>${usrInput}</p>
+                        </div>
+                    </div>
+                    <div class="ai-avatar ai-q-avatar">You</div>
+                </div>
+
+                <div class="ai-qa-item answer-item visible" id="unresolved">
+                    <div class="ai-avatar ai-a-avatar">AI</div>
+                    <div class="ai-answer">
+                        <div class="message-content">
+                            <p></p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            addConversationBtn.insertAdjacentHTML('afterend', html);
+            touchingReply();
+        } else {
+            // 请求失败时的操作
         }
-        console.log(reply);
-        console.log(reply.success, reply.data);
     })
 
     await initAIQAs();

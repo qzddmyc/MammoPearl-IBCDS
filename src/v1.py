@@ -3,6 +3,7 @@ from typing import Tuple, Union
 
 from src.utils import generate_short_unique_time_str, get_current_time, write_to_file
 from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available, check_and_get_full_json_by_v1
+from src.utils_ai import check_if_unresolved_msg_resolves_and_get_it
 from config.configs import BASE_CONFIG, AI_CONFIG
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
@@ -112,3 +113,9 @@ def get_all_json_data() -> Tuple[bool, Union[str, list], bool]:
     if not isOK:
         return False, data, False
     return isOK, data, containUnresolved
+
+
+def check_status_or_get_newest_reply():
+    file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
+    isResolved, msg, shouldAbort = check_if_unresolved_msg_resolves_and_get_it(file_path)
+    return isResolved, msg, shouldAbort
