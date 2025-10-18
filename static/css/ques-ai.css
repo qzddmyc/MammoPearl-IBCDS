@@ -24,6 +24,18 @@
     box-shadow: 0 4px 10px rgba(0, 20, 40, 0.3);
 }
 
+.add-conversation-btn:disabled {
+    filter: grayscale(90%);
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.add-conversation-btn:disabled:hover {
+    background: rgba(66, 165, 245, 0.7);
+    transform: none;
+    box-shadow: none;
+}
+
 .question-input-container {
     width: 80%;
     max-width: 100%;
@@ -71,6 +83,23 @@
     cursor: pointer;
     font-size: 0.9rem;
     transition: all 0.2s ease;
+}
+
+.confirm-btn:disabled,
+.cancel-btn:disabled {
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    opacity: 0.65 !important;
+    filter: grayscale(100%) !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+}
+
+.confirm-btn:disabled:hover {
+    background: #2196f3 !important;
+}
+
+.cancel-btn:disabled:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
 }
 
 .confirm-btn {
@@ -183,7 +212,7 @@
     margin-bottom: 10px;
 }
 
-.ai-qa-container h3{
+.ai-qa-container h3 {
     margin: 0 auto;
     color: #4fc3f7;
 }

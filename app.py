@@ -5,6 +5,7 @@ from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, ini
 from src.v1 import check_status_or_get_newest_reply
 from src.utils import open_file_with_explorer, generate_user_id
 from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User, check_if_server_started
+from src.utils_ai import check_if_environ_created
 from config.configs import BASE_CONFIG
 
 app = Flask(__name__)
@@ -150,6 +151,13 @@ def get_status():
         'resolve': isResolved,
         'message': msg,
         'error': shouldAbort
+    })
+
+
+@app.route('/api/check_api_environ', methods=['GET'])
+def check_api_environ():
+    return jsonify({
+        'exist': check_if_environ_created()
     })
 
 

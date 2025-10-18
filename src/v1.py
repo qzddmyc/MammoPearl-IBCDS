@@ -10,7 +10,7 @@ DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
 
 
 # 处理函数。True: 阳性，有概率是; False: 阴性，无事
-def v1_inner(pic: bytes) -> Tuple[bool, float]:
+def v1_inner(pic: bytes, base_path: str, pic_name: str) -> Tuple[bool, float]:
     base_path = "../static/assets/pth"
     ...
     return False, 0.869
@@ -34,7 +34,7 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple
     except Exception as e:
         print(f"保存图片时出错: {e}")
 
-    RES_TF, RES_ACC = v1_inner(pic)
+    RES_TF, RES_ACC = v1_inner(pic, folder_path, picName)
 
     # be careful that func showResultModal() in detect-main.js also uses name "阴性".
     res_A = '阳性' if RES_TF else '阴性'
