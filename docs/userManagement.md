@@ -2,6 +2,8 @@
 
 该项目提供了两份供管理员管理用户信息的接口：一份为python文件，包含基于控制台的交互式UI操作；另一份为二进制可执行文件，可以在终端通过命令行使用。
 
+---
+
 ### UI 操作
 
 1. 清除数据库数据
@@ -21,6 +23,8 @@ python -m Admin-Operation.cleardata
 ```shell
 python -m Admin-Operation.modifydata
 ```
+
+<br/>
 
 ### 命令行操作
 

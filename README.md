@@ -1,7 +1,5 @@
 # 乳此侦析 · 乳腺癌智能检测系统
 
-
-
 ### 项目初始化
 
 1. 安装Python三方库
@@ -34,19 +32,15 @@ python app.py
 http://127.0.0.1:8080
 ```
 
-<br/>
-
 ### 用户信息管理
 
 [用户信息管理](./docs/userManagement.md)
-
-<br/>
 
 ### AI api key配置
 
 [AI-key配置](./docs/apiConfig.md)
 
-<br/>
+<br>
 
 ### 特殊操作
 

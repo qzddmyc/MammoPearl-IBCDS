@@ -15,9 +15,9 @@
 SiliconCloudApi
 ```
 
-> 当然，如果变量名SiliconCloudApi存在冲突，请前往 /config/ai.yaml 中修改`ENV_NAME`变量的值
+当然，如果变量名SiliconCloudApi存在冲突，请前往 /config/ai.yaml 中修改`ENV_NAME`变量的值
 
-<br/>
+---
 
 ### 附：Windows系统中环境变量的配置
 
