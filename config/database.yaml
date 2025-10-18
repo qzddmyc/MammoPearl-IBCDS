@@ -6,6 +6,12 @@ DRIVER: "{ODBC Driver 17 for SQL Server}"
 
 SERVER: localhost
 
+USE_UID_TO_LOGIN: false
+
+UID: 'YourUID'
+
+PWD: 'YourPassword'
+
 # Without quotes will be parsed as 'True', crazy yaml!
 trusted_connection: 'yes'
 

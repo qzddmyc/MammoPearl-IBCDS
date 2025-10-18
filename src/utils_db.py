@@ -5,11 +5,20 @@ from config.configs import DATABASE_CONFIG
 
 def get_db_connection(printError=True):
     try:
-        connection = pyodbc.connect(
-            f"DRIVER={DATABASE_CONFIG['DRIVER']};"
-            f"SERVER={DATABASE_CONFIG['SERVER']};"
-            f"DATABASE={DATABASE_CONFIG['DB_NAME']};"
-            f"Trusted_Connection={DATABASE_CONFIG['trusted_connection']}")
+        if not DATABASE_CONFIG['USE_UID_TO_LOGIN']:
+            connection = pyodbc.connect(
+                f"DRIVER={DATABASE_CONFIG['DRIVER']};"
+                f"SERVER={DATABASE_CONFIG['SERVER']};"
+                f"DATABASE={DATABASE_CONFIG['DB_NAME']};"
+                f"Trusted_Connection={DATABASE_CONFIG['trusted_connection']}")
+        else:
+            connection = pyodbc.connect(
+                f"DRIVER={DATABASE_CONFIG['DRIVER']};"
+                f"SERVER={DATABASE_CONFIG['SERVER']};"
+                f"DATABASE={DATABASE_CONFIG['DB_NAME']};"
+                f"UID={DATABASE_CONFIG['UID']};"
+                f"PWD={DATABASE_CONFIG['PWD']}"
+            )
         return connection
     except Exception as e:
         if printError:
