@@ -1,3 +1,5 @@
+/* 必须使用box-sizing: border-box; */
+
 .main-header {
     position: fixed;
     top: 0;
@@ -176,7 +178,7 @@
     transition: 0.2s linear;
 }
 
-.mobile-menu-container.active .mobile-menu-item:hover::before{
+.mobile-menu-container.active .mobile-menu-item:hover::before {
     opacity: 1;
 }
 
@@ -221,3 +223,11 @@
 .menu-open {
     overflow: hidden;
 }
+
+/* you should auto add: 'color-text' like: */
+/* .color-text {
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+} */

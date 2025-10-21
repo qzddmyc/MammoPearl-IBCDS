@@ -32,6 +32,11 @@ def login():
     return render_template('login.html')
 
 
+@app.route('/advan.html')
+def advance():
+    return render_template('advan.html')
+
+
 @app.route('/api/check_conn', methods=['POST'])
 def check_conn():
     text_data = request.data.decode('utf-8')

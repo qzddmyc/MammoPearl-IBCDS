@@ -1,0 +1,164 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #e0f0ff;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.no-select {
+    user-select: none;
+}
+
+.color-text {
+    background: linear-gradient(90deg, #00ffcc, #0099ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 110px auto 50px;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+}
+
+.page-title {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(41, 182, 246, 0.2);
+}
+
+.page-title h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(90deg, #4fc3f7, #29b6f6, #03a9f4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 15px rgba(41, 182, 246, 0.3);
+    margin-bottom: 10px;
+}
+
+.page-title p {
+    color: #b3e5fc;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+#write {
+    width: 100%;
+    --pl: 8%;
+}
+
+#write p {
+    color: #b3e5fc;
+    font-size: 1.1rem;
+    line-height: 1.7rem;
+    padding: 0.6rem var(--pl);
+    text-indent: 2em;
+}
+
+#write h2 {
+    font-size: 1.7rem;
+    color: #9cdffe;
+    padding-left: var(--pl);
+    margin-bottom: 5px;
+}
+
+#write p + h2,
+#write img + h2,
+#write h2 + img {
+    margin-top: 1.5rem;
+}
+
+#write img {
+    max-width: 50%;
+    max-height: 450px;
+    margin: 0.8rem auto;
+    display: block;
+    border: 1px solid #9cdffe88;
+}
+
+@media (max-width: 768px) {
+    .container {
+        margin-bottom: 20px;
+    }
+
+    .page-title h1 {
+        font-size: 2rem;
+    }
+
+    #write p {
+        font-size: 0.88rem;
+        line-height: 1.35rem;
+    }
+
+    #write p + p {
+        padding-top: 0.2rem;
+    }
+
+    #write h2 {
+        font-size: 1.36rem;
+        margin-bottom: 4px;
+    }
+
+    #write p + h2,
+    #write img + h2,
+    #write h2 + img {
+        margin-top: 1.2rem;
+    }
+
+    #write img {
+        max-width: 52%;
+        max-height: 300px;
+        margin: 0.64rem auto;
+    }
+}
+
+@media (max-width: 450px) {
+    .page-title {
+        zoom: 0.8;
+    }
+
+    .container {
+        margin-bottom: 10px;
+    }
+
+    #write p {
+        font-size: 0.7rem;
+        line-height: 1.05rem;
+    }
+
+    #write p + p {
+        padding-top: 0;
+    }
+
+    #write h2 {
+        font-size: 1.08rem;
+        margin-bottom: 3.2px;
+    }
+
+    #write p + h2,
+    #write img + h2,
+    #write h2 + img {
+        margin-top: 0.96rem;
+    }
+
+    #write img {
+        max-width: 60%;
+        max-height: 280px;
+        margin: 0.512rem auto;
+    }
+}

@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         let html = '';
         if (ai_qas.length === 0) {
-            if (DISABLE_INTERACTION) html += '<h3>当前页面仅作展示，无法与服务器进行连接</h3>';
+            if (DISABLE_INTERACTION) html += '<h3>未能连接服务器，当前页面仅作展示</h3>';
             else html += '<h3>暂无内容，请点击“添加对话”进行添加</h3>';
         }
         ai_qas.forEach(qa => {

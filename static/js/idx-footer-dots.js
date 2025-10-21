@@ -1,4 +1,4 @@
-// 事件生命周期...
+// 事件生命周期
 
 document.addEventListener('DOMContentLoaded', () => {
     const footerContainer = document.querySelector('.footer-container');

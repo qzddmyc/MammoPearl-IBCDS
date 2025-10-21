@@ -1,3 +1,5 @@
+// .container的缩放不包含在此文件内
+
 document.addEventListener('DOMContentLoaded', function () {
     const doms = {
         banner: document.querySelector('.banner'),
