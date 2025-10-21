@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             doms.footer_content.style.zoom = ratio;
             doms.footer_container.style.paddingTop = ratio * 50 + 'px';
-            doms.footer_container.style.paddingBottom = ratio * 30 + 'px';
+            doms.footer_container.style.paddingBottom = ratio * 50 + 'px';
             doms.footer_bottom.style.paddingTop = '0px';
             doms.footer_copyright.style.zoom = ratio;
         } else {

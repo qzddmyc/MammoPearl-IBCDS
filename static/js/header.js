@@ -23,6 +23,12 @@ document.addEventListener('DOMContentLoaded', function () {
         // console.log(scrollTop);
         // console.log((scroll_threshold < 0 && scrollTop > 0));
 
+        if (scrollTop === 0) {
+            doms.header.classList.remove('scroll-out');
+            lastScrollTop = 0;
+            return;
+        }
+
         if ((scroll_threshold < 0 && scrollTop > 0) || (scroll_threshold >= 0 && scrollTop >= scroll_threshold)) {
             doms.header.classList.add('scroll-out');
         }
@@ -36,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         // 更新上一次滚动位置
         lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
-
     }
 
     // 防抖函数包装，设置延迟时间为100ms
