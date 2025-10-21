@@ -44,20 +44,20 @@ bin/ibcds -h
 该二进制文件的源代码位于raw/codesBeforePackage/ibcds.py，打包方式如下：
 
 - 前置条件（请根据命令自行检查）：
-```shell
-pip install pyinstaller
-rm -r bin
-```
+    ```shell
+    pip install pyinstaller
+    rm -r bin
+    ```
 
 - 打包并放入bin文件夹下：
-```shell
-cp raw/codesBeforePackage/ibcds.py ibcds.py
-pyinstaller -F ibcds.py
-rm ibcds.spec
-rm -r build
-rm ibcds.py
-mkdir -p bin
-mv dist/* bin/
-rmdir dist
-```
+    ```shell
+    cp raw/codesBeforePackage/ibcds.py ibcds.py
+    pyinstaller -F ibcds.py
+    rm ibcds.spec
+    rm -r build
+    rm ibcds.py
+    mkdir -p bin
+    mv dist/* bin/
+    rmdir dist
+    ```
 注意，打包时的.py文件必须位于项目根目录下，否则会无法执行。给出的命令行中已实现文件的移动操作。

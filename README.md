@@ -1,36 +1,64 @@
 # 乳此侦析 · 乳腺癌智能检测系统
 
+### 环境依赖
+
+确保本地环境满足以下版本要求，否则可能导致功能异常或运行报错：
+
+1. 编程语言：
+
+    - Python 版本：>= 3.12（推荐 3.12.0 及以上稳定版）
+
+2. 数据库：
+
+    - SQL Server 版本：Microsoft SQL Server 2022 (RTM) - 16.0.1000.6 (X64)
+
+<br>
+
+\* 你可以使用以下方法校验你的环境：
+
+- Python:
+    ```shell
+    python --version
+    ```
+
+- SqlServer（打开 SQL Server Management Studio (SSMS)，连接数据库后执行 T-SQL）:
+    ```sql
+    SELECT @@VERSION;
+    ```
+
+---
+
 ### 项目初始化
 
 1. 安装Python三方库
-```shell
-pip install -r requirements.txt
-```
+    ```shell
+    pip install -r requirements.txt
+    ```
 
 2. 开启数据库服务
-```shell
-sudo sc start MSSQLSERVER
-```
+    ```shell
+    sudo sc start MSSQLSERVER
+    ```
 
 3. 建立数据库
-```shell
-sqlcmd -Q "IBCDS"
-```
+    ```shell
+    sqlcmd -Q "IBCDS"
+    ```
 
 4. 初始化数据库
-```shell
-python -m init.init_database
-```
+    ```shell
+    python -m init.init_database
+    ```
 
 5. 运行程序
-```shell
-python app.py
-```
+    ```shell
+    python app.py
+    ```
 
 6. 访问页面
-```plaintext
-http://127.0.0.1:8080
-```
+    ```plaintext
+    http://127.0.0.1:8080
+    ```
 
 ---
 
@@ -47,9 +75,11 @@ http://127.0.0.1:8080
 ### 特殊操作
 
 #### 1. 修改项目端口
-修改config.yaml中的 `PORT` 值即可。
+
+当设备的端口存在冲突时，你可以通过修改config.yaml中的 `PORT` 值，改变本项目使用的端口号。
 
 #### 2. 设置页面为仅访问，禁止所有与服务器相关的操作
+
 将 /static/assets/data/vars.js 中的 `DISABLE_INTERACTION_global` 设置为 `true` 即可。
 
 该操作会禁止用户注册、提交检测、AI交互相关的操作，并隐藏需要开启服务器的提示。
