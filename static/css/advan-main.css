@@ -9,6 +9,8 @@ body {
     color: #e0f0ff;
     min-height: 100vh;
     overflow-x: hidden;
+    /* 阻止塌陷 */
+    border-top: 1px solid transparent;
 }
 
 .no-select {
@@ -137,8 +139,8 @@ body {
     }
 
     #write p {
-        font-size: 0.7rem;
-        line-height: 1.05rem;
+        font-size: 0.8rem;
+        line-height: 1.3rem;
     }
 
     #write p + p {
@@ -146,7 +148,7 @@ body {
     }
 
     #write h2 {
-        font-size: 1.08rem;
+        font-size: 1.25rem;
         margin-bottom: 3.2px;
     }
 
