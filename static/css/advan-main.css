@@ -65,7 +65,7 @@ body {
 }
 
 #write p {
-    color: #b3e5fc;
+    color: #a7e3ff;
     font-size: 1.1rem;
     line-height: 1.7rem;
     padding: 0.6rem var(--pl);
@@ -74,9 +74,18 @@ body {
 
 #write h2 {
     font-size: 1.7rem;
-    color: #9cdffe;
+    color: #88d9ff;
     padding-left: var(--pl);
     margin-bottom: 5px;
+    position: relative;
+}
+
+#write h2::before {
+    position: absolute;
+    top: 2px;
+    right: 93%;
+    font-size: inherit;
+    color: inherit;
 }
 
 #write p + h2,
@@ -91,6 +100,18 @@ body {
     margin: 0.8rem auto;
     display: block;
     border: 1px solid #9cdffe88;
+}
+
+#write img:has(+ span) {
+    margin-bottom: 0.5rem;
+}
+
+#write span {
+    display: block;
+    font-size: 0.95rem;
+    color: #d8f3ff;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 @media (max-width: 768px) {
@@ -116,6 +137,10 @@ body {
         margin-bottom: 4px;
     }
 
+    #write h2::before {
+        top: 1.5px;
+    }
+
     #write p + h2,
     #write img + h2,
     #write h2 + img {
@@ -126,6 +151,15 @@ body {
         max-width: 52%;
         max-height: 300px;
         margin: 0.64rem auto;
+    }
+
+    #write img:has(+ span) {
+        margin-bottom: 0.4rem;
+    }
+
+    #write span {
+        font-size: 0.82rem;
+        margin-bottom: 4px;
     }
 }
 
@@ -148,7 +182,7 @@ body {
     }
 
     #write h2 {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         margin-bottom: 3.2px;
     }
 
@@ -162,5 +196,14 @@ body {
         max-width: 60%;
         max-height: 280px;
         margin: 0.512rem auto;
+    }
+
+    #write img:has(+ span) {
+        margin-bottom: 0.38rem;
+    }
+
+    #write span {
+        font-size: 0.75rem;
+        margin-bottom: 1px;
     }
 }

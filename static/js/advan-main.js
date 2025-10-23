@@ -21,18 +21,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
             const keys = Object.keys(item);
-            if (keys.length !== 2) {
-                console.log(`错误：索引为${i}的对象包含${keys.length}个键，应仅包含type和content`);
-                return false;
-            }
-            if (!keys.includes('type') || !keys.includes('content')) {
-                console.log(`错误：索引为${i}的对象缺少type或content键`);
+            if (!keys.includes('type')) {
+                console.log(`错误：索引为${i}的对象缺少type键`);
                 return false;
             }
             const validTypes = ['title', 'txt', 'img'];
             if (!validTypes.includes(item.type)) {
                 console.log(`错误：索引为${i}的对象type值无效，当前值为${item.type}，允许值为${validTypes.join('、')}`);
                 return false;
+            }
+            if (item.type === 'img') {
+                if (keys.length !== 3) {
+                    console.log(`错误：索引为${i}的对象（type为img）包含${keys.length}个键，应包含type、url和title`);
+                    return false;
+                }
+                if (!keys.includes('url') || !keys.includes('title')) {
+                    console.log(`错误：索引为${i}的对象（type为img）缺少url或title键`);
+                    return false;
+                }
+            } else {
+                if (keys.length !== 2) {
+                    console.log(`错误：索引为${i}的对象（type为${item.type}）包含${keys.length}个键，应仅包含type和content`);
+                    return false;
+                }
+                if (!keys.includes('content')) {
+                    console.log(`错误：索引为${i}的对象（type为${item.type}）缺少content键`);
+                    return false;
+                }
             }
         }
         return true;
@@ -43,14 +58,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    let cnt = 0;
     const fragment = document.createDocumentFragment();
+    const styleFragment = document.createDocumentFragment();
     Advans.forEach(e => {
         const type = maps[e.type];
         const dom = document.createElement(type);
-        if (type === 'img') dom.src = baseImgPath + e.content;
+        if (type === 'img') dom.src = baseImgPath + e.url;
         else dom.textContent = e.content;
+        if (type === 'h2') {
+            cnt++;
+            const Id = `title-${cnt}`;
+            dom.id = Id;
+            const style = document.createElement('style');
+            style.textContent = `#write h2#${Id}::before { content: "${cnt}."; }`;
+            styleFragment.appendChild(style);
+        }
         fragment.appendChild(dom);
+        if (type === 'img' && e.title !== '') {
+            const span = document.createElement('span');
+            span.textContent = e.title;
+            fragment.appendChild(span);
+        }
     });
+    document.head.appendChild(styleFragment);
     writeZone.appendChild(fragment);
 
     setTimeout(() => {
