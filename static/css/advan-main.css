@@ -78,14 +78,16 @@ body {
     padding-left: var(--pl);
     margin-bottom: 5px;
     position: relative;
+    line-height: 2.5rem;
 }
 
 #write h2::before {
     position: absolute;
-    top: 2px;
+    top: 0;
     right: 93%;
     font-size: inherit;
     color: inherit;
+    line-height: inherit;
 }
 
 #write p + h2,
@@ -135,10 +137,7 @@ body {
     #write h2 {
         font-size: 1.36rem;
         margin-bottom: 4px;
-    }
-
-    #write h2::before {
-        top: 1.5px;
+        line-height: 2rem;
     }
 
     #write p + h2,
@@ -184,6 +183,7 @@ body {
     #write h2 {
         font-size: 1.15rem;
         margin-bottom: 3.2px;
+        line-height: 1.7rem;
     }
 
     #write p + h2,
