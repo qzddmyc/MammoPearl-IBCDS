@@ -1,4 +1,4 @@
-/* 完全隐藏原生滚动条（保持功能） */
+/* 完全隐藏原生滚动条 */
 ::-webkit-scrollbar {
     display: none;
 }

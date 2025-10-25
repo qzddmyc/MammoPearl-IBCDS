@@ -6,7 +6,7 @@ x docker打包
 o 封装Admin-Operation为二进制文件
 o 集成ai功能至页面
 x 优化数据库服务未开启时的超长延时 --无法实现
-x ai-qa-container & qa-container 在平板宽度时，右侧贴合 scrollbar 过紧的样式问题
+o ai-qa-container & qa-container 在平板宽度时，右侧贴合 scrollbar 过紧的样式问题
 x logs.results路径已更新，同步至README (?)
 o json数据存储工作
 o 对于AI工作，注意未等待AI回复就被强制中断的情况
@@ -23,4 +23,4 @@ o advan的标题前添加::before伪元素做序号
 o advan的图片添加图片名的显示，并更改advan变量的校验程序
 o 修改#write span样式，添加m-b样式
 x 两份img相邻时的margin塌陷问题
-- 字体不同时，标号与标题行高不同问题
+o 字体不同时，advan页面的title标号与标题行高不同问题
