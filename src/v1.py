@@ -91,7 +91,7 @@ def get_reply_in_ques_by_ai(usr_ipt):
     file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
     folder_path = os.path.dirname(file_path)
     if folder_path and not os.path.exists(folder_path):
-        # 二次确认。在服务开启时已确认文件夹初始化
+        # double confirmation
         try:
             os.makedirs(folder_path, exist_ok=True)
             print(f"文件夹创建成功：{folder_path}")

@@ -1,3 +1,5 @@
+/* 页面切换时的过渡场景样式，不再使用 */
+
 .loading {
     position: fixed;
     top: 0;
@@ -24,7 +26,6 @@
     left: -100%;
 }
 
-/* 网格背景 */
 .loading .grid-bg {
     position: absolute;
     width: 100%;
@@ -48,7 +49,6 @@
     z-index: 1;
 }
 
-/* 装饰性元素 */
 .loading .decor-element {
     position: absolute;
     opacity: 0.4;
@@ -88,7 +88,6 @@
     right: 18%;
 }
 
-/* 随机角度斜线 */
 .loading .line {
     position: absolute;
     background: linear-gradient(
@@ -143,7 +142,6 @@
     transform: rotate(-30deg);
 }
 
-/* 随机点 */
 .loading .dot {
     position: absolute;
     width: 3px;
@@ -152,7 +150,6 @@
     background-color: rgba(79, 195, 247, 0.8);
 }
 
-/* 第一象限点 */
 .loading .dot1 {
     top: 10%;
     left: 10%;
@@ -174,7 +171,6 @@
     left: 25%;
 }
 
-/* 第二象限点 */
 .loading .dot6 {
     top: 10%;
     right: 10%;
@@ -196,7 +192,6 @@
     right: 25%;
 }
 
-/* 第三象限点 */
 .loading .dot11 {
     bottom: 10%;
     left: 10%;
@@ -218,7 +213,6 @@
     left: 25%;
 }
 
-/* 第四象限点 */
 .loading .dot16 {
     bottom: 10%;
     right: 10%;
@@ -240,7 +234,6 @@
     right: 25%;
 }
 
-/* 中心点 */
 .loading .dot21 {
     top: 45%;
     left: 45%;
@@ -262,7 +255,6 @@
     left: 50%;
 }
 
-/* 其他随机点 */
 .loading .dot26 {
     top: 30%;
     left: 30%;

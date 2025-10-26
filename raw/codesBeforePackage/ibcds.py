@@ -146,11 +146,9 @@ def global_error(message):
 
 class NoHelpOnErrorParser(argparse.ArgumentParser):
     def error(self, message):
-        # sys.stderr.write(f'{self.prog}: error: {message}\n')
         global_error(message)
 
 
-# 自定义帮助信息格式化器
 class CustomHelpFormatter(argparse.HelpFormatter):
     def __init__(self, parser, command=None):
         super().__init__(parser)
@@ -280,16 +278,13 @@ ibcds ls - 列出所有用户信息
 
 
 def main():
-    # 优先检查是否需要显示帮助（在解析前处理）
     if len(sys.argv) >= 2:
         command = sys.argv[1]
-        # 检查全局帮助
         if command in ['-h', '--help']:
             if len(sys.argv) > 2:
                 global_error(f"Unexpected argument(s): {' '.join(sys.argv[2:])}")
             print(CustomHelpFormatter(None).get_general_help())
             sys.exit(0)
-        # 检查子命令帮助
         if len(sys.argv) >= 3 and sys.argv[2] in ['-h', '--help']:
             if len(sys.argv) > 3:
                 global_error(f"Unexpected argument(s): {' '.join(sys.argv[3:])}")
@@ -297,23 +292,19 @@ def main():
             print(formatter.format_help())
             sys.exit(0)
 
-    # 当没有传入任何参数时，显示全局帮助信息
     if len(sys.argv) == 1:
         print(CustomHelpFormatter(None).get_general_help())
         sys.exit(0)
 
-    # 创建主解析器
     parser = NoHelpOnErrorParser(
         prog='ibcds',
         add_help=False,
         formatter_class=lambda prog: CustomHelpFormatter(prog))
 
-    # 创建子命令解析器
     subparsers = parser.add_subparsers(dest='command',
                                        required=True,
                                        parser_class=NoHelpOnErrorParser)
 
-    # 处理 rm 子命令
     rm_parser = subparsers.add_parser(
         'rm',
         add_help=False,
@@ -323,7 +314,6 @@ def main():
     rm_group.add_argument('--table', action='store_true')
     rm_group.add_argument('-u', '--user')
 
-    # 处理 add 子命令
     add_parser = subparsers.add_parser(
         'add',
         add_help=False,
@@ -331,7 +321,6 @@ def main():
     add_parser.add_argument('-u', '--user', required=True)
     add_parser.add_argument('-p', '--pwd', required=True)
 
-    # 处理 modify 子命令
     modify_parser = subparsers.add_parser(
         'modify',
         add_help=False,
@@ -339,7 +328,6 @@ def main():
     modify_parser.add_argument('-u', '--user', required=True)
     modify_parser.add_argument('-n', '--newpwd', required=True)
 
-    # 处理 ls 子命令
     subparsers.add_parser(
         'ls',
         add_help=False,
@@ -347,8 +335,6 @@ def main():
 
     args = None
     try:
-        # command = sys.argv[1]
-        # check_excess_arguments(sys.argv, command)
         args = parser.parse_args()
     except argparse.ArgumentError as err:
         global_error(err)

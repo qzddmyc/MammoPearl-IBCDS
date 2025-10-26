@@ -21,9 +21,9 @@ from src.utils import read_json, save_json
 # const Flags in /static/assets/data/qa_doc.js
 class __F:
     def __init__(self):
-        self.finish = 0  # AI已返回回答
-        self.unresolved = 1  # AI正在回答，尚且未返回值
-        self.wrong = 2  # 发生错误，"reply"记录值为错误信息
+        self.finish = 0         # AI已返回回答
+        self.unresolved = 1     # AI正在回答，尚且未返回值
+        self.wrong = 2          # 发生错误，"reply"记录值为错误信息
 
 
 Flags = __F()
@@ -75,7 +75,7 @@ def INIT_check_if_json_available(path):
             print(f"INIT: 文件夹创建时失败：{e}")
             return False
     if not os.path.isfile(path):
-        # 文件不存在，则初始化为空列表
+        # Init as an empty list if the file do not exist.
         save_json([], path, __LOCK)
         print(f'INIT: 初始化 {path} 文件成功')
         return True
@@ -88,7 +88,7 @@ def INIT_check_if_json_available(path):
         print(f"INIT: Unexpected Error in check_number_of_unresolved_msg: {msgOrNum}")
         return False
     if msgOrNum != 0:
-        # 异常，初始时不应该存在unresolved信息
+        # Error: while initating, there should not exist any unresolved message.
         isReadOk, data = read_json(path, __LOCK)
         if not isReadOk or not isinstance(data, list):
             print(f"INIT: Unexpected Error in reading json file: {data}")
@@ -169,7 +169,7 @@ def check_number_of_unresolved_msg(path: str) -> Tuple[bool, Union[int, str], bo
         print('Warning: __LOCK target is not the same in check_number_of_unresolved_msg')
     isJsonOk, infoForIsJsonOk = check_if_match_format_of_history_json(path)
     if not isJsonOk:
-        return False, infoForIsJsonOk, False  # 返回False表示原先的json文件已经被修改
+        return False, infoForIsJsonOk, False
     openJsonOk, data = read_json(path, __LOCK)
     if not openJsonOk:
         return False, data, False
@@ -235,7 +235,7 @@ def change_the_first_msg_in_json(path: str, reply: str, flag: int) -> Tuple[bool
         if not isRead_ok:
             return False, f'Read json error: {json_data}, in change_the_first_msg_in_json'
         if not isinstance(json_data, list) or len(json_data) == 0:
-            # isinstance 部分不会出问题，只是让编辑器不显示错误
+            # This part won't cause any issues, it just prevents the editor from showing errors.
             return False, 'Unexpected empty json'
         new_first_item = {
             "ask": json_data[0]["ask"],
@@ -313,7 +313,6 @@ def get_reply_from_ai_and_save_json(ipt: str, pth: str) -> Tuple[bool, str]:
 
     def run_async_task(input_text, path):
         success, reply = asyncio.run(__async_ai(input_text))
-        # 原先的json第一项应当是Flags.unresolved对象，现在应当替换relpy与flag字段
         new_flag = Flags.finish if success else Flags.wrong
         isOK, msg_change = change_the_first_msg_in_json(path, reply, new_flag)
         if isOK:

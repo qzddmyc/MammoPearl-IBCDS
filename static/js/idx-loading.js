@@ -1,18 +1,16 @@
-// 不再使用
+// 页面切换时使用的过渡背景，现在不再使用
 
 document.addEventListener('DOMContentLoaded', function () {
     const doms = {
         loading: document.querySelector('.loading'),
     }
-
-    const shouldShowLoading = false;                // 从后端获取（根据session判断是否首次进入）
-
+    const shouldShowLoading = false;    // 从后端获取（根据session/localStorage判断是否首次进入）
     if (!shouldShowLoading) {
         const transition = getComputedStyle(doms.loading).transition;
         doms.loading.style.transition = 'none';
         
         doms.loading.classList.remove('show');
-        doms.loading.clientHeight;  // reflow页面
+        doms.loading.clientHeight;  // reflow
         doms.loading.style.transition = transition;
     } else {
         setTimeout(function () {

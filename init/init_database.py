@@ -25,7 +25,6 @@ def execute_sql_file(file_path):
             cursor.execute(sql_script)
             conn.commit()
 
-        # print(f"成功执行: {file_path}")
         return True
     except Exception as e:
         print(f"执行SQL文件失败 ({file_path}): {e}")
@@ -40,10 +39,8 @@ def main():
         print(f"错误：数据库 '{DATABASE_CONFIG['DB_NAME']}' 不存在，无法继续初始化")
         sys.exit(1)
 
-    # 项目根目录
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-    # 执行初始化脚本
     for path in DATABASE_CONFIG['initial_file_paths']:
         init_sql_path = os.path.join(project_root, *path)
         if os.path.exists(init_sql_path):

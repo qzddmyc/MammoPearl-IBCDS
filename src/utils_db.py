@@ -97,7 +97,6 @@ def check_value_exists(table_name: str, column_name: str, value: str) -> bool:
     conn = get_db_connection()
     try:
         with conn.cursor() as cursor:
-            # 防止 SQL 注入，对表名和列名进行简单验证
             if not (table_name.isidentifier() and column_name.isidentifier()):
                 raise ValueError("非法的表名或列名")
 
@@ -123,7 +122,6 @@ def if_table_exists(table_name: str) -> bool:
             print(f"检查表 {table_name} 存在性时发生错误")
             return False
 
-        # 解析查询结果
         table_count = result[0]['table_count']
         return table_count > 0
 
@@ -147,7 +145,6 @@ def save_User(UserID: str, UserName: str, UserPwd: str) -> dict:
 
     def hash_password(password: str) -> bytes:
         """将明文密码转换为哈希值"""
-        # 生成盐值并哈希密码
         salt = bcrypt.gensalt()
         hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
         return hashed

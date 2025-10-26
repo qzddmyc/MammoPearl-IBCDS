@@ -106,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleViewportResize() {
-        // 获取当前视口宽度
         const viewportWidth = window.innerWidth;
 
         if (viewportWidth < 560) {

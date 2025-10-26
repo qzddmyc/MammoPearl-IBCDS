@@ -13,14 +13,12 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     const initialPageTitle = pageTitle.innerHTML;
     let observer = null;    // normal-observer
-    let observerAI = null;
+    let observerAI = null;  // ai-observer
 
     let isQuerying = false; // 判断当前是否正在发送fetch请求, 防止阻塞
-    const SEP = 2000;   // 查询间隔
+    const SEP = 2000;       // 查询间隔
 
-    // 标记环境
     let DISABLE_INTERACTION = DISABLE_INTERACTION_global;
-
     async function check_connection() {
         try {
             const response = await fetch('api/check_conn', {
@@ -39,7 +37,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             return false;
         }
     }
-
     if (!DISABLE_INTERACTION) {
         const res = await check_connection();
         if (res) {
@@ -130,7 +127,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         }, SEP);
     }
 
-    // 初始化AI问答内容
     async function initAIQAs() {
         let ai_qas = [];
         let contianUnresolved = false;
@@ -148,9 +144,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 alert("获取初始问答列表失败: ", error);
             }
         }
-
         ai_qas = Array.from(ai_qas).filter(each => each.flag !== Flags.wrong);
-
         let html = '';
         if (ai_qas.length === 0) {
             if (DISABLE_INTERACTION) html += '<h3>未能连接服务器，当前页面仅作展示</h3>';
@@ -177,22 +171,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </div>
             `;
         });
-
-        // 将生成的内容添加到AI问答容器（添加按钮下方）
         if (addConversationBtn) {
             addConversationBtn.insertAdjacentHTML('afterend', html);
         } else {
             aiQaContainer.innerHTML = html;
         }
-
-        // 为AI问答项添加滚动动画
         initAIQaAnimation();
-
         if (contianUnresolved) {
             touchingReply();
         };
 
-        // 用户api_key未配置时，仅生成历史记录，但仍然标记为不可交互
         if (!DISABLE_INTERACTION) {
             const response = await fetch('api/check_api_environ');
             const result = await response.json();
@@ -203,11 +191,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 console.log("检测api配置成功");
             }
         }
-        // 禁止交互时禁用按钮
         if (DISABLE_INTERACTION) addConversationBtn.disabled = true;
     }
 
-    // 初始化AI问答项的滚动动画
     function initAIQaAnimation() {
         const aiQaItems = Array.from(document.querySelectorAll('.ai-qa-item'));
         const observerOptions = {
@@ -239,11 +225,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function initNormalQaAnimation() {
-        // 获取所有问答项并转换为数组
         const qaItems = Array.from(document.querySelectorAll('.qa-item'));
         const observerOptions = {
             root: null,
-            rootMargin: '0px 0px 100px 0px', // 底部额外100px触发区域
+            rootMargin: '0px 0px 100px 0px',
             threshold: 0.1
         };
 
@@ -252,36 +237,29 @@ document.addEventListener('DOMContentLoaded', async function () {
             observer = null;
         }
 
-        // 使用IntersectionObserver监测元素可见性
         observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !entry.target.classList.contains('visible')) {
-                    // 为每个可见元素添加延迟，创建顺序动画
                     const index = qaItems.indexOf(entry.target);
                     setTimeout(() => {
                         entry.target.classList.add('visible');
                     }, index * 50);
-
-                    // 只观察一次
                     observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        // 观察所有问答项
         qaItems.forEach(item => {
             observer.observe(item);
         });
     }
 
-
-    // 切换到AI问答：隐藏普通问答，显示AI问答
     function switchToAIQA() {
-        qaContainer.classList.add('hide'); // 隐藏普通问答
-        aiQaContainer.classList.remove('hide'); // 显示AI问答
+        qaContainer.classList.add('hide');
+        aiQaContainer.classList.remove('hide');
 
-        aiBtn.forEach(e => e.classList.add('hide')); // 隐藏"AI问答"按钮
-        normalBtn.forEach(e => e.classList.remove('hide')); // 显示"普通问答"按钮
+        aiBtn.forEach(e => e.classList.add('hide'));
+        normalBtn.forEach(e => e.classList.remove('hide'));
         pageTitle.innerHTML = 'AI 解答';
 
         document.querySelectorAll('.ai-qa-item').forEach(item => {
@@ -293,16 +271,15 @@ document.addEventListener('DOMContentLoaded', async function () {
         else updateScrollIndicator();
     }
 
-    // 切换到普通问答：隐藏AI问答，显示普通问答
     function switchToNormalQA() {
-        aiQaContainer.classList.add('hide'); // 隐藏AI问答
-        qaContainer.classList.remove('hide'); // 显示普通问答
+        aiQaContainer.classList.add('hide');
+        qaContainer.classList.remove('hide');
 
-        normalBtn.forEach(e => e.classList.add('hide')); // 隐藏"普通问答"按钮
-        aiBtn.forEach(e => e.classList.remove('hide')); // 显示"AI问答"按钮
+        normalBtn.forEach(e => e.classList.add('hide'));
+        aiBtn.forEach(e => e.classList.remove('hide'));
         pageTitle.innerHTML = initialPageTitle;
 
-        questionInputContainer.classList.add('hide'); // 切换时隐藏问题输入框
+        questionInputContainer.classList.add('hide');
 
         document.querySelectorAll('.qa-item').forEach(item => {
             item.classList.remove('visible');
@@ -313,26 +290,22 @@ document.addEventListener('DOMContentLoaded', async function () {
         else updateScrollIndicator();
     }
 
-    // 显示问题输入区域：移除hide类
     function showQuestionInput() {
         questionInputContainer.classList.remove('hide');
         addConversationBtn.disabled = true;
     }
 
-    // 隐藏问题输入区域：添加hide类并清空内容
     function hideQuestionInput() {
         questionInputContainer.classList.add('hide');
         textarea.value = '';
         addConversationBtn.disabled = false;
     }
 
-    // 绑定事件监听
     if (aiBtn) aiBtn.forEach(e => e.addEventListener('click', switchToAIQA));
     if (normalBtn) normalBtn.forEach(e => e.addEventListener('click', switchToNormalQA));
     if (addConversationBtn) addConversationBtn.addEventListener('click', showQuestionInput);
     if (cancelBtn) cancelBtn.addEventListener('click', hideQuestionInput);
 
-    // 提交文本域内容函数。
     const submitToAI = async function () {
         const usrInput = textarea.value.trim();
         if (!usrInput) {

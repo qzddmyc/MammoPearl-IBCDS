@@ -6,13 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>乳此侦析 - 科普中心</title>
     <link rel="icon" href="../static/assets/img/favicon.ico" type="image/x-icon">
-    <!-- <link rel="stylesheet" href="../static/css/loading.css"> -->
     <link rel="stylesheet" href="../static/css/scrollbar.css">
     <link rel="stylesheet" href="../static/css/star.css">
     <link rel="stylesheet" href="../static/css/header.css">
     <link rel="stylesheet" href="../static/css/ques-ai.css">
     <style>
-        /* 基础样式复用原页面风格 */
         * {
             margin: 0;
             padding: 0;
@@ -25,7 +23,7 @@
             color: #e0f0ff;
             min-height: 100vh;
             overflow-x: hidden;
-            /* 阻止塌陷 */
+            /* avoid collapse */
             border-top: 1px solid transparent;
         }
 
@@ -34,8 +32,6 @@
             max-width: 1000px;
             margin: 110px auto 50px;
             padding: 40px 20px;
-            /* min-width: 320px;
-            overflow-x: hidden; */
         }
 
         .page-title {
@@ -61,7 +57,6 @@
             opacity: 0.8;
         }
 
-        /* 问答对话框样式 */
         .qa-container {
             display: flex;
             flex-direction: column;
@@ -84,12 +79,10 @@
             transform: translateY(0);
         }
 
-        /* 问题项 - 头像在右侧外部 */
         .qa-item.question-item {
             justify-content: flex-end;
         }
 
-        /* 答案项 - 头像在左侧外部 */
         .qa-item.answer-item {
             justify-content: flex-start;
         }
@@ -106,14 +99,11 @@
             transition: all 0.3s ease;
         }
 
-        /* 问题和答案的视觉区分 */
         .question {
             background: rgba(28, 75, 125, 0.6);
             border: 1px solid rgba(66, 165, 245, 0.4);
             margin-right: 15px;
-            /* 与头像保持距离 */
             border-top-right-radius: var(--small-radius);
-            /* 右上角略平，与头像呼应 */
             box-shadow: 0 4px 15px rgba(0, 20, 40, 0.3);
         }
 
@@ -121,13 +111,10 @@
             background: rgba(15, 90, 160, 0.55);
             border: 1px solid rgba(66, 165, 245, 0.5);
             margin-left: 15px;
-            /* 与头像保持距离 */
             border-top-left-radius: var(--small-radius);
-            /* 左上角略平，与头像呼应 */
             box-shadow: 0 4px 15px rgba(0, 20, 40, 0.3);
         }
 
-        /* 头像样式 - 完全在聊天框外部 */
         .avatar {
             width: 36px;
             height: 36px;
@@ -140,8 +127,6 @@
             font-size: 1rem;
             box-shadow: 0 0 10px rgba(66, 165, 245, 0.4);
             flex-shrink: 0;
-            /* 防止头像缩小 */
-            /* margin-top: 5px; */
         }
 
         .q-avatar {
@@ -152,12 +137,10 @@
             background: #2196f3;
         }
 
-        /* 消息内容容器 */
         .message-content {
             position: relative;
         }
 
-        /* 问题内容样式 */
         .question h3 {
             color: #a7d7f5;
             margin-bottom: 12px;
@@ -169,13 +152,11 @@
             font-size: 1.05rem;
         }
 
-        /* 答案内容样式 */
         .answer p {
             color: #f0f7ff;
             font-size: 1.05rem;
         }
 
-        /* 悬停效果 */
         .question:hover,
         .answer:hover {
             transform: translateY(-2px);
@@ -186,7 +167,6 @@
             display: none !important;
         }
 
-        /* 响应式调整 */
         @media (max-width: 768px) {
 
             .question,
@@ -260,7 +240,6 @@
 </head>
 
 <body>
-    <!-- 背景图 -->
     <div class="star-container">
         <div class="layer1"></div>
         <div class="layer2"></div>
@@ -269,12 +248,10 @@
         <div class="layer5"></div>
     </div>
 
-    <!-- 滚动条 -->
     <div class="scroll-indicator">
         <div class="scroll-indicator-thumb" id="scroll-thumb"></div>
     </div>
 
-    <!-- 头部 -->
     <header class="main-header">
         <div class="main-header-left">
             <svg class="main-header-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="52" height="52"
@@ -773,16 +750,13 @@
             <button class="normal-btn" data-action="page-skip" data-msg="./index.html">返回</button>
         </div>
 
-        <!-- 压缩菜单栏 -->
         <div class="mobile-menu-container disappear">
-            <!-- 按钮 -->
             <div class="mobile-menu-btn">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
             </div>
 
-            <!-- 菜单内容 -->
             <div class="mobile-menu-content">
                 <button class="mobile-menu-item color-text qa-ai">AI 问答</button>
                 <button class="mobile-menu-item color-text qa-normal hide">常见问答</button>
@@ -791,7 +765,6 @@
         </div>
     </header>
 
-    <!-- 主内容区 -->
     <div class="container">
         <div class="page-title">
             <h1>常见问题解答</h1>
@@ -799,11 +772,11 @@
         </div>
 
         <div class="qa-container">
-            <!-- 第一组问答 -->
+            <!-- QA Region  -->
             <div class="qa-item question-item">
                 <div class="question">
                     <div class="message-content">
-                        <h3>loading...</h3>
+                        <h3>Lorem</h3>
                         <p>Lorem ipsum dolor sit amet.</p>
                     </div>
                 </div>
@@ -814,7 +787,7 @@
                 <div class="avatar a-avatar">A</div>
                 <div class="answer">
                     <div class="message-content">
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem, iure?</p>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
                     </div>
                 </div>
             </div>
@@ -832,7 +805,6 @@
         </div>
     </div>
 
-    <!-- <script src="../static/js/idx-loading.js"></script> -->
     <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
     <script src="../static/js/main.js"></script>
     <script src="../static/js/header.js"></script>
@@ -844,7 +816,6 @@
     <script src="../static/assets/data/qa_doc.js"></script>
     <script src="../static/js/ques-init.js"></script>
     <script src="../static/js/ques-ai.js"></script>
-
 </body>
 
 </html>

@@ -94,7 +94,6 @@ h1 {
     transform: scale(1.05);
 }
 
-/* SVG图形样式 */
 .dna-helix {
     position: absolute;
     width: 200px;
@@ -165,7 +164,6 @@ h1 {
     .circuit,
     .dna-strand {
         --root-size: 3vw;
-        /* display: none; */
     }
 
     .dna-helix {
@@ -193,7 +191,6 @@ h1 {
     }
 }
 
-/* 动画效果 */
 @keyframes float {
     0%,
     100% {

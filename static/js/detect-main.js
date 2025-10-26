@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', async function () {
-    // 获取DOM元素
-    // const form = document.getElementById('form');                    // 表单
     const dropArea = document.getElementById('drop-area');              // 整个虚线框内的内容
     const fileInput = document.getElementById('image-upload');          // 表单中的input.file元素
     const previewImage = document.getElementById('preview-image');      // 图片预览区的img标签; 使用base64展示图片
@@ -8,7 +6,6 @@ document.addEventListener('DOMContentLoaded', async function () {
     const noImageState = document.getElementById('no-image-state');     // 图片的预览区域-无图片时展示, 在image-preview-container内
     const removeImage = document.getElementById('remove-image');        // 删除已上传图片的按钮
     const imageFilename = document.getElementById('image-filename');    // 展示图片名称的区域, 是h4
-    // const fileInfo = document.getElementById('file-info');           // 图片名称区域的container
     const uploadBtn = document.getElementById('upload-btn');            // "选择图片"按钮
     const submitBtn = document.getElementById('submit-btn');            // "提交"按钮
     const errorModal = document.getElementById('error-modal');
@@ -17,7 +14,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     let __info = null;
 
-    // 标记环境
     let DISABLE_INTERACTION = DISABLE_INTERACTION_global;
 
     async function check_connection() {
@@ -39,7 +35,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    // 环境二次检查
     if (!DISABLE_INTERACTION) {
         const res = await check_connection();
         if (res) {
@@ -51,32 +46,25 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    // 倒计时相关变量
     let countdownTimer = null;
     const countdownTime = 5;
     let countdownSeconds = countdownTime;
     const originalBtnText = closeErrorBtn.textContent || "确定";
 
-    // 图片上传处理
     function handleFileUpload(files, isManual = false) {
         if (files.length > 0) {
             const file = files[0];
-            // 检查文件类型
             const validTypes = ['image/jpg', 'image/jpeg', 'image/png'];
             if (validTypes.includes(file.type)) {
-                // 保存文件至表单
                 if (!isManual) {
                     setFileInputValue(fileInput, file);
                 }
-                // 显示文件名并移除占位符样式
                 imageFilename.textContent = file.name;
                 imageFilename.classList.remove('placeholder');
 
-                // 显示预览图
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     previewImage.src = e.target.result;
-                    // 切换显示状态
                     imagePreview.style.display = 'block';
                     noImageState.style.display = 'none';
                     dropArea.classList.add('border-success');
@@ -84,43 +72,29 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
                 reader.readAsDataURL(file);
             } else {
-                // 显示错误弹窗
                 showErrorModal('请上传JPG、JPEG或PNG格式的图片！');
-                // 移除拖放样式
                 dropArea.classList.remove('drag-over');
             }
         }
     }
 
-    // 将文件设置到file input中
     function setFileInputValue(input, file) {
-        // 创建一个新的DataTransfer对象
         const dataTransfer = new DataTransfer();
-        // 将文件添加到DataTransfer
         dataTransfer.items.add(file);
-        // 将DataTransfer的文件列表赋值给input
         input.files = dataTransfer.files;
-
-        // 触发input的change事件，确保后续处理能感知到文件变化
         const event = new Event('change', { bubbles: true });
         event.isManual = true;
         input.dispatchEvent(event);
     }
 
-    // 显示错误弹窗
     function showErrorModal(message) {
         errorMessage.textContent = message;
         errorModal.classList.add('active');
-
-        // 初始化倒计时
         countdownSeconds = countdownTime;
         updateCountdown();
-
-        // 设置定时器
         countdownTimer = setInterval(() => {
             countdownSeconds--;
             updateCountdown();
-
             if (countdownSeconds <= 0) {
                 clearInterval(countdownTimer);
                 closeErrorModal();
@@ -128,19 +102,16 @@ document.addEventListener('DOMContentLoaded', async function () {
         }, 1000);
     }
 
-    // 更新倒计时显示
     function updateCountdown() {
         closeErrorBtn.textContent = `${originalBtnText}(${countdownSeconds})`;
     }
 
-    // 关闭错误弹窗
     function closeErrorModal() {
         errorModal.classList.remove('active');
         clearInterval(countdownTimer);
         closeErrorBtn.textContent = originalBtnText;
     }
 
-    // 拖放事件处理
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
     });
@@ -150,21 +121,18 @@ document.addEventListener('DOMContentLoaded', async function () {
         e.stopPropagation();
     }
 
-    // 拖放颜色变化 - 添加样式
     ['dragenter', 'dragover'].forEach(eventName => {
         dropArea.addEventListener(eventName, function () {
             dropArea.classList.add('drag-over');
         }, false);
     });
 
-    // 拖放颜色变化 - 移除样式
     ['dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, function () {
             dropArea.classList.remove('drag-over');
         }, false);
     });
 
-    // 处理拖放文件
     dropArea.addEventListener('drop', handleDrop, false);
 
     function handleDrop(e) {
@@ -173,37 +141,28 @@ document.addEventListener('DOMContentLoaded', async function () {
         handleFileUpload(files);
     }
 
-    // 文件选择按钮点击
     uploadBtn.addEventListener('click', function () {
         fileInput.click();
     });
 
-    // 监听fileInput的change事件，包括事件来源判断
     fileInput.addEventListener('change', function (e) {
-        // 判断事件是否是手动触发的
         const isManual = e.isManual || false;
         handleFileUpload(this.files, isManual);
     });
 
-    // 移除图片
     removeImage.addEventListener('click', function () {
         previewImage.src = '';
-        // 切换显示状态
         imagePreview.style.display = 'none';
         noImageState.style.display = 'block';
-        // 重置样式和信息
         dropArea.classList.remove('border-success');
         dropArea.classList.add('border-dashed');
         fileInput.value = '';
-        // 恢复提示文本和占位符样式
         imageFilename.textContent = '传入图片后显示图片名...';
         imageFilename.classList.add('placeholder');
     });
 
-    // 关闭错误弹窗
     closeErrorBtn.addEventListener('click', closeErrorModal);
 
-    // 点击弹窗外部关闭
     errorModal.addEventListener('click', function (e) {
         if (e.target === errorModal) {
             closeErrorModal();
@@ -217,18 +176,14 @@ document.addEventListener('DOMContentLoaded', async function () {
                 return;
             }
 
-            // console.log('提交的文件:', fileInput.files[0]);
-
             const file = fileInput.files[0];
 
             const reader = new FileReader();
             reader.readAsArrayBuffer(file);
 
-            // 读取完成后的处理
             reader.onload = async function (e) {
                 const uint8Array = new Uint8Array(e.target.result);
 
-                // 创建FormData并添加二进制数据
                 const formData = new FormData();
                 formData.append('image_data', new Blob([uint8Array], { type: file.type }), file.name);
                 const usr = localStorage.getItem('usr');
@@ -242,10 +197,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                         body: formData
                     });
 
-                    // 解析JSON响应
                     const result = await response.json();
 
-                    // 处理响应结果
                     if (result.success) {
                         const res_A = result.RES_TF;
                         const res_B = result.RES_ACC;
@@ -254,7 +207,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                         }
                         __info = {
                             relative_path: result.relative_dir_path,
-                            // img_name: file.name,
                         }
                         showResultModal(res_A, res_B);
                     } else {
@@ -265,7 +217,6 @@ document.addEventListener('DOMContentLoaded', async function () {
                 }
             };
 
-            // 读取错误处理
             reader.onerror = function () {
                 showErrorModal('文件读取失败，请重试！');
             };
@@ -280,8 +231,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     });
 
-
-    // 获取结果弹窗相关元素
     const resultModal = document.getElementById('result-modal');
     const detectionResult = document.getElementById('detection-result');
     const detectionConfidence = document.getElementById('detection-confidence');
@@ -290,9 +239,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const openTxtBtn = document.getElementById('open-txt');
     const closeResultBtn = document.getElementById('close-result');
 
-    // 显示结果弹窗
     function showResultModal(result, confidence) {
-        // 更新结果内容
         detectionResult.textContent = result;
         detectionConfidence.textContent = confidence;
         if (result === '阴性') {
@@ -304,23 +251,19 @@ document.addEventListener('DOMContentLoaded', async function () {
                 item.classList.add('bad');
             })
         }
-        // 显示弹窗
         resultModal.classList.add('active');
     }
 
-    // 关闭结果弹窗
     function closeResultModal() {
         __info = null;
         removeImage.click();
         resultModal.classList.remove('active');
     }
 
-    // 打开MD文件
     openMdBtn.addEventListener('click', async function () {
         await open_file(__info.relative_path, 'md');
     });
 
-    // 打开TXT文件
     openTxtBtn.addEventListener('click', async function () {
         await open_file(__info.relative_path, 'txt');
     });
@@ -335,14 +278,9 @@ document.addEventListener('DOMContentLoaded', async function () {
                 body: JSON.stringify({
                     dir_path: path,
                     file_type: type,
-                    // img_name: __info.img_name,
                 })
             });
-
-            // 解析JSON响应
             const result = await response.json();
-
-            // 处理响应结果
             if (result.success) {
                 alert(result.message);
             } else {
@@ -352,38 +290,23 @@ document.addEventListener('DOMContentLoaded', async function () {
             alert('错误:', error);
         }
     }
-
-    // 关闭结果弹窗
     closeResultBtn.addEventListener('click', closeResultModal);
-
 });
 
 document.addEventListener('DOMContentLoaded', function () {
     const doms = {
         form_container: document.querySelector('.form-container'),
     };
-
-    // 定义处理视口变化的函数
     function handleViewportResize() {
-        // console.log('change');
-
-        // 获取当前视口宽度
         const viewportWidth = window.innerWidth;
-
         if (viewportWidth < 700) {
             doms.form_container.style.transform = `scale(${viewportWidth / 700})`;
         } else {
             doms.form_container.style.transform = 'none';
         }
         doms.form_container.clientHeight;
-        // console.log(doms.form_container.style.transform);
     }
-
-    // 初始执行一次
     handleViewportResize();
-
-    // 必须执行两次，否则渲染会与预期不一致
-    setTimeout(handleViewportResize, 0);
-
+    setTimeout(handleViewportResize, 0);    // 必须执行两次，否则渲染会与预期不一致
     window.addEventListener('resize', handleViewportResize);
 });

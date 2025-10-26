@@ -17,11 +17,8 @@ body {
 .form-container {
     width: 600px;
     min-width: 600px;
-
-    /* margin-top: 50px; */
 }
 
-/* 上传区域样式 */
 .upload-container {
     background-color: rgba(15, 23, 42, 0.8);
     border-radius: 12px;
@@ -67,7 +64,6 @@ body {
     border-style: solid;
 }
 
-/* 拖放颜色变化效果 */
 .drop-area.drag-over {
     border-color: #60a5fa;
     background-color: rgba(96, 165, 250, 0.1);
@@ -176,11 +172,10 @@ body {
     opacity: 1;
 }
 
-/* 预览区域样式 */
 .image-preview-container {
     margin-top: 16px;
     width: 100%;
-    height: 240px; /* 固定高度 */
+    height: 240px;
     border: 1px solid #334155;
     border-radius: 6px;
     display: flex;
@@ -191,7 +186,6 @@ body {
     background-color: rgba(2, 6, 23, 0.5);
 }
 
-/* 未上传图片状态 */
 .no-image-state {
     color: #94a3b8;
     font-size: 16px;
@@ -199,7 +193,6 @@ body {
     text-align: center;
 }
 
-/* 已上传图片状态 */
 .image-preview {
     display: none;
     width: 100%;
@@ -246,7 +239,6 @@ body {
     margin-top: 12px;
 }
 
-/* 未上传图片时的提示文本颜色 */
 .file-name.placeholder {
     color: #64748b;
 }
@@ -260,7 +252,6 @@ body {
     color: #e2e8f0;
 }
 
-/* 错误提示弹窗 */
 .error-modal {
     position: fixed;
     top: 0;
@@ -346,7 +337,6 @@ body {
     border: 2px dashed #f87272 !important;
 }
 
-/* 动画效果 */
 @keyframes shake {
     0%,
     100% {
@@ -408,7 +398,6 @@ body {
     backdrop-filter: blur(2px);
 }
 
-/* 渐变背景效果 */
 .submit-btn::before {
     content: "";
     position: absolute;
@@ -436,12 +425,10 @@ body {
     transform: translateX(0);
 }
 
-/* 星点融合效果 */
 .submit-btn::before {
     box-shadow: 0 0 15px 2px var(--glow-color);
 }
 
-/* 交互状态 */
 .submit-btn:hover {
     transform: translateY(-2px);
     border-color: rgba(96, 165, 250, 0.5);
@@ -464,7 +451,6 @@ body {
     box-shadow: 0 2px 10px var(--glow-color);
 }
 
-/* 禁用状态 */
 .submit-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -503,23 +489,13 @@ body {
     right: 25px;
 }
 
-/* 
-@media (max-width: 768px) {
-    .form-container{
-        transform: scale(calc(100vw / 610));
-        zoom: calc(100vw / 610);
-        transform: none;
-    }
-} */
-
-/* 结果弹窗样式 */
 .result-modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* 半透明黑色背景，与星空融合 */
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -535,9 +511,9 @@ body {
 }
 
 .result-content {
-    background-color: rgba(15, 23, 42, 0.98); /* 深色背景，与上传区域呼应 */
+    background-color: rgba(15, 23, 42, 0.98);
     border-radius: 10px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 30px rgba(96, 165, 250, 0.15); /* 增加蓝色光晕，与星空呼应 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 30px rgba(96, 165, 250, 0.15);
     min-width: 444px;
     min-height: 25vh;
     padding: 25px;
@@ -545,11 +521,11 @@ body {
     flex-direction: column;
     justify-content: space-between;
     width: 350px;
-    border: 1px solid rgba(96, 165, 250, 0.2); /* 蓝色边框，与主题色调一致 */
+    border: 1px solid rgba(96, 165, 250, 0.2);
 }
 
 .result-title {
-    background: linear-gradient(90deg, #4ade80, #2dd4bf); /* 渐变绿色标题 */
+    background: linear-gradient(90deg, #4ade80, #2dd4bf);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
@@ -563,7 +539,7 @@ body {
 
 .result-title i {
     font-size: 1.8rem;
-    color: #4ade80; /* 保持图标颜色与渐变匹配 */
+    color: #4ade80;
 }
 
 .result-info {
@@ -577,7 +553,7 @@ body {
 
 .result-item {
     font-size: 1.1rem;
-    color: #e2e8f0; /* 浅灰色文本，与深色背景对比 */
+    color: #e2e8f0;
     margin: 0;
 }
 
@@ -586,7 +562,7 @@ body {
     background: linear-gradient(90deg, #93c5fd, #60a5fa);
     background-clip: text;
     -webkit-background-clip: text;
-    color: transparent; /* 蓝色渐变突出结果值 */
+    color: transparent;
 }
 
 .result-item span.bad {
@@ -631,7 +607,6 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    /* background: linear-gradient(90deg, #132141, #1e293b); */
     background-color: #132141;
     z-index: -1;
     transition: opacity 0.3s ease;
@@ -658,7 +633,6 @@ body {
     box-shadow: 0 0 10px rgba(108, 117, 125, 0.3);
 }
 
-/* 响应式调整保持不变 */
 @media (max-width: 768px) {
     .result-content {
         width: 65%;
