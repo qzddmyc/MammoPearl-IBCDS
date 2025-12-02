@@ -60,6 +60,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         addConversationBtn.disabled = true;
 
         const div = document.getElementById('unresolved');
+        if(!div){
+            console.error('Error in touchingReply: no dom with #unresolved found');
+            return;
+        }
         const p = div.querySelector('p');
         let queryTimer = null;
 

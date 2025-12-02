@@ -1,5 +1,6 @@
 import os
 import yaml
+from src.logger_config import Logger
 
 __DOTS = '..' if os.path.basename(os.getcwd()) == 'config' else '.'
 
@@ -34,3 +35,5 @@ def __get_ai_config():
 BASE_CONFIG = __get_base_config()
 DATABASE_CONFIG = __get_database_config()
 AI_CONFIG = __get_ai_config()
+
+Logger.info("* Get configs successfully.")

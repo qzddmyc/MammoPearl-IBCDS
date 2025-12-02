@@ -1,38 +1,53 @@
 import os
 from typing import Tuple, Union
 
-from src.utils import generate_short_unique_time_str, get_current_time, write_to_file
+from src.utils import generate_short_unique_time_str, get_current_time, write_to_file, save_a_picture
 from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available, check_and_get_full_json_by_v1
 from src.utils_ai import check_if_unresolved_msg_resolves_and_get_it
 from config.configs import BASE_CONFIG, AI_CONFIG
+from src.logger_config import Logger
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
 
 
-# 处理函数。True: 阳性，有概率是; False: 阴性，无事
 def v1_inner(pic: bytes, base_path: str, pic_name: str) -> Tuple[bool, float]:
-    base_path = "../static/assets/pth"
+    """
+    处理函数。True: 阳性，患病； False: 阴性，不患病
+    :param pic: The picture to check if ill
+    :param base_path: The path for saving result pictures
+    :param pic_name: The name of the picture
+    :return: Judge result, Accuracy
+    """
+    # base_path = "../static/assets/pth"
     ...
     return False, 0.869
 
 
-# Pass in a binary image file and the name (with suffix) of the image.
-# Return the detection result formatted [True/False(to string), accuracy, the relative path of the directory].
 def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple[str, str, str]:
+    """
+    Pass in a binary image file and the name (with suffix) of the image.
+    :param pic: The picture
+    :param picName: The name of the picture
+    :param usr: The username of who was logged in
+    :return: the detection result formatted [True/False(to Chinese str), accuracy, the relative path of the directory]
+    """
     folder_path = os.path.join(DOTS, "logs", 'results', usr, generate_short_unique_time_str())
     try:
         os.makedirs(folder_path, exist_ok=True)
-        print(f"文件夹创建成功：{folder_path}")
+        Logger.info(
+            f"success in making directory: {folder_path}, in Func 'detect_if_Breast_Cancer_picture', in File 'v1.py'")
     except Exception as e:
-        print(f"文件夹创建时失败：{e}")
+        Logger.error(
+            f"error in making directory: {folder_path}, error info: {e}, "
+            f"in Func 'detect_if_Breast_Cancer_picture', in File 'v1.py'")
 
     output_path = os.path.join(folder_path, picName)
-    try:
-        with open(output_path, 'wb') as f:
-            f.write(pic)
-        print(f"图片已成功保存至: {output_path}")
-    except Exception as e:
-        print(f"保存图片时出错: {e}")
+    if save_a_picture(pic, output_path):
+        Logger.info(f"success in saving picture to: {output_path}, "
+                    f"in Func 'detect_if_Breast_Cancer_picture', in File 'v1.py'")
+    else:
+        # logs were written in func 'save_a_picture'
+        print(f"警告：图片'{output_path}'保存失败。详情见日志")
 
     RES_TF, RES_ACC = v1_inner(pic, folder_path, picName)
 
@@ -80,42 +95,81 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple
             txt_content = txt_content.replace(k, v)
         write_to_file(os.path.join(folder_path, f'{BASE_CONFIG['RESULT_FILE_NAME']}.txt'), txt_content)
 
+    Logger.info(f"Read templates and save detect result success, user: {usr}, folder: {absolute_path_of_folder}")
+
     return res_A, res_B, folder_path
 
 
-# 注意，这个函数只会返回bool作为是否将内容成功提交至AI，并不会返回AI的回复内容。原因是AI的回复需要时间，所以调用此函数后，不会及时返回回答。
-# 调用该函数后，
-#   若返回值为True，前端需要setInterval持续查询json中任务的完成状态。
-#   若返回值为False，表示用户的问题处于未提交状态，不需更新页面。
-def get_reply_in_ques_by_ai(usr_ipt):
+def get_reply_in_ques_by_ai(usr_ipt) -> Tuple[bool, str]:
+    """
+    注意，这个函数只会返回bool作为是否将内容成功提交至AI，并不会返回AI的回复内容。原因是AI的回复需要时间，所以调用此函数后，不会及时返回回答。
+    调用该函数后，
+    若返回值为True，前端需要setInterval持续查询json中任务的完成状态。
+    若返回值为False，表示用户的问题处于未提交状态，不需更新页面。
+    :param usr_ipt: The questions asked by user to the AI
+    :return: [is submission success, message]
+    """
     file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
     folder_path = os.path.dirname(file_path)
     if folder_path and not os.path.exists(folder_path):
         # double confirmation
+        Logger.warning(f"Double check triggered: The directory '{folder_path}' uses in Func 'get_reply_in_ques_by_ai' "
+                       f"does not exist, it should be created before. In File 'v1.py'")
         try:
             os.makedirs(folder_path, exist_ok=True)
-            print(f"文件夹创建成功：{folder_path}")
+            Logger.info(f"continue by the previous log: directory created successfully")
         except Exception as e:
-            print(f"文件夹创建时失败：{e}")
+            Logger.warning(f"continue by the previous log: directory created failure: {e}")
     isOK, msg = get_reply_from_ai_and_save_json(usr_ipt, file_path)
+    if not isOK:
+        Logger.warning(f"Submitting the request to AI error: {msg}, in Func 'get_reply_in_ques_by_ai', in File 'v1.py'")
+    else:
+        Logger.info(f"Submitting the request to AI and write unresolved message to file successfully")
     return isOK, msg
 
 
 def init_for_AI_model() -> bool:
+    """
+    Init for the AI model, includes init the file, check the format, and delete the unresolved messages.
+    :return: Is initial success
+    """
+    Logger.info(f"Start to initiate for AI history file")
     file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
     canContinue = INIT_check_if_json_available(file_path)
+    if canContinue:
+        Logger.info("Initiation for AI history file successfully")
+    # While failure, logs will be written in Func 'INIT_check_if_json_available'.
     return canContinue
 
 
 def get_all_json_data() -> Tuple[bool, Union[str, list], bool]:
+    """
+    Get the history.json for init(or when refreshing the page), allow at most one unresolved message at the top size.
+    If contains unresolved message, the app should be now querying for the answer,
+        and the front-end will consistently query for the reply.
+    :return: [if something error happened; error message or the full data; if the first message is unresolved]
+    """
     file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
     isOK, data, containUnresolved = check_and_get_full_json_by_v1(file_path)
     if not isOK:
+        Logger.error(f"Func 'check_and_get_full_json_by_v1' returned a wrong status: {data}, "
+                     f"in Func 'get_all_json_data', in File 'v1.py'")
         return False, data, False
+    # Success logs are written in func check_and_get_full_json_by_v1.
     return isOK, data, containUnresolved
 
 
 def check_status_or_get_newest_reply():
+    """
+    This function is uses by front-end for a consistent query for the AI's reply.
+    :return: [Is AI's reply got; AI's reply or the error message; Should the front-end abort query]
+    """
     file_path = os.path.join(DOTS, *AI_CONFIG['HISTORY_PATH'])
     isResolved, msg, shouldAbort = check_if_unresolved_msg_resolves_and_get_it(file_path)
+    if isResolved:
+        Logger.info('Trough query, found AI already replied the quiz. Consistent querying ends')
+    if shouldAbort:
+        Logger.error(f"Trough query, found something error while checking AI's reply: {msg}")
+    if not isResolved and not shouldAbort:
+        Logger.info('Trough query, found AI still working...')
     return isResolved, msg, shouldAbort

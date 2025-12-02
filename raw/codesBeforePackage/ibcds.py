@@ -1,7 +1,14 @@
-import sys
-import argparse
-import wcwidth
-from tabulate import tabulate
+try:
+    import sys
+    import argparse
+    import wcwidth
+    from tabulate import tabulate
+except ImportError as e:
+    print(f"ImportError: {e}\nSome third-party modules may not be installed.", file=sys.stderr)
+    sys.exit(1)
+except Exception as e:
+    print(f'Unexpected exception: {e} in importing official models.', file=sys.stderr)
+    sys.exit(1)
 
 try:
     from config.configs import DATABASE_CONFIG
@@ -253,30 +260,6 @@ ibcds ls - 列出所有用户信息
   ibcds ls"""
 
 
-# def check_excess_arguments(args, command):
-#     """检查是否有多余的参数。不再使用，采用argparse库自带的错误分析机制"""
-#     # 根据不同命令定义最大允许的参数数量
-#     len_args = {
-#         'rm': 3,  # ibcds rm [--data|--table|-u <user>]
-#         'add': 6,  # ibcds add -u <user> -p <pwd>
-#         'modify': 6,  # ibcds modify -u <user> -n <newpwd>
-#         'ls': 2  # ibcds ls
-#     }.get(command, -1)
-#
-#     if command == 'rm' and len(args) > 2 and (args[2] == '-u' or args[2] == '--user'):
-#         len_args += 1
-#
-#     if len_args == -1:
-#         if len(args) == 2:
-#             raise argparse.ArgumentError(None, f"Unexpected command: {command}")
-#         raise argparse.ArgumentError(None,
-#                                      f"Unexpected command: {command}, unexpected arguments: {' '.join(args[2:])}")
-#
-#     if len(sys.argv) > len_args:
-#         raise argparse.ArgumentError(None, f"Command '{command}' contains more arguments than expected")
-#     return
-
-
 def main():
     if len(sys.argv) >= 2:
         command = sys.argv[1]
@@ -379,8 +362,8 @@ if __name__ == '__main__':
     mkdir -p bin
     mv dist/* bin/
     rmdir dist
-
     """
+    # No logs here.
 
     if not check_if_server_started():
         print('数据库服务未开启', file=sys.stderr)
