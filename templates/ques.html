@@ -519,7 +519,7 @@
         </div>
 
         <div class="main-header-right">
-            <button class="normal-btn qa-ai">AI 问答</button>
+            <button class="normal-btn qa-ai" id="useForChangePageInitially">AI 问答</button>
             <button class="normal-btn qa-normal hide">常见问答</button>
             <button class="normal-btn" data-action="page-skip" data-msg="./index.html">返回</button>
         </div>
@@ -540,9 +540,9 @@
     </header>
 
     <div class="container">
-        <div class="page-title">
-            <h1>常见问题解答</h1>
-            <p>关于乳腺癌检测的常见疑问与专业解答</p>
+        <div class="page-title hide">
+            <h1></h1>
+            <p></p>
         </div>
 
         <div class="qa-container">
@@ -579,7 +579,8 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
     <script src="../static/js/debounce.js"></script>
     <script src="../static/js/header.js"></script>
 

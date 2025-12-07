@@ -61,12 +61,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     let DISABLE_INTERACTION = DISABLE_INTERACTION_global;
     async function check_connection() {
         try {
-            const response = await fetch('api/check_conn', {
+            const response = await fetch('/api/check_conn', {
                 method: 'POST',
-                body: 'hello',
                 headers: {
                     'Content-Type': 'text/plain'
-                }
+                },
+                body: 'hello'
             });
             const result = await response.json();
             if (result.success) {
@@ -135,8 +135,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     doms.form.addEventListener('submit', async e => {
         e.preventDefault();
         clearToast();
-        const usrName = e.target.elements.usrName.value;
-        const usrPwd = e.target.elements.usrPwd.value;
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+
+        const usrName = data.usrName;
+        const usrPwd = data.usrPwd;
         if (!usrName || !usrPwd) {
             if (!usrName) shake(doms.ipt_usrName);
             if (!usrPwd) shake(doms.ipt_usrPwd);
@@ -157,11 +161,14 @@ document.addEventListener('DOMContentLoaded', async function () {
             showTopToast('当前环境仅展示页面，无法提交数据。');
             return;
         }
-        const formData = new FormData(e.target);
+
         try {
-            const response = await fetch('api/login', {
+            const response = await fetch('/api/login', {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data),
             });
             const result = await response.json();
             if (result.success) {
@@ -174,8 +181,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 shake(doms.ipt_usrPwd);
             }
         } catch (error) {
-            showTopToast('Error in: api/login');
-            console.error('Error in: api/login');
+            showTopToast('Error in: /api/login');
+            console.error('Error in: /api/login');
         }
     });
 });

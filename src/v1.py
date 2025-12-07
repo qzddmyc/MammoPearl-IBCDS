@@ -1,9 +1,11 @@
 import os
 from typing import Tuple, Union
 
-from src.utils import generate_short_unique_time_str, get_current_time, write_to_file, save_a_picture
+from src.utils import generate_short_unique_time_str, get_current_time, write_to_file, \
+    save_a_picture, generate_user_id, secret_a_string
 from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available, check_and_get_full_json_by_v1
 from src.utils_ai import check_if_unresolved_msg_resolves_and_get_it
+from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User
 from config.configs import BASE_CONFIG, AI_CONFIG
 from src.logger_config import Logger
 
@@ -173,3 +175,21 @@ def check_status_or_get_newest_reply():
     if not isResolved and not shouldAbort:
         Logger.info('Trough query, found AI still working...')
     return isResolved, msg, shouldAbort
+
+
+def login_or_register_for_user(username: str, password: str) -> Tuple[bool, str]:
+    if not username or not password:
+        return False, 'parameters missing'
+
+    if check_if_usr_exist(username):
+        IsPwdCorrect = verify_UserAccount_password(username, password)
+        if IsPwdCorrect:
+            return True, '登录成功。即将跳转至主页'
+        Logger.warning(f"Login failure: user '{secret_a_string(username)}' gave an error password.")
+        return False, '登录失败：密码错误'
+    else:
+        spec_id = generate_user_id()
+        info = save_User(spec_id, username, password)
+        if not info['success']:
+            return False, f'注册失败：{info['message']}'
+        return True, '注册成功，已自动登录。即将跳转至主页'

@@ -17,3 +17,15 @@ const DISABLE_INTERACTION_global = false;
  * - login.html > login-main.js
  */
 const LocalStorage_DataName = 'usr';
+
+/**
+ * localStorage中用于存放“此时ques.html中应当展示的页面”所用的键名。
+ * 取值：
+ * - LS_page.normal: 展示"常见问题解答"
+ * - LS_page.ai: 展示"AI问答"
+ * 
+ * 用于以下文件：
+ * - ques.html > ques-ai.js
+ */
+const LocalStorage_QuesInitPage = 'quesInitPage';
+const LS_page = { normal: 'page-a', ai: 'page-b' };

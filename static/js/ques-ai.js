@@ -9,9 +9,19 @@ document.addEventListener('DOMContentLoaded', async function () {
     const questionInputContainer = document.querySelector('.question-input-container');
     const cancelBtn = document.querySelector('.cancel-btn');
     const pageTitle = document.querySelector('.page-title h1');
+    const pageIntroEle = document.querySelector('.page-title p');
     const textarea = document.querySelector('.question-input');
 
-    const initialPageTitle = pageTitle.innerHTML;
+    const initialPageTitle = '常见问题解答';
+    const aiPageTitle = 'AI 解答';
+    const pageIntro = '关于乳腺癌检测的常见疑问与专业解答';
+
+    !function () {
+        pageTitle.innerText = localStorage.getItem(LocalStorage_QuesInitPage) === LS_page.ai ? aiPageTitle : initialPageTitle;
+        pageIntroEle.innerText = pageIntro;
+        document.querySelector('.page-title').classList.remove('hide');
+    }();
+
     let observer = null;    // normal-observer
     let observerAI = null;  // ai-observer
 
@@ -21,12 +31,12 @@ document.addEventListener('DOMContentLoaded', async function () {
     let DISABLE_INTERACTION = DISABLE_INTERACTION_global;
     async function check_connection() {
         try {
-            const response = await fetch('api/check_conn', {
+            const response = await fetch('/api/check_conn', {
                 method: 'POST',
-                body: 'hello',
                 headers: {
                     'Content-Type': 'text/plain'
-                }
+                },
+                body: 'hello'
             });
             const result = await response.json();
             if (result.success) {
@@ -60,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         addConversationBtn.disabled = true;
 
         const div = document.getElementById('unresolved');
-        if(!div){
+        if (!div) {
             console.error('Error in touchingReply: no dom with #unresolved found');
             return;
         }
@@ -90,7 +100,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (loadingTyper) {
                 loadingTyper.destroy();
             }
-            if (s) { p.innerHTML = s; }
+            if (s) { p.innerText = s; }
             if (clearID) {
                 div.id = null;
             }
@@ -101,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             if (isQuerying) return;
             isQuerying = true;
             try {
-                const response = await fetch('api/get_status');
+                const response = await fetch('/api/get_status');
                 const result = await response.json();
                 if (result.error) {
                     clearAllRequestAndShowNewMessage(`fatal error: ${result.message}`);
@@ -115,7 +125,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                         loop: false,
                         onComplete: function (typed) {
                             typed.destroy();
-                            p.innerHTML = result.message;
+                            p.innerText = result.message;
                         }
                     };
                     new Typed(p, options);
@@ -124,7 +134,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     console.log('请求成功，但AI未完成回答。');
                 }
             } catch (error) {
-                console.error('fetch 请求(api/get_status)失败', error);
+                console.error('fetch 请求(/api/get_status)失败', error);
                 clearAllRequestAndShowNewMessage('请求发生错误：' + error);
             }
             isQuerying = false;
@@ -136,7 +146,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         let contianUnresolved = false;
         if (!DISABLE_INTERACTION) {
             try {
-                const response = await fetch('api/get_full_json');
+                const response = await fetch('/api/get_full_json');
                 const result = await response.json();
                 if (!result.success) {
                     alert("获取初始问答列表失败: " + result.data);
@@ -159,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <div class="ai-qa-item question-item">
                     <div class="ai-question">
                         <div class="message-content">
-                            <p>${qa.ask}</p>
+                            <p>${_.escape(qa.ask)}</p>
                         </div>
                     </div>
                     <div class="ai-avatar ai-q-avatar">You</div>
@@ -169,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div class="ai-avatar ai-a-avatar">AI</div>
                     <div class="ai-answer">
                         <div class="message-content">
-                            <p>${qa.reply}</p>
+                            <p>${_.escape(qa.reply)}</p>
                         </div>
                     </div>
                 </div>
@@ -186,7 +196,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         };
 
         if (!DISABLE_INTERACTION) {
-            const response = await fetch('api/check_api_environ');
+            const response = await fetch('/api/check_api_environ');
             const result = await response.json();
             if (!result.exist) {
                 alert("用户api key未配置，无法使用AI功能");
@@ -264,11 +274,13 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         aiBtn.forEach(e => e.classList.add('hide'));
         normalBtn.forEach(e => e.classList.remove('hide'));
-        pageTitle.innerHTML = 'AI 解答';
+        pageTitle.innerText = aiPageTitle;
 
         document.querySelectorAll('.ai-qa-item').forEach(item => {
             item.classList.remove('visible');
         });
+
+        localStorage.setItem(LocalStorage_QuesInitPage, LS_page.ai);
 
         initAIQaAnimation();
         if (window.updateScrollIndicator) window.updateScrollIndicator();
@@ -281,15 +293,17 @@ document.addEventListener('DOMContentLoaded', async function () {
 
         normalBtn.forEach(e => e.classList.add('hide'));
         aiBtn.forEach(e => e.classList.remove('hide'));
-        pageTitle.innerHTML = initialPageTitle;
+        pageTitle.innerText = initialPageTitle;
 
         questionInputContainer.classList.add('hide');
 
         document.querySelectorAll('.qa-item').forEach(item => {
             item.classList.remove('visible');
         });
-        initNormalQaAnimation();
 
+        localStorage.setItem(LocalStorage_QuesInitPage, LS_page.normal);
+
+        initNormalQaAnimation();
         if (window.updateScrollIndicator) window.updateScrollIndicator();
         else updateScrollIndicator();
     }
@@ -310,34 +324,35 @@ document.addEventListener('DOMContentLoaded', async function () {
     if (addConversationBtn) addConversationBtn.addEventListener('click', showQuestionInput);
     if (cancelBtn) cancelBtn.addEventListener('click', hideQuestionInput);
 
+    async function sendUsrIptToAI(msg) {
+        try {
+            const response = await fetch('/api/send_msg_to_ai', {
+                method: 'POST',
+                body: msg,
+                headers: {
+                    'Content-Type': 'text/plain'
+                }
+            });
+            const result = await response.json();
+            return {
+                success: result.success,
+                data: result.data,
+            }
+        } catch (error) {
+            return {
+                success: false,
+                data: error
+            };
+        }
+    }
+
     const submitToAI = async function () {
         const usrInput = textarea.value.trim();
         if (!usrInput) {
             alert("请输入内容后提交");
             return;
         };
-        async function sendUsrIptToAI(msg) {
-            try {
-                const response = await fetch('api/send_msg_to_ai', {
-                    method: 'POST',
-                    body: msg,
-                    headers: {
-                        'Content-Type': 'text/plain'
-                    }
-                });
-                const result = await response.json();
-                return {
-                    success: result.success,
-                    data: result.data,
-                }
 
-            } catch (error) {
-                return {
-                    success: false,
-                    data: error
-                };
-            }
-        }
         const reply = await sendUsrIptToAI(usrInput);
         if (reply.success) {
             hideQuestionInput();
@@ -345,7 +360,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 <div class="ai-qa-item question-item visible">
                     <div class="ai-question">
                         <div class="message-content">
-                            <p>${usrInput}</p>
+                            <p>${_.escape(usrInput)}</p>
                         </div>
                     </div>
                     <div class="ai-avatar ai-q-avatar">You</div>
@@ -379,5 +394,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     });
 
     await initAIQAs();
-    initNormalQaAnimation();
+
+    !function () {
+        const v = localStorage.getItem(LocalStorage_QuesInitPage);
+        if (!v || ![LS_page.normal, LS_page.ai].includes(v)) localStorage.setItem(LocalStorage_QuesInitPage, LS_page.normal);
+        if (v === LS_page.ai) document.getElementById('useForChangePageInitially').click();
+        else initNormalQaAnimation();
+    }();
 });

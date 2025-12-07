@@ -5,9 +5,9 @@ import threading
 from flask import Flask, render_template, request, jsonify
 
 from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, init_for_AI_model, get_all_json_data
-from src.v1 import check_status_or_get_newest_reply
-from src.utils import open_file_in_system, generate_user_id, check_web_conn
-from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User, check_if_server_started
+from src.v1 import check_status_or_get_newest_reply, login_or_register_for_user
+from src.utils import open_file_in_system, check_web_conn
+from src.utils_db import check_if_server_started
 from src.utils_ai import check_if_environ_created
 from config.configs import BASE_CONFIG
 from src.logger_config import Logger
@@ -58,7 +58,7 @@ def advance():
 @app.route('/api/check_conn', methods=['POST'])
 def check_conn():
     Logger.info('POST /api/check_conn')
-    text_data = request.data.decode('utf-8')
+    text_data = request.get_data(as_text=True)
     if text_data == 'hello':
         return jsonify({
             'success': True
@@ -68,11 +68,18 @@ def check_conn():
     })
 
 
-# according to the picture, return the result about is cancer or not.
 @app.route('/api/v1', methods=['POST'])
 def api_v1():
+    """ according to the picture, return the result about is cancer or not. """
     Logger.info('POST /api/v1')
-    file = request.files['image_data']
+    file = request.files.get('image_data')
+
+    if not file:
+        Logger.error('No image found in the request.')
+        return jsonify({
+            'success': False,
+            'message': 'No images found through submitted request.'
+        })
 
     pic_bytes = file.read()
     pic_name = file.filename
@@ -90,14 +97,22 @@ def api_v1():
     })
 
 
-# get the relative path ends with the random dir, and the suffix 'md' or 'txt',
-# then open 'path/{BASE_CONFIG['RESULT_FILE_NAME']}.(md|txt)' file
 @app.route('/api/open_file', methods=['POST'])
 def api_open_file():
+    """
+    get the relative path ends with the random dir, and the suffix 'md' or 'txt',
+    then open 'path/{BASE_CONFIG['RESULT_FILE_NAME']}.(md|txt)' file
+    """
     Logger.info('POST /api/open_file')
     data = request.get_json()
     file_path = data.get('dir_path', '')
     file_type = data.get('file_type', '')
+
+    if not file_path or not file_path:
+        return jsonify({
+            'success': False,
+            'message': 'parameters missing'
+        })
 
     relative_path_for_utils = os.path.join(file_path, f'{BASE_CONFIG['RESULT_FILE_NAME']}.{file_type}')
     is_open, msg = open_file_in_system(relative_path_for_utils)
@@ -111,38 +126,22 @@ def api_open_file():
 @app.route('/api/login', methods=['POST'])
 def api_login():
     Logger.info('POST /api/login')
-    username = request.form.get('usrName')
-    password = request.form.get('usrPwd')
 
-    if check_if_usr_exist(username):
-        IsPwdCorrect = verify_UserAccount_password(username, password)
-        if IsPwdCorrect:
-            return jsonify({
-                'success': True,
-                'message': '登录成功。即将跳转至主页'
-            })
-        return jsonify({
-            'success': False,
-            'message': '登录失败：密码错误'
-        })
-    else:
-        spec_id = generate_user_id()
-        info = save_User(spec_id, username, password)
-        if not info['success']:
-            return jsonify({
-                'success': False,
-                'message': f'注册失败：{info['message']}'
-            })
-        return jsonify({
-            'success': True,
-            'message': '注册成功，已自动登录。即将跳转至主页'
-        })
+    data = request.get_json()
+    username = data.get('usrName', '')
+    password = data.get('usrPwd', '')
+
+    success, message = login_or_register_for_user(username, password)
+    return jsonify({
+        'success': success,
+        'message': message
+    })
 
 
 @app.route('/api/send_msg_to_ai', methods=['POST'])
 def send_msg_to_ai():
     Logger.info('POST /api/send_msg_to_ai')
-    usrIpt = request.data.decode('utf-8')
+    usrIpt = request.get_data(as_text=True)
     success, msg = get_reply_in_ques_by_ai(usrIpt)
     return jsonify({
         'success': success,
@@ -170,7 +169,7 @@ def get_full_json():
 
 @app.route('/api/get_status', methods=['GET'])
 def get_status():
-    # this func is uses to check if AI replied the query, it may be a consistent call to this func
+    """ this func is uses to check if AI replied the query, it may be a consistent call to this func """
     global __Counter_get_status
     __Counter_get_status += 1
     Logger.info(f'GET /api/get_status - {__Counter_get_status}')

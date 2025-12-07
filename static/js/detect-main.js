@@ -13,12 +13,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     const closeErrorBtn = document.getElementById('close-error');
 
     let __info = null;
+    let removeImgWhenErrorModalClosed = false;
 
     let DISABLE_INTERACTION = DISABLE_INTERACTION_global;
 
     async function check_connection() {
         try {
-            const response = await fetch('api/check_conn', {
+            const response = await fetch('/api/check_conn', {
                 method: 'POST',
                 body: 'hello',
                 headers: {
@@ -107,6 +108,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function closeErrorModal() {
+        if (removeImgWhenErrorModalClosed) {
+            removeImage.click();
+            removeImgWhenErrorModalClosed = false;
+        }
         errorModal.classList.remove('active');
         clearInterval(countdownTimer);
         closeErrorBtn.textContent = originalBtnText;
@@ -164,62 +169,63 @@ document.addEventListener('DOMContentLoaded', async function () {
     closeErrorBtn.addEventListener('click', closeErrorModal);
 
     errorModal.addEventListener('click', function (e) {
+        // close error modal when click the margin
         if (e.target === errorModal) {
             closeErrorModal();
         }
     });
 
-    submitBtn.addEventListener('click', function () {
+    submitBtn.addEventListener('click', async function () {
         if (fileInput.files.length > 0) {
             if (DISABLE_INTERACTION) {
                 alert("提示：当前环境仅展示页面，无法提交数据。");
                 return;
             }
 
+            const formData = new FormData();
+
             const file = fileInput.files[0];
+            const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
-            const reader = new FileReader();
-            reader.readAsArrayBuffer(file);
+            if (file.size > MAX_FILE_SIZE) {
+                showErrorModal('文件过大，请上传小于 20MB 的文件。');
+                removeImgWhenErrorModalClosed = true;
+                return;
+            }
 
-            reader.onload = async function (e) {
-                const uint8Array = new Uint8Array(e.target.result);
+            formData.append('image_data', file, file.name);
 
-                const formData = new FormData();
-                formData.append('image_data', new Blob([uint8Array], { type: file.type }), file.name);
-                const usr = localStorage.getItem('usr');
+            const usr = localStorage.getItem('usr');
+            if (usr) formData.append('usr', usr);
 
-                if (usr) {
-                    formData.append('usr', usr);
-                }
-                try {
-                    const response = await fetch('api/v1', {
-                        method: 'POST',
-                        body: formData
-                    });
+            try {
+                const response = await fetch('/api/v1', {
+                    method: 'POST',
+                    body: formData
+                });
 
-                    const result = await response.json();
+                const result = await response.json();
 
-                    if (result.success) {
-                        const res_A = result.RES_TF;
-                        const res_B = result.RES_ACC;
-                        if (__info) {
-                            console.error("__info did not cleared!");
-                        }
-                        __info = {
-                            relative_path: result.relative_dir_path,
-                        }
-                        showResultModal(res_A, res_B);
-                    } else {
-                        console.log(result.message);
+                if (result.success) {
+                    const res_A = result.RES_TF;
+                    const res_B = result.RES_ACC;
+                    if (__info) {
+                        console.error("__info did not cleared!");
                     }
-                } catch (error) {
-                    console.error('错误:', error);
+                    __info = {
+                        relative_path: result.relative_dir_path,
+                    }
+                    showResultModal(res_A, res_B);
+                } else {
+                    console.log(result.message);
+                    alert('发生错误：' + result.message);
+                    removeImage.click();
                 }
-            };
-
-            reader.onerror = function () {
-                showErrorModal('文件读取失败，请重试！');
-            };
+            } catch (error) {
+                console.error('错误:', error);
+                alert('错误：' + error);
+                removeImage.click();
+            }
 
         } else {
             dropArea.classList.add('shake');
@@ -228,7 +234,6 @@ document.addEventListener('DOMContentLoaded', async function () {
             }, 1200);
             return;
         }
-
     });
 
     const resultModal = document.getElementById('result-modal');
@@ -270,7 +275,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     async function open_file(path, type) {
         try {
-            const response = await fetch('api/open_file', {
+            const response = await fetch('/api/open_file', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -281,11 +286,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 })
             });
             const result = await response.json();
-            if (result.success) {
-                alert(result.message);
-            } else {
-                alert(result.message);
-            }
+            alert(result.message);  // Whether succeess or not, alert response.
         } catch (error) {
             alert('错误:', error);
         }
