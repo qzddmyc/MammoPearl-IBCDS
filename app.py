@@ -217,11 +217,11 @@ def write_logger():
             Logger.warning(f"Got an undefined log level: {logger_level}, along with message: {logger_message}")
             return jsonify({
                 'success': False,
-                'msg': f'unknown logger level: {logger_level}'
+                'message': f'unknown logger level: {logger_level}'
             })
     return jsonify({
         'success': True,
-        'msg': 'ok'
+        'message': 'ok'
     })
 
 

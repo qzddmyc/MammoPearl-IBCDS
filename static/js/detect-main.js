@@ -265,12 +265,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         resultModal.classList.remove('active');
     }
 
-    openMdBtn.addEventListener('click', async function () {
-        await open_file(__info.relative_path, 'md');
+    openMdBtn.addEventListener('click', function () {
+        open_file(__info.relative_path, 'md');
     });
 
-    openTxtBtn.addEventListener('click', async function () {
-        await open_file(__info.relative_path, 'txt');
+    openTxtBtn.addEventListener('click', function () {
+        open_file(__info.relative_path, 'txt');
     });
 
     async function open_file(path, type) {
