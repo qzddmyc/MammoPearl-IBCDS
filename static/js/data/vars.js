@@ -7,8 +7,9 @@
  * 用于以下文件:
  * - login.html > login-main.js
  * - detect.html > detect-main.js
+ * - ques.html > ques-ai.js
  */
-const DISABLE_INTERACTION_global = false;
+export const DISABLE_INTERACTION_global = false;
 
 /**
  * localStorage中存放用户名的变量名。使用时无需拷贝。
@@ -16,7 +17,7 @@ const DISABLE_INTERACTION_global = false;
  * - index.html > idx-main.js
  * - login.html > login-main.js
  */
-const LocalStorage_DataName = 'usr';
+export const LocalStorage_DataName = 'usr';
 
 /**
  * localStorage中用于存放“此时ques.html中应当展示的页面”所用的键名。
@@ -27,5 +28,5 @@ const LocalStorage_DataName = 'usr';
  * 用于以下文件：
  * - ques.html > ques-ai.js
  */
-const LocalStorage_QuesInitPage = 'quesInitPage';
-const LS_page = { normal: 'page-a', ai: 'page-b' };
+export const LocalStorage_QuesInitPage = 'quesInitPage';
+export const LS_page = { normal: 'page-a', ai: 'page-b' };

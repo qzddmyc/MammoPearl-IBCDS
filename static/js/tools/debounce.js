@@ -4,7 +4,7 @@
  * @param {number} delay - 延迟时间（毫秒），事件停止触发后等待该时间才执行函数
  * @returns {Function} 包装后的防抖函数
  */
-function debounce(func, delay) {
+export function debounce(func, delay) {
     let timer = null;
     return function (...args) {
         if (timer) clearTimeout(timer);

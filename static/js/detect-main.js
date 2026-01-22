@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', async function () {
+import { DISABLE_INTERACTION_global } from "./data/vars.js";
+
+!async function () {
     const dropArea = document.getElementById('drop-area');              // 整个虚线框内的内容
     const fileInput = document.getElementById('image-upload');          // 表单中的input.file元素
     const previewImage = document.getElementById('preview-image');      // 图片预览区的img标签; 使用base64展示图片
@@ -265,12 +267,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         resultModal.classList.remove('active');
     }
 
-    openMdBtn.addEventListener('click', function () {
-        open_file(__info.relative_path, 'md');
+    openMdBtn.addEventListener('click', async function () {
+        await open_file(__info.relative_path, 'md');
     });
 
-    openTxtBtn.addEventListener('click', function () {
-        open_file(__info.relative_path, 'txt');
+    openTxtBtn.addEventListener('click', async function () {
+        await open_file(__info.relative_path, 'txt');
     });
 
     async function open_file(path, type) {
@@ -292,9 +294,9 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
     closeResultBtn.addEventListener('click', closeResultModal);
-});
+}();
 
-document.addEventListener('DOMContentLoaded', function () {
+!function () {
     const doms = {
         form_container: document.querySelector('.form-container'),
     };
@@ -310,4 +312,4 @@ document.addEventListener('DOMContentLoaded', function () {
     handleViewportResize();
     setTimeout(handleViewportResize, 0);    // 必须执行两次，否则渲染会与预期不一致
     window.addEventListener('resize', handleViewportResize);
-});
+}();

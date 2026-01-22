@@ -1,6 +1,9 @@
-// 需要在 scrollbar.js 之后引入
+import { Flags } from "./data/qa_doc.js";
+import { DISABLE_INTERACTION_global } from "./data/vars.js";
+import { updateScrollIndicator } from "./common/scrollbar.js";
+import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
 
-document.addEventListener('DOMContentLoaded', async function () {
+!async function () {
     const qaContainer = document.querySelector('.qa-container');
     const aiQaContainer = document.querySelector('.ai-qa-container');
     const aiBtn = document.querySelectorAll('.qa-ai');
@@ -227,7 +230,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const index = aiQaItems.indexOf(entry.target);
                     setTimeout(() => {
                         entry.target.classList.add('visible');
-                    }, index * 50);
+                    }, Math.min(index * 50, 500));
                     observerAI.unobserve(entry.target);
                 }
             });
@@ -257,7 +260,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                     const index = qaItems.indexOf(entry.target);
                     setTimeout(() => {
                         entry.target.classList.add('visible');
-                    }, index * 50);
+                    }, Math.min(index * 50, 500));
                     observer.unobserve(entry.target);
                 }
             });
@@ -283,8 +286,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         localStorage.setItem(LocalStorage_QuesInitPage, LS_page.ai);
 
         initAIQaAnimation();
-        if (window.updateScrollIndicator) window.updateScrollIndicator();
-        else updateScrollIndicator();
+        updateScrollIndicator();
     }
 
     function switchToNormalQA() {
@@ -304,8 +306,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         localStorage.setItem(LocalStorage_QuesInitPage, LS_page.normal);
 
         initNormalQaAnimation();
-        if (window.updateScrollIndicator) window.updateScrollIndicator();
-        else updateScrollIndicator();
+        updateScrollIndicator();
     }
 
     function showQuestionInput() {
@@ -356,7 +357,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const reply = await sendUsrIptToAI(usrInput);
         if (reply.success) {
             hideQuestionInput();
-            html = `
+            const html = `
                 <div class="ai-qa-item question-item visible">
                     <div class="ai-question">
                         <div class="message-content">
@@ -401,4 +402,4 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (v === LS_page.ai) document.getElementById('useForChangePageInitially').click();
         else initNormalQaAnimation();
     }();
-});
+}();

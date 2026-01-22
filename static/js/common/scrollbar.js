@@ -1,10 +1,4 @@
-// 尽量在html最后引入，如需要手动调用updateScrollIndicator而提前引用，需要在最后一个修改过页面内容的的文件中使用：
-/*  
-    if (window.updateScrollIndicator) window.updateScrollIndicator();
-    else updateScrollIndicator();
-*/
-
-function updateScrollIndicator() {
+export function updateScrollIndicator() {
     const thumb = document.getElementById('scroll-thumb');
     if (!thumb) return;
 
@@ -36,7 +30,7 @@ function updateScrollIndicator() {
     thumb.style.top = `${thumbTop}px`;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+!function(){
     if (!document.querySelector('.scroll-indicator')) {
         const indicator = document.createElement('div');
         indicator.className = 'scroll-indicator';
@@ -44,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(indicator);
     }
     updateScrollIndicator();
+    
     window.addEventListener('scroll', updateScrollIndicator);
     window.addEventListener('resize', updateScrollIndicator);
-});
+}();

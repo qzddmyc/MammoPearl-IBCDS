@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+import { Advans } from "./data/advan_doc.js";
+import { updateScrollIndicator } from "./common/scrollbar.js";
+
+!function () {
     const maps = {
         'txt': 'p',
         'img': 'img',
@@ -83,15 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.head.appendChild(styleFragment);
     writeZone.appendChild(fragment);
+}();
 
-    setTimeout(() => {
-        if (window.updateScrollIndicator) window.updateScrollIndicator();
-        else updateScrollIndicator();
-    }, 0);
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    doms = {
+!function () {
+    const doms = {
         header: document.querySelector('.main-header'),
         container: document.querySelector('.container'),
     }
@@ -116,6 +114,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     handleViewportResize();
-
     window.addEventListener('resize', handleViewportResize);
-});
+}();
+
+!function () {
+    window.addEventListener('load', () => {
+        updateScrollIndicator();
+    });
+}();

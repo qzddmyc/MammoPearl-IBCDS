@@ -1,6 +1,8 @@
+import { debounce } from "../tools/debounce.js";
+
 // .container的缩放不包含在此文件内
 
-document.addEventListener('DOMContentLoaded', function () {
+!function () {
     const doms = {
         banner: document.querySelector('.banner'),
         header: document.querySelector('.main-header'),
@@ -32,10 +34,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const debouncedScroll = debounce(handleScroll, 100);    // 防抖
     window.addEventListener('scroll', debouncedScroll);
-});
+}();
 
-
-document.addEventListener('DOMContentLoaded', function () {
+!function () {
     const doms = {
         header_left: document.querySelector('.main-header-left'),
         header_right: document.querySelector('.main-header-right'),
@@ -80,9 +81,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     handleViewportResize();
     window.addEventListener('resize', handleViewportResize);
-});
+}();
 
-document.addEventListener('DOMContentLoaded', function () {
+!function () {
     const menuContainer = document.querySelector('.mobile-menu-container');
     const menuBtn = document.querySelector('.mobile-menu-btn');
     const html = document.documentElement;
@@ -114,4 +115,4 @@ document.addEventListener('DOMContentLoaded', function () {
             html.classList.remove('menu-open');
         }
     });
-});
+}();

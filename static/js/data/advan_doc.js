@@ -9,7 +9,7 @@
  *      - 若图片不需要介绍内容，保持title的键为空字符串即可
  */
 
-const Advans = [
+export const Advans = [
     {
         type: 'title',
         content: '可变形卷积（DCN）技术'

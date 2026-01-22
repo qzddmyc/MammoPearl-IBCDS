@@ -677,7 +677,9 @@
     </div>
 
     <footer class="footer-container">
-        <div class="footer-dots"></div>
+        <div class="footer-dots">
+            <canvas id="dotsCanvas"></canvas>
+        </div>
 
         <div class="footer-content">
             <div class="footer-section">
@@ -733,12 +735,10 @@
         </div>
     </footer>
 
-    <script src="../static/js/scrollbar.js"></script>
-    <script src="../static/js/debounce.js"></script>
-    <script src="../static/js/header.js"></script>
-    <script src="../static/js/buttons.js"></script>
-    <script src="../static/assets/data/vars.js"></script>
-    <script src="../static/js/idx-main.js"></script>
+    <script src="../static/js/common/buttons.js"></script>
+    <script src="../static/js/common/scrollbar.js" type="module"></script>
+    <script src="../static/js/common/header.js" type="module"></script>
+    <script src="../static/js/idx-main.js" type="module"></script>
     <script src="../static/js/idx-footer-dots.js"></script>
 </body>
 

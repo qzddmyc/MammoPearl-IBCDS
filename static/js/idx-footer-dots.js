@@ -1,83 +1,93 @@
-// 注意事件生命周期问题
-
 document.addEventListener('DOMContentLoaded', () => {
-    const footerContainer = document.querySelector('.footer-container');
-    const dotsContainer = document.querySelector('.footer-dots');
-    const dotSpacing = 18;      // 圆点间距, px, default: 20
-    const baseAlpha = 0;        // default: 0.15
-    const maxAlpha = 1;
-    const maxDistance = 120;    // 渲染距离, default: 150
+    const canvas = document.getElementById('dotsCanvas');
+    const container = document.querySelector('.footer-dots');
+    const footer = document.querySelector('.footer-container');
+
+    if (!canvas || !container || !footer) return;
+
+    const ctx = canvas.getContext('2d');
+    const config = {
+        dotSpacing: 18,
+        baseAlpha: 0,
+        maxAlpha: 1,
+        maxDistance: 120,
+        R: 0, G: 204, B: 255
+    };
+
     let dots = [];
+    let mouse = { x: -1000, y: -1000 };
+    let isAnimating = false;
 
-    const R = 0;        // default: 139
-    const G = 204;      // default: 92
-    const B = 255;      // default: 246
+    function initCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = container.getBoundingClientRect();
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.scale(dpr, dpr);
 
-    function generateDots() {
-        dotsContainer.innerHTML = '';
         dots = [];
-        const containerWidth = dotsContainer.offsetWidth;
-        const containerHeight = dotsContainer.offsetHeight;
-        const cols = Math.ceil((containerWidth * 2) / dotSpacing);
-        const rows = Math.ceil((containerHeight * 2) / dotSpacing);
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-                const dot = document.createElement('div');
-                dot.classList.add('dot');
-                const x = col * dotSpacing;
-                const y = row * dotSpacing;
-                dot.style.left = `${x}px`;
-                dot.style.top = `${y}px`;
-                dotsContainer.appendChild(dot);
-                dots.push(dot);
+        for (let x = 0; x < rect.width; x += config.dotSpacing) {
+            for (let y = 0; y < rect.height; y += config.dotSpacing) {
+                dots.push({ x, y });
             }
         }
+        if (!isAnimating) renderFrame();
     }
-    const viewportWidth = window.innerWidth;
-    if (viewportWidth >= 768) {
-        generateDots();
-    }
-    footerContainer.addEventListener('mousemove', (e) => {
-        const rect = dotsContainer.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+
+    function renderFrame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         dots.forEach(dot => {
-            const dotRect = dot.getBoundingClientRect();
-            const dotX = dotRect.left - rect.left + 0.5;
-            const dotY = dotRect.top - rect.top + 0.5;
-            const distance = Math.sqrt(
-                Math.pow(mouseX - dotX, 2) +
-                Math.pow(mouseY - dotY, 2)
-            );
-            if (distance < maxDistance) {
-                const intensity = 1 - Math.pow(distance / maxDistance, 2);
-                const alpha = baseAlpha + (intensity * (maxAlpha - baseAlpha));
-                dot.style.backgroundColor = `rgba(${R}, ${G}, ${B}, ${alpha})`;
-            } else {
-                dot.style.backgroundColor = `rgba(${R}, ${G}, ${B}, ${baseAlpha})`;
+            const dx = mouse.x - dot.x;
+            const dy = mouse.y - dot.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < config.maxDistance) {
+                const intensity = 1 - Math.pow(distance / config.maxDistance, 2);
+                const alpha = config.baseAlpha + (intensity * (config.maxAlpha - config.baseAlpha));
+                ctx.fillStyle = `rgba(${config.R}, ${config.G}, ${config.B}, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, 0.85, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (config.baseAlpha > 0) {
+                ctx.fillStyle = `rgba(${config.R}, ${config.G}, ${config.B}, ${config.baseAlpha})`;
+                ctx.beginPath();
+                ctx.arc(dot.x, dot.y, 0.85, 0, Math.PI * 2);
+                ctx.fill();
             }
         });
-    });
-    footerContainer.addEventListener('mouseleave', () => {
-        dots.forEach(dot => {
-            dot.style.backgroundColor = `rgba(${R}, ${G}, ${B}, ${baseAlpha})`;
-        });
-    });
-    function cleanupDots() {
-        dotsContainer.innerHTML = '';
-        dots = [];
     }
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        const viewportWidth = window.innerWidth;
-        if (viewportWidth < 768) {
-            clearTimeout(resizeTimeout);
-            cleanupDots();
-            return;
+
+    function loop() {
+        if (!isAnimating) return;
+        renderFrame();
+        requestAnimationFrame(loop);
+    }
+
+    function startAnimation() {
+        if (!isAnimating) {
+            isAnimating = true;
+            loop();
         }
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            generateDots();
-        }, 100);    // wait for resize
+    }
+
+    function stopAnimation() {
+        isAnimating = false;
+    }
+
+    footer.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+        startAnimation();
     });
+
+    footer.addEventListener('mouseleave', () => {
+        mouse.x = -1000;
+        mouse.y = -1000;
+        renderFrame();
+        stopAnimation();
+    });
+
+    window.addEventListener('resize', initCanvas);
+    if (window.innerWidth >= 768 && window.matchMedia("(hover: hover)").matches) initCanvas();
 });

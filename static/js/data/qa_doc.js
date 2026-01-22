@@ -1,4 +1,4 @@
-const qas = [
+export const qas = [
     {
         q_title: "乳腺癌筛查方法有哪些？如何选择？",
         q_content: "乳腺X线摄影（钼靶）、超声、MRI的适用人群？40岁以上一般风险女性优先选钼靶还是超声？年轻女性（20-39岁）是否需超声？高风险人群为何推荐MRI？筛查频率差异？",
@@ -41,7 +41,7 @@ const qas = [
     },
 ];
 
-const Flags = {
+export const Flags = {
     finish: 0,
     unresolved: 1,
     wrong: 2,

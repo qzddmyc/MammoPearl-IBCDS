@@ -24,7 +24,7 @@ body {
     align-items: center;
     padding: 40px 20px;
     margin-top: 110px;
-    margin-bottom: 100px;
+    margin-bottom: 80px;
     min-height: 824px;
     overflow-x: hidden;
 }
@@ -336,6 +336,10 @@ h1 {
         min-width: 220px;
         max-width: 310px;
         height: auto;
+    }
+
+    .container {
+        margin-bottom: 50px;
     }
 }
 

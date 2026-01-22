@@ -1,3 +1,6 @@
+// Do not use this file with type="module".
+
+
 // 为button元素或是添加了i-should-be-a-button类的元素实现自动跳转
 // 该元素必须包含data-action自定义属性，否则不生效
 // 生效时，将cursor设置为pointer
@@ -23,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 a.style.display = 'none';
                 document.body.appendChild(a);
                 a.click();
-                document.body.remove(a);
+                document.body.removeChild(a);
             });
 
         } else if (btn.dataset.action === 'form-submit') {

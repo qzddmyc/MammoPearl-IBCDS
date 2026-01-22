@@ -26,7 +26,7 @@ async function sendLog(type, message) {
     return;
 }
 
-const Log = {
+export const Log = {
     info: (msg) => sendLog(logLevel.INFO, msg),
     warning: (msg) => sendLog(logLevel.WARNING, msg),
     error: (msg) => sendLog(logLevel.ERROR, msg),

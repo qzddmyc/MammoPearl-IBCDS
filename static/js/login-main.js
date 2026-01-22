@@ -1,4 +1,6 @@
-document.addEventListener('DOMContentLoaded', function () {
+import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.js";
+
+!function(){
     const circle1 = document.querySelector('.circle1');
     const circle2 = document.querySelector('.circle2');
     const leftDecoration = document.querySelector('.left-decoration');
@@ -50,9 +52,9 @@ document.addEventListener('DOMContentLoaded', function () {
     initCirclePosition();
     window.addEventListener('resize', initCirclePosition);
     document.addEventListener('mousemove', updateCircleByMouse);
-});
+}();
 
-document.addEventListener('DOMContentLoaded', async function () {
+!async function(){
     const doms = {
         form: document.querySelector('#form-login'),
         ipt_usrName: document.querySelector('#username'),
@@ -185,4 +187,4 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.error('Error in: /api/login');
         }
     });
-});
+}();

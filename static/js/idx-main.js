@@ -1,6 +1,8 @@
-// 最好在header.js之后引入！
+import { LocalStorage_DataName } from "./data/vars.js";
 
-document.addEventListener('DOMContentLoaded', function () {
+// 在header.js之后引入
+
+!function () {
     const doms = {
         banner_btn: document.querySelector('.button-to-detect'),
         container: document.querySelector('.container'),
@@ -24,11 +26,11 @@ document.addEventListener('DOMContentLoaded', function () {
         return Math.exp(x - 1);
     }
 
-    // g(t) = -4(t - 1)² + 1, for t in (0.5, 1)
+    // g(t) = 4(t - 0.5)², for t in (0.5, 1)
     function gt(t) {
         if (t <= 0.5) return 0;
         if (t >= 1) return 1;
-        return -4 * Math.pow(t - 1, 2) + 1;
+        return 4 * Math.pow(t - 0.5, 2);
     }
 
     // h(x) = 0.3x + 0.7, through (0.7, 0) and (1, 1)
@@ -56,21 +58,20 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (viewportWidth < 615) {
+            let Z = 0;
             if (viewportWidth >= 280) {
-                doms.feature_card_container.style.zoom = hx(viewportWidth / 615);
+                Z = hx(viewportWidth / 615);
+                doms.feature_card_container.style.zoom = Z;
                 doms.container.style.minHeight = '';
             } else {
-                doms.feature_card_container.style.zoom = viewportWidth / 480;
+                Z = viewportWidth / 480;
+                doms.feature_card_container.style.zoom = Z;
                 doms.container.style.minHeight = 'auto';
             }
+            doms.container.style.marginBottom = 35 * gt(Z) + 15 + 'px';
         } else {
             doms.feature_card_container.style.zoom = '';
             doms.container.style.minHeight = '';
-        }
-
-        if (viewportWidth < 425) {
-            doms.container.style.marginBottom = 100 * (viewportWidth / 425) + 'px';
-        } else {
             doms.container.style.marginBottom = '';
         }
 
@@ -127,9 +128,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     handleViewportResize();
     window.addEventListener('resize', handleViewportResize);
-});
+}();
 
-document.addEventListener('DOMContentLoaded', function () {
+!function () {
     const doms = {
         logins: document.querySelectorAll('.login-door'),
         logouts: document.querySelectorAll('.logout-door'),
@@ -173,4 +174,4 @@ document.addEventListener('DOMContentLoaded', function () {
             clearLocalUsrInfo();
         });
     });
-});
+}();

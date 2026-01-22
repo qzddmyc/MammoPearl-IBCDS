@@ -1,4 +1,7 @@
-document.addEventListener('DOMContentLoaded', function () {
+import { qas } from "./data/qa_doc.js";
+import { updateScrollIndicator } from "./common/scrollbar.js";
+
+!function () {
     const qa_container = document.querySelector('.qa-container');
     qa_container.innerHTML = '';
 
@@ -27,13 +30,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     qa_container.innerHTML = html;
+    updateScrollIndicator();
+}();
 
-    if (window.updateScrollIndicator) window.updateScrollIndicator();
-    else updateScrollIndicator();
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    doms = {
+!function () {
+    const doms = {
         header: document.querySelector('.main-header'),
         container: document.querySelector('.container'),
     }
@@ -57,4 +58,4 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     handleViewportResize();
     window.addEventListener('resize', handleViewportResize);
-});
+}();
