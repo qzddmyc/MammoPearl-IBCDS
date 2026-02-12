@@ -1,6 +1,7 @@
 import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.js";
+import { encryptString } from "./tools/cryptoTools.js";
 
-!function(){
+!function () {
     const circle1 = document.querySelector('.circle1');
     const circle2 = document.querySelector('.circle2');
     const leftDecoration = document.querySelector('.left-decoration');
@@ -54,11 +55,13 @@ import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.j
     document.addEventListener('mousemove', updateCircleByMouse);
 }();
 
-!async function(){
+!async function () {
     const doms = {
         form: document.querySelector('#form-login'),
         ipt_usrName: document.querySelector('#username'),
         ipt_usrPwd: document.querySelector('#password'),
+        login_btn: document.getElementById('submit-btn'),
+        register_btn: document.getElementById('register-btn'),
     }
     let DISABLE_INTERACTION = DISABLE_INTERACTION_global;
     async function check_connection() {
@@ -134,57 +137,146 @@ import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.j
         }, 1100);
     }
 
-    doms.form.addEventListener('submit', async e => {
-        e.preventDefault();
+    const Lock = {
+        locked: false,
+        unlock() {
+            this.locked = false;
+        },
+        lock() {
+            this.locked = true;
+        },
+        isLocked() {
+            return this.locked;
+        }
+    };
+
+    function handleInfoSubmit() {
         clearToast();
-
-        const formData = new FormData(e.target);
+        const formData = new FormData(doms.form);
         const data = Object.fromEntries(formData.entries());
-
-        const usrName = data.usrName;
-        const usrPwd = data.usrPwd;
+        const { usrName, usrPwd } = data;
         if (!usrName || !usrPwd) {
             if (!usrName) shake(doms.ipt_usrName);
             if (!usrPwd) shake(doms.ipt_usrPwd);
             showTopToast("用户名或密码不可为空");
-            return;
+            return { success: false };
         }
         if (!regTest(/^[\u4e00-\u9fa5a-zA-Z0-9_-]{1,10}$/, usrName)) {
             shake(doms.ipt_usrName);
             showTopToast("用户名只能为至多10位的中文、英文、数字、下划线、减号", 5);
-            return;
+            return { success: false };
         }
         if (!regTest(/^[a-zA-Z0-9_]{6,18}$/, usrPwd)) {
             shake(doms.ipt_usrPwd);
             showTopToast("密码需要6-18位的英文、数字、下划线", 5);
-            return;
+            return { success: false };
         }
         if (DISABLE_INTERACTION) {
             showTopToast('当前环境仅展示页面，无法提交数据。');
+            return { success: false };
+        }
+        return {
+            success: true,
+            data,
+        }
+    }
+
+    async function encodeStrings(data) {
+        const resp = await fetch('/api/get_secret_key');
+        const { key, iv } = await resp.json();
+        const { usrName, usrPwd } = data;
+
+        const s_uname = encryptString(usrName, key, iv);
+        const s_upwd = encryptString(usrPwd, key, iv);
+        return { s_uname, s_upwd, key, iv }
+    }
+
+    doms.login_btn.addEventListener('click', async e => {
+        e.preventDefault();
+
+        if (Lock.isLocked()) {
+            clearToast();
+            showTopToast('请求处理中，请稍候...');
             return;
         }
+        Lock.lock();
 
+        const resp = handleInfoSubmit();
+        if (!resp.success) {
+            Lock.unlock();
+            return;
+        };
+
+        const { data } = resp;
+        const secret_data = await encodeStrings(data);
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(secret_data),
             });
             const result = await response.json();
             if (result.success) {
-                localStorage.setItem(LocalStorage_DataName, usrName);
+                localStorage.setItem(LocalStorage_DataName, result.token);
                 alert(result.message);
                 window.location.replace('./index.html');
             } else {
+                clearToast();
                 showTopToast(result.message, 5);
                 shake(doms.ipt_usrName);
                 shake(doms.ipt_usrPwd);
             }
         } catch (error) {
+            clearToast();
             showTopToast('Error in: /api/login');
             console.error('Error in: /api/login');
+        } finally {
+            Lock.unlock();
+        }
+    });
+
+    doms.register_btn.addEventListener('click', async e => {
+        e.preventDefault();
+
+        if (Lock.isLocked()) {
+            clearToast();
+            showTopToast('请求处理中，请稍候...');
+            return;
+        }
+        Lock.lock();
+
+        const resp = handleInfoSubmit();
+        if (!resp.success) {
+            Lock.unlock();
+            return;
+        };
+        const { data } = resp;
+        const secret_data = await encodeStrings(data);
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(secret_data),
+            });
+            const result = await response.json();
+            clearToast();
+            showTopToast(result.message, 5);
+            if (result.success) {
+                doms.form.reset();
+            } else {
+                shake(doms.ipt_usrName);
+                shake(doms.ipt_usrPwd);
+            }
+        } catch (error) {
+            clearToast();
+            showTopToast('Error in: /api/register');
+            console.error('Error in: /api/register');
+        } finally {
+            Lock.unlock();
         }
     });
 }();

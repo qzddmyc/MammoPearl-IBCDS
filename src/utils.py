@@ -7,8 +7,10 @@ import json
 import subprocess
 import uuid
 import socket
+import base64
+import binascii
 from filelock import BaseFileLock
-from typing import Tuple, Union, Dict, List
+from typing import Tuple, Union, Dict, List, Optional
 from datetime import datetime
 from config.configs import AI_CONFIG
 from src.logger_config import Logger
@@ -260,3 +262,54 @@ def secret_a_string(s: str) -> str:
         return ''
 
     return f'{s}***{s}' if len(s) == 1 else f'{s[0]}***{s[-1]}'
+
+
+def encode_username(text: str) -> Optional[str]:
+    """
+    encode a username string to a 44-len string (token)
+    """
+    Logger.info("Encoding username.")
+    BLOCK_SIZE = 32
+
+    if not is_usrName_ok(text):
+        return None
+
+    text_bytes = text.encode('utf-8')
+    pad_len = BLOCK_SIZE - len(text_bytes)
+    if pad_len < 0:
+        return None
+
+    padded_data = text_bytes + (b'\x00' * pad_len)
+    seed = ord(os.urandom(1))
+    xor_result = bytearray([seed])
+
+    for i, byte in enumerate(padded_data):
+        key_byte = (seed + i + 828) % 256
+        xor_result.append(byte ^ key_byte)
+
+    return base64.urlsafe_b64encode(xor_result).decode('utf-8')
+
+
+def decode_username(encrypted_text: str) -> Optional[str]:
+    """
+    decode the token, if error return None
+    if username does not exist or username not in valid format, return None
+    """
+    Logger.info("Decoding username.")
+    try:
+        decoded_bytes = base64.urlsafe_b64decode(encrypted_text)
+        if len(decoded_bytes) < 2:
+            return None
+        seed = decoded_bytes[0]
+        cipher_body = decoded_bytes[1:]
+        plain_bytes = bytearray()
+        for i, byte in enumerate(cipher_body):
+            key_byte = (seed + i + 828) % 256
+            plain_bytes.append(byte ^ key_byte)
+        usr_name = plain_bytes.rstrip(b'\x00').decode('utf-8')
+
+        if not is_usrName_ok(usr_name):
+            return None
+        return usr_name
+    except (binascii.Error, UnicodeDecodeError, Exception):
+        return None

@@ -1,4 +1,4 @@
-import { DISABLE_INTERACTION_global } from "./data/vars.js";
+import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.js";
 
 !async function () {
     const dropArea = document.getElementById('drop-area');              // 整个虚线框内的内容
@@ -197,8 +197,8 @@ import { DISABLE_INTERACTION_global } from "./data/vars.js";
 
             formData.append('image_data', file, file.name);
 
-            const usr = localStorage.getItem('usr');
-            if (usr) formData.append('usr', usr);
+            const usrToken = localStorage.getItem(LocalStorage_DataName);
+            if (usrToken) formData.append('usrToken', usrToken);
 
             try {
                 const response = await fetch('/api/v1', {

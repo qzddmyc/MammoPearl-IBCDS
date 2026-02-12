@@ -42,10 +42,8 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: linear-gradient(
-            rgba(41, 182, 246, 0.1) 1px,
-            transparent 1px
-        ),
+    background-image:
+        linear-gradient(rgba(41, 182, 246, 0.1) 1px, transparent 1px),
         linear-gradient(90deg, rgba(41, 182, 246, 0.1) 1px, transparent 1px);
     background-size: 30px 30px;
     z-index: 1;
@@ -178,10 +176,11 @@ body {
 .submit-container {
     margin-top: 50px;
     margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: 5fr 1fr 5fr;
 }
 
-.submit-btn {
-    width: 100%;
+.form-btn {
     --submitbtn_h: 48px;
     height: var(--submitbtn_h);
     line-height: var(--submitbtn_h);
@@ -199,16 +198,10 @@ body {
     backdrop-filter: blur(5px);
 }
 
-.submit-btn:hover {
+.form-btn:hover {
     background: rgba(41, 182, 246, 0.2);
     box-shadow: 0 0 20px rgba(41, 182, 246, 0.3);
     transform: translateY(-2px);
-}
-
-.submit-container p {
-    margin-bottom: 12px;
-    font-size: 0.8rem;
-    color: #b3e5fc88;
 }
 
 .shake {
@@ -308,7 +301,7 @@ body {
         text-align: center;
     }
 
-    .submit-btn {
+    .form-btn {
         --submitbtn_h: 45px;
         font-size: 1rem;
     }
@@ -342,7 +335,7 @@ body {
         font-size: 1.4rem;
     }
 
-    .submit-btn {
+    .form-btn {
         --submitbtn_h: 40px;
         font-size: 0.9rem;
     }
@@ -367,11 +360,6 @@ body {
 
     .submit-container {
         margin-top: 35px;
-    }
-
-    .submit-container p {
-        margin-bottom: 12px;
-        font-size: 0.7rem;
     }
 
     .top-toast {

@@ -16,8 +16,9 @@ export const DISABLE_INTERACTION_global = false;
  * 用于以下文件：
  * - index.html > idx-main.js
  * - login.html > login-main.js
+ * - detect.html > detect-main.js
  */
-export const LocalStorage_DataName = 'usr';
+export const LocalStorage_DataName = 'token';
 
 /**
  * localStorage中用于存放“此时ques.html中应当展示的页面”所用的键名。

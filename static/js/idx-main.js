@@ -1,4 +1,5 @@
 import { LocalStorage_DataName } from "./data/vars.js";
+import { decodeTokenToUserName } from "./tools/decodeToken.js";
 
 // 在header.js之后引入
 
@@ -130,12 +131,14 @@ import { LocalStorage_DataName } from "./data/vars.js";
     window.addEventListener('resize', handleViewportResize);
 }();
 
-!function () {
+!async function () {
     const doms = {
         logins: document.querySelectorAll('.login-door'),
         logouts: document.querySelectorAll('.logout-door'),
     };
-    let usrInfo = localStorage.getItem(LocalStorage_DataName);
+
+    let usrInfo = await decodeTokenToUserName(localStorage.getItem(LocalStorage_DataName));
+
     const classNameForHide = 'hide-me';
     function showLogin_hideLogout() {
         doms.logins.forEach(item => {

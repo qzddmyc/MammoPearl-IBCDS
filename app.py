@@ -4,11 +4,13 @@ import logging
 import threading
 from flask import Flask, render_template, request, jsonify
 
-from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, init_for_AI_model, get_all_json_data
-from src.v1 import check_status_or_get_newest_reply, login_or_register_for_user
+from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, \
+    init_for_AI_model, get_all_json_data, token_to_crypto_username
+from src.v1 import check_status_or_get_newest_reply, login_for_user, register_for_user
 from src.utils import open_file_in_system, check_web_conn
 from src.utils_db import check_if_server_started
 from src.utils_ai import check_if_environ_created
+from src.utils_crypto import generate_random_key_for_crypto
 from config.configs import BASE_CONFIG
 from src.logger_config import Logger
 
@@ -83,11 +85,9 @@ def api_v1():
 
     pic_bytes = file.read()
     pic_name = file.filename
-    usr = request.form.get('usr')
-    if not usr:
-        usr = BASE_CONFIG['DEFAULT_USER']
+    usrToken = request.form.get('usrToken', '')
 
-    RES_TF, RES_ACC, dir_path = detect_if_Breast_Cancer_picture(pic_bytes, pic_name, usr)
+    RES_TF, RES_ACC, dir_path = detect_if_Breast_Cancer_picture(pic_bytes, pic_name, usrToken)
 
     return jsonify({
         'success': True,
@@ -128,10 +128,30 @@ def api_login():
     Logger.info('POST /api/login')
 
     data = request.get_json()
-    username = data.get('usrName', '')
-    password = data.get('usrPwd', '')
+    username = data.get('s_uname', '')
+    password = data.get('s_upwd', '')
+    key = data.get('key', '')
+    iv = data.get('iv', '')
 
-    success, message = login_or_register_for_user(username, password)
+    success, message, token = login_for_user(username, password, key, iv)
+    return jsonify({
+        'success': success,
+        'message': message,
+        'token': token
+    })
+
+
+@app.route('/api/register', methods=['POST'])
+def api_register():
+    Logger.info('POST /api/register')
+
+    data = request.get_json()
+    username = data.get('s_uname', '')
+    password = data.get('s_upwd', '')
+    key = data.get('key', '')
+    iv = data.get('iv', '')
+
+    success, message = register_for_user(username, password, key, iv)
     return jsonify({
         'success': success,
         'message': message
@@ -222,6 +242,29 @@ def write_logger():
     return jsonify({
         'success': True,
         'message': 'ok'
+    })
+
+
+@app.route('/api/get_secret_key', methods=['GET'])
+def get_secret_key():
+    key = generate_random_key_for_crypto()
+    iv = generate_random_key_for_crypto()
+    return jsonify({
+        "key": key,
+        "iv": iv
+    })
+
+
+@app.route('/api/peek_user', methods=['POST'])
+def peek_user():
+    data = request.get_json()
+    t = data.get('token')
+    s, var, k, iv = token_to_crypto_username(t)
+    return jsonify({
+        "success": s,
+        "var": var,
+        "key": k,
+        "iv": iv
     })
 
 

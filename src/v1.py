@@ -2,10 +2,11 @@ import os
 from typing import Tuple, Union
 
 from src.utils import generate_short_unique_time_str, get_current_time, write_to_file, \
-    save_a_picture, generate_user_id, secret_a_string
+    save_a_picture, generate_user_id, secret_a_string, encode_username, decode_username
 from src.utils_ai import get_reply_from_ai_and_save_json, INIT_check_if_json_available, check_and_get_full_json_by_v1
 from src.utils_ai import check_if_unresolved_msg_resolves_and_get_it
 from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_User
+from src.utils_crypto import encrypt_data, decrypt_data, generate_random_key_for_crypto
 from config.configs import BASE_CONFIG, AI_CONFIG
 from src.logger_config import Logger
 
@@ -25,14 +26,21 @@ def v1_inner(pic: bytes, base_path: str, pic_name: str) -> Tuple[bool, float]:
     return False, 0.869
 
 
-def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usr: str) -> Tuple[str, str, str]:
+def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> Tuple[str, str, str]:
     """
     Pass in a binary image file and the name (with suffix) of the image.
     :param pic: The picture
     :param picName: The name of the picture
-    :param usr: The username of who was logged in
+    :param usrToken: The user token of who was logged in
     :return: the detection result formatted [True/False(to Chinese str), accuracy, the relative path of the directory]
     """
+    if usrToken == "" or not usrToken:
+        usr = BASE_CONFIG['DEFAULT_USER']
+    else:
+        encodeOk, usr = token_to_username_and_check_existence(usrToken)
+        if not encodeOk:
+            Logger.error('Warn: User token decode error in detecting pics!')
+            usr = BASE_CONFIG['DEFAULT_USER']
     folder_path = os.path.join(DOTS, "logs", 'results', usr, generate_short_unique_time_str())
     try:
         os.makedirs(folder_path, exist_ok=True)
@@ -177,19 +185,52 @@ def check_status_or_get_newest_reply():
     return isResolved, msg, shouldAbort
 
 
-def login_or_register_for_user(username: str, password: str) -> Tuple[bool, str]:
-    if not username or not password:
-        return False, 'parameters missing'
+def login_for_user(s_username: str, s_password: str, key: str, iv: str) -> Tuple[bool, str, str]:
+    """ s_username & s_password are base64 """
+    if not s_username or not s_password or not key or not iv:
+        return False, 'parameters missing', ''
+    username = decrypt_data(s_username, key, iv)
+    password = decrypt_data(s_password, key, iv)
+    if not check_if_usr_exist(username):
+        return False, '登录失败：用户不存在，请先注册', ''
+    IsPwdCorrect = verify_UserAccount_password(username, password)
+    if IsPwdCorrect:
+        token_uname = encode_username(username)
+        if not token_uname:
+            Logger.error('Fatal: get token from userName error!')
+            return False, '登录成功，但令牌生成失败', ''
+        return True, '登录成功。即将跳转至主页', token_uname
+    Logger.warning(f"Login failure: user '{secret_a_string(username)}' gave an error password.")
+    return False, '登录失败：密码错误', ''
 
+
+def register_for_user(s_username: str, s_password: str, key: str, iv: str) -> Tuple[bool, str]:
+    if not s_username or not s_password or not key or not iv:
+        return False, 'parameters missing'
+    username = decrypt_data(s_username, key, iv)
+    password = decrypt_data(s_password, key, iv)
+    if not username.strip() or not password.strip():
+        return False, '注册失败：账号或密码不能为空值'
     if check_if_usr_exist(username):
-        IsPwdCorrect = verify_UserAccount_password(username, password)
-        if IsPwdCorrect:
-            return True, '登录成功。即将跳转至主页'
-        Logger.warning(f"Login failure: user '{secret_a_string(username)}' gave an error password.")
-        return False, '登录失败：密码错误'
-    else:
-        spec_id = generate_user_id()
-        info = save_User(spec_id, username, password)
-        if not info['success']:
-            return False, f'注册失败：{info['message']}'
-        return True, '注册成功，已自动登录。即将跳转至主页'
+        return False, '注册失败：用户已存在，请直接登录'
+    spec_id = generate_user_id()
+    info = save_User(spec_id, username, password)
+    if not info['success']:
+        return False, f'注册失败：{info['message']}'
+    return True, '注册成功，请继续登录'
+
+
+def token_to_crypto_username(token: str) -> Tuple[bool, str, str, str]:
+    encodeOk, uname = token_to_username_and_check_existence(token)
+    if not encodeOk:
+        return False, '', '', ''
+    key, iv = generate_random_key_for_crypto(), generate_random_key_for_crypto()
+    s_uname = encrypt_data(uname, key, iv)
+    return True, s_uname, key, iv
+
+
+def token_to_username_and_check_existence(t: str) -> Tuple[bool, str]:
+    raw_uname = decode_username(t)
+    if not raw_uname or not check_if_usr_exist(raw_uname):
+        return False, ''
+    return True, raw_uname
