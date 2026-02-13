@@ -1,7 +1,13 @@
 import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.js";
 import { encryptString } from "./tools/cryptoTools.js";
 
-!function () {
+!async function () {
+    const val = localStorage.getItem(LocalStorage_DataName);
+    if (val) {
+        window.location.replace('/');
+        return;
+    }
+
     const circle1 = document.querySelector('.circle1');
     const circle2 = document.querySelector('.circle2');
     const leftDecoration = document.querySelector('.left-decoration');
@@ -53,9 +59,11 @@ import { encryptString } from "./tools/cryptoTools.js";
     initCirclePosition();
     window.addEventListener('resize', initCirclePosition);
     document.addEventListener('mousemove', updateCircleByMouse);
+
+    await F();
 }();
 
-!async function () {
+async function F() {
     const doms = {
         form: document.querySelector('#form-login'),
         ipt_usrName: document.querySelector('#username'),
@@ -92,6 +100,7 @@ import { encryptString } from "./tools/cryptoTools.js";
             DISABLE_INTERACTION = true;
         }
     }
+
     let toastTimer = null;
     let currentToast = null;
     function clearToast() {
@@ -182,13 +191,21 @@ import { encryptString } from "./tools/cryptoTools.js";
     }
 
     async function encodeStrings(data) {
-        const resp = await fetch('/api/get_secret_key');
-        const { key, iv } = await resp.json();
-        const { usrName, usrPwd } = data;
+        try {
+            const resp = await fetch('/api/get_secret_key');
+            const { key, iv } = await resp.json();
+            const { usrName, usrPwd } = data;
 
-        const s_uname = encryptString(usrName, key, iv);
-        const s_upwd = encryptString(usrPwd, key, iv);
-        return { s_uname, s_upwd, key, iv }
+            const s_uname = encryptString(usrName, key, iv);
+            const s_upwd = encryptString(usrPwd, key, iv);
+            return { s_uname, s_upwd, key, iv }
+        } catch (err) {
+            clearToast();
+            showTopToast("FATAL: EncodeStrings Error! Fail to get the encode key!", 8);
+            console.error(err);
+            doms.form.reset();
+            return null;
+        }
     }
 
     doms.login_btn.addEventListener('click', async e => {
@@ -209,6 +226,12 @@ import { encryptString } from "./tools/cryptoTools.js";
 
         const { data } = resp;
         const secret_data = await encodeStrings(data);
+
+        if (!secret_data) {
+            Lock.unlock();
+            return;
+        }
+
         try {
             const response = await fetch('/api/login', {
                 method: 'POST',
@@ -254,6 +277,12 @@ import { encryptString } from "./tools/cryptoTools.js";
         };
         const { data } = resp;
         const secret_data = await encodeStrings(data);
+
+        if (!secret_data) {
+            Lock.unlock();
+            return;
+        }
+
         try {
             const response = await fetch('/api/register', {
                 method: 'POST',
@@ -279,4 +308,4 @@ import { encryptString } from "./tools/cryptoTools.js";
             Lock.unlock();
         }
     });
-}();
+};

@@ -137,7 +137,13 @@ import { decodeTokenToUserName } from "./tools/decodeToken.js";
         logouts: document.querySelectorAll('.logout-door'),
     };
 
-    let usrInfo = await decodeTokenToUserName(localStorage.getItem(LocalStorage_DataName));
+    const infoGotFromLocalStorage = localStorage.getItem(LocalStorage_DataName);
+    let usrInfo = await decodeTokenToUserName(infoGotFromLocalStorage);
+    if (infoGotFromLocalStorage && !usrInfo) {
+        localStorage.removeItem(LocalStorage_DataName);
+        const r = confirm("检测到你的登录信息有误，是否重新登录？");
+        if (r) window.location.href = "/login.html";
+    }
 
     const classNameForHide = 'hide-me';
     function showLogin_hideLogout() {

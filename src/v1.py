@@ -216,13 +216,16 @@ def register_for_user(s_username: str, s_password: str, key: str, iv: str) -> Tu
     spec_id = generate_user_id()
     info = save_User(spec_id, username, password)
     if not info['success']:
+        Logger.error('Fatal: error happened in register_for_user!')
         return False, f'注册失败：{info['message']}'
+    Logger.info(f'User register success: user {secret_a_string(username)}.')
     return True, '注册成功，请继续登录'
 
 
 def token_to_crypto_username(token: str) -> Tuple[bool, str, str, str]:
     encodeOk, uname = token_to_username_and_check_existence(token)
     if not encodeOk:
+        Logger.error(f'decode username error, and func token_to_crypto_username returns a false.')
         return False, '', '', ''
     key, iv = generate_random_key_for_crypto(), generate_random_key_for_crypto()
     s_uname = encrypt_data(uname, key, iv)
@@ -232,5 +235,6 @@ def token_to_crypto_username(token: str) -> Tuple[bool, str, str, str]:
 def token_to_username_and_check_existence(t: str) -> Tuple[bool, str]:
     raw_uname = decode_username(t)
     if not raw_uname or not check_if_usr_exist(raw_uname):
+        Logger.error(f'decode username error in func token_to_username_and_check_existence')
         return False, ''
     return True, raw_uname

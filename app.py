@@ -247,6 +247,7 @@ def write_logger():
 
 @app.route('/api/get_secret_key', methods=['GET'])
 def get_secret_key():
+    Logger.info('GET /api/get_secret_key')
     key = generate_random_key_for_crypto()
     iv = generate_random_key_for_crypto()
     return jsonify({
@@ -257,6 +258,7 @@ def get_secret_key():
 
 @app.route('/api/peek_user', methods=['POST'])
 def peek_user():
+    Logger.info('POST /api/peek_user')
     data = request.get_json()
     t = data.get('token')
     s, var, k, iv = token_to_crypto_username(t)
