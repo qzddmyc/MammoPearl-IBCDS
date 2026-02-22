@@ -1,9 +1,11 @@
 import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.js";
 import { encryptString } from "./tools/cryptoTools.js";
+import { Log } from "./tools/log.js";
 
 !async function () {
     const val = localStorage.getItem(LocalStorage_DataName);
     if (val) {
+        Log.warning("User visited login-page with a logged-in status.")
         window.location.replace('/');
         return;
     }

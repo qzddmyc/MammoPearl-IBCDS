@@ -1,5 +1,6 @@
 import { LocalStorage_DataName } from "./data/vars.js";
 import { decodeTokenToUserName } from "./tools/decodeToken.js";
+import { Log } from "./tools/log.js";
 
 // 在header.js之后引入
 
@@ -141,6 +142,7 @@ import { decodeTokenToUserName } from "./tools/decodeToken.js";
     let usrInfo = await decodeTokenToUserName(infoGotFromLocalStorage);
     if (infoGotFromLocalStorage && !usrInfo) {
         localStorage.removeItem(LocalStorage_DataName);
+        Log.warning("User modified token which lead to a logout.")
         const r = confirm("检测到你的登录信息有误，是否重新登录？");
         if (r) window.location.href = "/login.html";
     }
@@ -172,6 +174,7 @@ import { decodeTokenToUserName } from "./tools/decodeToken.js";
         const check = confirm("确认退出账号？");
         if (!check) return;
         localStorage.removeItem(LocalStorage_DataName);
+        Log.info("User logged out manually.");
         usrInfo = null;
         console.log("用户账号已退出。");    // No more use alert, use log instead.
         refreshLoginButtons();

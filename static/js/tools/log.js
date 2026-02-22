@@ -6,24 +6,22 @@ const logLevel = {
 }
 
 async function sendLog(type, message) {
-    const resp = await fetch('/api/logger', {
-        method: "POST",
-        headers: {
-            "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-            "logger_level": type,
-            "logger_message": message
-        })
-    });
-    await resp.json()
-        .then((msg) => {
-            if (!msg.success) console.warn(msg.message);
-        })
-        .catch((err) => {
-            console.warn(err);
+    try {
+        const resp = await fetch('/api/logger', {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify({
+                "logger_level": type,
+                "logger_message": message
+            })
         });
-    return;
+        const msg = await resp.json();
+        if (!msg.success) throw new Error(msg.message);
+    } catch (err) {
+        console.warn("Logger reported failure: " + err);
+    }
 }
 
 export const Log = {
