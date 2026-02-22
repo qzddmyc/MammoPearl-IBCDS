@@ -18,13 +18,13 @@
 
 确保本地环境满足以下版本要求：
 
-1. 编程语言：
+1. 编程语言：Python
 
-    - Python 版本：>= 3.12
+   版本：>= 3.12
 
-2. 数据库：
-
-    - SQL Server 版本：Microsoft SQL Server 2022 (RTM) - 16.0.1000.6 (X64)
+2. 数据库：SQL Server
+   
+   版本：Microsoft SQL Server 2022 (RTM) - 16.0.1000.6 (X64)
 
 ## 项目初始化
 
@@ -40,7 +40,7 @@
     在此暂不提供 Linux/macOS 版本的命令。
 
 2. 运行程序
-    ```shell
+    ```batch
     python app.py
     ```
     如果报错数据库服务未被开启，请运行：
