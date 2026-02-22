@@ -18,7 +18,7 @@ echo.
 echo [2/4] 正在启动MSSQLSERVER数据库服务...
 sudo sc start MSSQLSERVER
 if %errorlevel% neq 0 (
-    echo 警告：数据库服务启动失败
+    echo 错误：数据库服务启动失败
     pause
     exit /b 1
 ) else (
@@ -31,7 +31,7 @@ sqlcmd -Q "CREATE DATABASE IBCDS"
 if %errorlevel% equ 0 (
     echo [3/4] IBCDS数据库创建成功
 ) else (
-    echo 警告：数据库创建失败
+    echo 错误：数据库创建失败
     pause
     exit /b 1
 )
