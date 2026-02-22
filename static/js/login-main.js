@@ -308,4 +308,34 @@ async function F() {
             Lock.unlock();
         }
     });
+
+    let w_wait = false;
+    let w_timeout = null;
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' || e.ctrlKey || e.repeat) return;
+        e.preventDefault();
+        if (w_wait) {
+            clearToast();
+            showTopToast('按得太快了');
+            return;
+        }
+        w_wait = true;
+        if (e.shiftKey) {
+            doms.register_btn.click();
+            doms.register_btn.classList.add('key-active');
+        } else {
+            doms.login_btn.click();
+            doms.login_btn.classList.add('key-active');
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (e.key !== 'Enter') return;
+        document.querySelectorAll('.key-active').forEach(d => d.classList.remove('key-active'));
+        if (w_timeout) return;
+        w_timeout = setTimeout(() => {
+            w_wait = false;
+            w_timeout = null;
+        }, 500);
+    });
 };

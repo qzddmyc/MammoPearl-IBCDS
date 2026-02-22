@@ -4,6 +4,7 @@
 
 检测时间：${time}
 检测样本图片详见：${imgFullPath}
+
 检测结果：${result}
 检测可信度：${accuracy}
 
