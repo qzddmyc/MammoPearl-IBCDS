@@ -1,67 +1,56 @@
 # 乳此侦析 · 乳腺癌智能检测系统
 
-### 环境依赖
+## 项目简介
 
-确保本地环境满足以下版本要求，否则可能导致功能异常或运行报错：
+该项目为“乳腺癌检测系统”的**前端界面展示部分**，其中并不包含真正的检测程序。
+
+在该项目中，你可以实现：用户登录，AI问答，拟检测等。
+
+请注意，如果你使用了检测的功能，其得到的结果为固定数值，无任何含义。当然，如果你想要实现真正的检测，请参考[此文档](./docs/self_detect.md)。
+
+\* 项目技术栈为：原生HTML + Python Flask
+
+## 环境依赖
+
+确保本地环境满足以下版本要求：
 
 1. 编程语言：
 
-    - Python 版本：>= 3.12（推荐 3.12.0 及以上稳定版）
+    - Python 版本：>= 3.12
 
 2. 数据库：
 
     - SQL Server 版本：Microsoft SQL Server 2022 (RTM) - 16.0.1000.6 (X64)
 
-<br>
+## 项目初始化
 
-\* 你可以使用以下方法校验你的环境：
+1. 安装Python库与数据库的初始化
 
-- Python:
-    ```shell
-    python --version
-    ```
-
-- SqlServer（打开 SQL Server Management Studio (SSMS)，连接数据库后执行 T-SQL）:
-    ```sql
-    SELECT @@VERSION;
-    ```
-
----
-
-### 项目初始化
-
-1. 安装Python三方库
-    ```shell
+    运行 deploy.bat 即可，其中包含了以下命令：
+    ```batch
     pip install -r requirements.txt
-    ```
-
-2. 开启数据库服务
-    ```shell
     sudo sc start MSSQLSERVER
-    ```
-
-3. 建立数据库
-    ```shell
     sqlcmd -Q "CREATE DATABASE IBCDS"
-    ```
-
-4. 初始化数据库
-    ```shell
     python -m init.init_database
     ```
+    在此暂不提供 Linux/macOS 版本的命令。
 
-5. 运行程序
+2. 运行程序
     ```shell
     python app.py
     ```
+    如果报错数据库服务未被开启，请运行：
+    ```batch
+    sudo sc start MSSQLSERVER
+    python app.py
+    ```
 
-6. 访问页面
+3. 访问页面
     ```plaintext
     http://127.0.0.1:8080
     ```
 
----
-
+## 其他文档
 ### 管理员：用户信息管理
 
 [用户信息管理](./docs/userManagement.md)
@@ -70,15 +59,13 @@
 
 [AI-key配置](./docs/apiConfig.md)
 
----
+## 特殊操作
 
-### 特殊操作
-
-#### 1. 修改项目端口
+### 1. 修改项目端口
 
 当设备的端口存在冲突时，你可以通过修改config.yaml中的 `PORT` 值，改变本项目使用的端口号。
 
-#### 2. 设置页面为仅访问，禁止所有与服务器相关的操作
+### 2. 设置页面为仅访问，禁止所有与服务器相关的操作
 
 将 /static/assets/data/vars.js 中的 `DISABLE_INTERACTION_global` 设置为 `true` 即可。
 
@@ -86,19 +73,17 @@
 
 当然，如果服务器并没有开启，但该值被设定为 `false`，它会被二次检测程序更改为 `true`。
 
----
+## 其他说明
 
-### 项目说明
-
-#### 1. 关于config文件的使用
+### 1. 关于config文件的使用
 
 该项目中的 `config/*.yaml` 文件会被同目录下的 `configs.py` 文件读取并整合。故需要引入配置信息时，可以从 `configs.py` 中直接引入相关的变量。
 
-#### 2. 关于数据库的连接
+### 2. 关于数据库的连接
 
-该项目中的数据库默认通过windows免密连接进行登录。若需要通过账号与密码进行登录，请前往 /config/database.yaml，将 `USE_UID_TO_LOGIN` 改为 `true`，并将 `UID` 与 `PWD` 改为你的账号密码。
+该项目中的数据库默认通过 windows 免密连接进行登录。若需要通过账号与密码进行登录，请前往 /config/database.yaml，将 `USE_UID_TO_LOGIN` 改为 `true`，并将 `UID` 与 `PWD` 改为你的账号密码。
 
-#### 3. 关于logs文件夹
+### 3. 关于logs文件夹
 
 在使用AI功能后，会在logs文件夹下生成 ./historical_dialogue/history.json 文件，用于存放你的AI问答记录。为便于查看，该文件采用文件而非数据库的存储方式，请勿随意修改，否则合法性检测程序会抛出异常。
 

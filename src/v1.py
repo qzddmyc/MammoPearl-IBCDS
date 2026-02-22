@@ -16,13 +16,25 @@ DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
 def v1_inner(pic: bytes, base_path: str, pic_name: str) -> Tuple[bool, float]:
     """
     处理函数。True: 阳性，患病； False: 阴性，不患病
-    :param pic: The picture to check if ill
-    :param base_path: The path for saving result pictures
-    :param pic_name: The name of the picture
+    :param pic: The picture to check if ill or not.
+    :param base_path: The path uses for saving result pictures, you should not save the original picture.
+    :param pic_name: The name of the original picture.
     :return: Judge result, Accuracy
     """
-    # base_path = "../static/assets/pth"
+
+    # pth_file_path = os.path.join(DOTS, 'static', 'assets', 'pth', '???.pth')
+
+    # if you wanna save a picture, use this:
+    #   pic_bytes_info = ???
+    #   new_pic_name = ???
+    #   _, _suffix = os.path.splitext(pic_name)
+    #   new_pic_path = os.path.join(base_path, new_pic_name + _suffix)
+    #   isSaved = save_a_picture(pic_bytes_info, new_pic_path)
+
+    # add your own logic here
     ...
+
+    # here just gave a static value
     return False, 0.869
 
 
@@ -60,7 +72,7 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> 
         print(f"警告：图片'{output_path}'保存失败。详情见日志")
 
     RES_TF, RES_ACC = v1_inner(pic, folder_path, picName)
-
+    print(picName)
     # be careful that func showResultModal() in detect-main.js also uses name "阴性".
     res_A = '阳性' if RES_TF else '阴性'
     res_B = f"{(round(RES_ACC * 1000) / 10)}%"
