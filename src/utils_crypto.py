@@ -1,9 +1,10 @@
-import random
+import secrets
 import string
 import base64
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 from src.logger_config import Logger
+
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # Username passing logic:
@@ -30,7 +31,7 @@ from src.logger_config import Logger
 def generate_random_key_for_crypto(length=16):
     """ generate Key & IV """
     chars = string.ascii_letters + string.digits
-    return ''.join(random.choice(chars) for _ in range(length))
+    return ''.join(secrets.choice(chars) for _ in range(length))
 
 
 def encrypt_data(text, key_str, iv_str):
