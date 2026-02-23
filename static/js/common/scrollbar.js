@@ -12,7 +12,7 @@ export function updateScrollIndicator() {
     const containerHeight = indicatorContainer.offsetHeight;
 
     const scrollableHeight = scrollHeight - clientHeight;
-    
+
     if (scrollableHeight <= 0) {
         thumb.style.height = '100%';
         thumb.style.top = '0';
@@ -30,7 +30,7 @@ export function updateScrollIndicator() {
     thumb.style.top = `${thumbTop}px`;
 }
 
-!function(){
+!function () {
     if (!document.querySelector('.scroll-indicator')) {
         const indicator = document.createElement('div');
         indicator.className = 'scroll-indicator';
@@ -38,7 +38,7 @@ export function updateScrollIndicator() {
         document.body.appendChild(indicator);
     }
     updateScrollIndicator();
-    
+
     window.addEventListener('scroll', updateScrollIndicator);
     window.addEventListener('resize', updateScrollIndicator);
 }();

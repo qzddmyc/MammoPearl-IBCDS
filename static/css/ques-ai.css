@@ -217,6 +217,12 @@
     color: #4fc3f7;
 }
 
+.ai-qa-container h4{
+    margin: 0 auto;
+    color: #4fc2f7be;
+    font-weight: normal;
+}
+
 @media (max-width: 768px) {
     .ai-question,
     .ai-answer {

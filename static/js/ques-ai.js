@@ -19,6 +19,9 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
     const aiPageTitle = 'AI 解答';
     const pageIntro = '关于乳腺癌检测的常见疑问与专业解答';
 
+    let dialogueLength = 0;
+    const maxDialoguesToShow = 20;
+
     !function () {
         pageTitle.innerText = localStorage.getItem(LocalStorage_QuesInitPage) === LS_page.ai ? aiPageTitle : initialPageTitle;
         pageIntroEle.innerText = pageIntro;
@@ -91,6 +94,8 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
             showCursor: false,
         });
 
+        updateScrollIndicator();
+
         /**
          * 清除持续发送请求的定时器，清除打字机效果，修改p元素(应答元素)内容，清除应答元素的id，解除按钮禁用
          * @param {string} s 让p元素展示的新字符串。若为null，则不进行修改。
@@ -105,7 +110,8 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
             }
             if (s) { p.innerText = s; }
             if (clearID) {
-                div.id = null;
+                div.id = '';
+                div.removeAttribute('id');
             }
             addConversationBtn.disabled = false;
         }
@@ -129,6 +135,7 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
                         onComplete: function (typed) {
                             typed.destroy();
                             p.innerText = result.message;
+                            updateScrollIndicator();
                         }
                     };
                     new Typed(p, options);
@@ -139,6 +146,15 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
             }
             isQuerying = false;
         }, SEP);
+    }
+
+    function addTooManyDialoguePrompt() {
+        const id_name = 'too-many-dialogue';
+        if (document.getElementById(id_name)) return;
+        const h4 = document.createElement('h4');
+        h4.id = id_name;
+        h4.innerHTML = `---&nbsp;&nbsp;仅展示最近${maxDialoguesToShow}条对话&nbsp;&nbsp;---`;
+        aiQaContainer.appendChild(h4);
     }
 
     async function initAIQAs() {
@@ -159,10 +175,17 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
             }
         }
         ai_qas = Array.from(ai_qas).filter(each => each.flag !== Flags.wrong);
+
+        if (ai_qas.length > maxDialoguesToShow) {
+            ai_qas = ai_qas.slice(0, maxDialoguesToShow);
+            addTooManyDialoguePrompt();
+        }
+        dialogueLength = ai_qas.length;
+
         let html = '';
-        if (ai_qas.length === 0) {
+        if (dialogueLength === 0) {
             if (DISABLE_INTERACTION) html += '<h3>未能连接服务器，当前页面仅作展示</h3>';
-            else html += '<h3>暂无内容，请点击“添加对话”进行添加</h3>';
+            else html += '<h3 id="del-if-new-dialogue-append">暂无内容，请点击“添加对话”进行添加</h3>';
         }
         ai_qas.forEach(qa => {
             html += `
@@ -309,12 +332,16 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
     function showQuestionInput() {
         questionInputContainer.classList.remove('hide');
         addConversationBtn.disabled = true;
+        textarea.focus();
+        updateScrollIndicator();
     }
 
     function hideQuestionInput() {
+        textarea.blur();
         questionInputContainer.classList.add('hide');
         textarea.value = '';
         addConversationBtn.disabled = false;
+        updateScrollIndicator();
     }
 
     if (aiBtn) aiBtn.forEach(e => e.addEventListener('click', switchToAIQA));
@@ -374,6 +401,17 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
                 </div>
             `;
             addConversationBtn.insertAdjacentHTML('afterend', html);
+            if (dialogueLength === 0) {
+                const _ddd = document.getElementById('del-if-new-dialogue-append');
+                if (_ddd) _ddd.remove();
+            }
+            dialogueLength++;
+            if (dialogueLength > maxDialoguesToShow) {
+                const ds = document.querySelectorAll('.ai-qa-item');
+                Array.from(ds).slice(-2).forEach(e => e.remove());
+                dialogueLength--;
+                addTooManyDialoguePrompt();
+            }
             touchingReply();
         } else {
             alert(`AI请求失败：${reply.data}`);
