@@ -71,7 +71,7 @@
 
 ### 2. 设置页面为仅访问，禁止所有与服务器相关的操作
 
-将 /static/assets/data/vars.js 中的 `DISABLE_INTERACTION_global` 设置为 `true` 即可。
+将 /static/js/data/vars.js 中的 `DISABLE_INTERACTION_global` 设置为 `true` 即可。
 
 该操作会禁止用户注册、提交检测、AI交互相关的操作，并隐藏需要开启服务器的提示。
 
