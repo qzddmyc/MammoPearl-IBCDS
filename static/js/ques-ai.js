@@ -132,9 +132,6 @@ import { LocalStorage_QuesInitPage, LS_page } from "./data/vars.js";
                         }
                     };
                     new Typed(p, options);
-                    console.log('AI完成了回答。');
-                } else {
-                    console.log('请求成功，但AI未完成回答。');
                 }
             } catch (error) {
                 console.error('fetch 请求(/api/get_status)失败', error);

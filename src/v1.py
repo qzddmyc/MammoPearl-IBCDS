@@ -72,7 +72,7 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> 
         print(f"警告：图片'{output_path}'保存失败。详情见日志")
 
     RES_TF, RES_ACC = v1_inner(pic, folder_path, picName)
-    print(picName)
+
     # be careful that func showResultModal() in detect-main.js also uses name "阴性".
     res_A = '阳性' if RES_TF else '阴性'
     res_B = f"{(round(RES_ACC * 1000) / 10)}%"
