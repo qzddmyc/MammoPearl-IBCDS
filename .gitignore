@@ -9,4 +9,4 @@ youshoulddelit/
 
 /todo.txt
 
-*.pth
+static/assets/pth/*.pth

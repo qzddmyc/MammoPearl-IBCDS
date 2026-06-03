@@ -10,6 +10,7 @@ from src.utils_crypto import encrypt_data, decrypt_data, generate_random_key_for
 from config.configs import BASE_CONFIG, AI_CONFIG
 from src.logger_config import Logger
 from src.model import MammoPearlPredictor, PredictionResult
+from src.manage_weights import merge_files
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
 
@@ -21,6 +22,12 @@ def _get_predictor() -> MammoPearlPredictor:
     if _predictor is None:
         stage1 = os.path.join(DOTS, 'static', 'assets', 'pth', 'clf_efficientnet_b4.pth')
         stage2 = os.path.join(DOTS, 'static', 'assets', 'pth', 'clf2_cond_efficientnet_b4.pth')
+        if not os.path.exists(stage1) or not os.path.exists(stage2):
+            merge_files()
+            Logger.info("Model weight files merged.")
+        if not os.path.exists(stage1) or not os.path.exists(stage2):
+            Logger.error("Model weight files still missing after merging attempt.")
+            raise FileNotFoundError("Model weight files missing.")
         _predictor = MammoPearlPredictor(
             stage1_ckpt=stage1,
             stage2_ckpt=stage2,
@@ -36,7 +43,14 @@ def v1_inner(pic: bytes) -> Tuple[bool, str, float]:
     :param pic: The picture to check if ill or not.
     :return: (是否患病, 患病类型（阴性时为空字符串）, 综合置信度)
     """
-    predictor = _get_predictor()
+    try:
+        predictor = _get_predictor()
+    except FileNotFoundError:
+        return False, '模型权重文件缺失', 0.0
+    except Exception as e:
+        Logger.error(f"Unexpected error while loading predictor: {e}")
+        return False, '模型加载失败', 0.0
+
     result: PredictionResult = predictor.predict(image=pic)
 
     if not result.has_lesion:
