@@ -9,42 +9,54 @@ from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_U
 from src.utils_crypto import encrypt_data, decrypt_data, generate_random_key_for_crypto
 from config.configs import BASE_CONFIG, AI_CONFIG
 from src.logger_config import Logger
+from src.model import MammoPearlPredictor, PredictionResult
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
 
+_predictor: MammoPearlPredictor | None = None
 
-def v1_inner(pic: bytes, base_path: str, pic_name: str) -> Tuple[bool, float]:
+
+def _get_predictor() -> MammoPearlPredictor:
+    global _predictor
+    if _predictor is None:
+        stage1 = os.path.join(DOTS, 'static', 'assets', 'pth', 'clf_efficientnet_b4.pth')
+        stage2 = os.path.join(DOTS, 'static', 'assets', 'pth', 'clf2_cond_efficientnet_b4.pth')
+        _predictor = MammoPearlPredictor(
+            stage1_ckpt=stage1,
+            stage2_ckpt=stage2,
+            stage1_threshold=0.4,
+        )
+        Logger.info('MammoPearlPredictor loaded successfully.')
+    return _predictor
+
+
+def v1_inner(pic: bytes) -> Tuple[bool, str, float]:
     """
     处理函数。True: 阳性，患病； False: 阴性，不患病
     :param pic: The picture to check if ill or not.
-    :param base_path: The path uses for saving result pictures, you should not save the original picture.
-    :param pic_name: The name of the original picture.
-    :return: Judge result, Accuracy
+    :return: (是否患病, 患病类型（阴性时为空字符串）, 综合置信度)
     """
+    predictor = _get_predictor()
+    result: PredictionResult = predictor.predict(image=pic)
 
-    # pth_file_path = os.path.join(DOTS, 'static', 'assets', 'pth', '???.pth')
+    if not result.has_lesion:
+        # 阴性：综合置信度取 Stage 1 的阴性把握度
+        confidence = 1.0 - result.stage1_prob
+        return False, '', confidence
 
-    # if you wanna save a picture, use this:
-    #   pic_bytes_info = ???
-    #   new_pic_name = ???
-    #   _, _suffix = os.path.splitext(pic_name)
-    #   new_pic_path = os.path.join(base_path, new_pic_name + _suffix)
-    #   isSaved = save_a_picture(pic_bytes_info, new_pic_path)
-
-    # add your own logic here
-    ...
-
-    # here just gave a static value
-    return False, 0.869
+    # 阳性：s1 主导（0.75），s2 最高类别概率作轻微修正（0.25）
+    s2_best = max(result.lesion_type_probs.values())
+    confidence = (result.stage1_prob ** 0.75) * (s2_best ** 0.25)
+    return True, result.lesion_type or '', confidence
 
 
-def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> Tuple[str, str, str]:
+def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> Tuple[str, str, str, str]:
     """
     Pass in a binary image file and the name (with suffix) of the image.
     :param pic: The picture
     :param picName: The name of the picture
     :param usrToken: The user token of who was logged in
-    :return: the detection result formatted [True/False(to Chinese str), accuracy, the relative path of the directory]
+    :return: the detection result formatted [True/False(to Chinese str), accuracy, type(empty string if healthy), the relative path of the directory]
     """
     if usrToken == "" or not usrToken:
         usr = BASE_CONFIG['DEFAULT_USER']
@@ -71,10 +83,11 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> 
         # logs were written in func 'save_a_picture'
         print(f"警告：图片'{output_path}'保存失败。详情见日志")
 
-    RES_TF, RES_ACC = v1_inner(pic, folder_path, picName)
+    RES_TF, RES_TYPE, RES_ACC = v1_inner(pic)
 
     # be careful that func showResultModal() in detect-main.js also uses name "阴性".
     res_A = '阳性' if RES_TF else '阴性'
+    res_T = RES_TYPE
     res_B = f"{(round(RES_ACC * 1000) / 10)}%"
 
     now = get_current_time()
@@ -89,6 +102,7 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> 
         '${imgNameWithSuffix}': picName,
         '${color}': corresponding_color,
         '${result}': res_A,
+        '${type}': res_T or '无',
         '${accuracy}': res_B,
         '${folder}': absolute_path_of_folder
     }
@@ -98,6 +112,7 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> 
         '${time}': now,
         '${imgFullPath}': absolute_path_of_pic,
         '${result}': res_A,
+        '${type}': res_T or '无',
         '${accuracy}': res_B,
         '${folder}': absolute_path_of_folder
     }
@@ -119,7 +134,7 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> 
 
     Logger.info(f"Read templates and save detect result success, user: {usr}, folder: {absolute_path_of_folder}")
 
-    return res_A, res_B, folder_path
+    return res_A, res_B, res_T, folder_path
 
 
 def get_reply_in_ques_by_ai(usr_ipt) -> Tuple[bool, str]:

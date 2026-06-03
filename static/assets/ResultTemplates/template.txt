@@ -6,6 +6,7 @@
 检测样本图片详见：${imgFullPath}
 
 检测结果：${result}
+预测类型：${type}
 检测可信度：${accuracy}
 
 当前结果所在文件夹：${folder}

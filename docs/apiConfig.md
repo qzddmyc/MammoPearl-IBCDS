@@ -15,7 +15,7 @@
 SiliconCloudApi
 ```
 
-当然，如果变量名SiliconCloudApi存在冲突，请前往 /config/ai.yaml 中修改`ENV_NAME`的值
+当然，如果变量名SiliconCloudApi存在冲突，请前往 config/ai.yaml 中修改`ENV_NAME`的值
 
 <br/>
 

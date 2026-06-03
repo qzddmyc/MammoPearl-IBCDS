@@ -8,6 +8,7 @@
 | 内容 | 值 |
 |:--|:--|
 | 检测结果 | <span style="color: ${color}">${result}</span> |
+| 预测类型 | ${type} |
 | 检测可信度 | ${accuracy} |
 
 > 当前结果所在文件夹：${folder}

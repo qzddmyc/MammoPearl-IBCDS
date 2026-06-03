@@ -1,7 +1,12 @@
 __pycache__/
 .idea/
 .vscode/
+
 logs/*
 !logs/.gitkeep
+
 youshoulddelit/
+
 /todo.txt
+
+*.pth

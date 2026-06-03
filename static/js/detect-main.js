@@ -177,10 +177,14 @@ import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.j
         }
     });
 
+    let isSubmitting = false;
     submitBtn.addEventListener('click', async function () {
+        if (isSubmitting) return;
+        isSubmitting = true;
         if (fileInput.files.length > 0) {
             if (DISABLE_INTERACTION) {
                 alert("提示：当前环境仅展示页面，无法提交数据。");
+                isSubmitting = false;
                 return;
             }
 
@@ -192,6 +196,7 @@ import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.j
             if (file.size > MAX_FILE_SIZE) {
                 showErrorModal('文件过大，请上传小于 20MB 的文件。');
                 removeImgWhenErrorModalClosed = true;
+                isSubmitting = false;
                 return;
             }
 
@@ -211,13 +216,14 @@ import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.j
                 if (result.success) {
                     const res_A = result.RES_TF;
                     const res_B = result.RES_ACC;
+                    const res_T = result.RES_TYPE;
                     if (__info) {
                         console.error("__info did not cleared!");
                     }
                     __info = {
                         relative_path: result.relative_dir_path,
                     }
-                    showResultModal(res_A, res_B);
+                    showResultModal(res_A, res_B, res_T);
                 } else {
                     console.log(result.message);
                     alert('发生错误：' + result.message);
@@ -227,6 +233,8 @@ import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.j
                 console.error('错误:', error);
                 alert('错误：' + error);
                 removeImage.click();
+            } finally {
+                isSubmitting = false;
             }
 
         } else {
@@ -234,29 +242,34 @@ import { DISABLE_INTERACTION_global, LocalStorage_DataName } from "./data/vars.j
             setTimeout(() => {
                 dropArea.classList.remove('shake');
             }, 1200);
+            isSubmitting = false;
             return;
         }
     });
 
     const resultModal = document.getElementById('result-modal');
     const detectionResult = document.getElementById('detection-result');
+    const detectionType = document.getElementById('detection-type');
     const detectionConfidence = document.getElementById('detection-confidence');
     const detections = document.querySelectorAll('.result-item span');  // includes detectionResult and detectionConfidence
     const openMdBtn = document.getElementById('open-md');
     const openTxtBtn = document.getElementById('open-txt');
     const closeResultBtn = document.getElementById('close-result');
 
-    function showResultModal(result, confidence) {
+    function showResultModal(result, confidence, type) {
         detectionResult.textContent = result;
+        detectionType.textContent = type || '无';
         detectionConfidence.textContent = confidence;
         if (result === '阴性') {
             detections.forEach(item => {
                 item.classList.remove('bad');
-            })
+            });
+            detectionType.parentElement.style.display = 'none';
         } else {
             detections.forEach(item => {
                 item.classList.add('bad');
-            })
+            });
+            detectionType.parentElement.style.display = 'block';
         }
         resultModal.classList.add('active');
     }

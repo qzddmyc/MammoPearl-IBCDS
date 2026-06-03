@@ -87,12 +87,13 @@ def api_v1():
     pic_name = file.filename
     usrToken = request.form.get('usrToken', '')
 
-    RES_TF, RES_ACC, dir_path = detect_if_Breast_Cancer_picture(pic_bytes, pic_name, usrToken)
+    RES_TF, RES_ACC, RES_TYPE, dir_path = detect_if_Breast_Cancer_picture(pic_bytes, pic_name, usrToken)
 
     return jsonify({
         'success': True,
         'RES_TF': RES_TF,
         'RES_ACC': RES_ACC,
+        'RES_TYPE': RES_TYPE,
         'relative_dir_path': dir_path
     })
 
