@@ -108,4 +108,9 @@
 python -c "from src.manage_weights import split_files; split_files()"
 ```
 
-在项目初次调用模型时，会自动重组。**你不需要对分片进行手动重组**，也不要干预 `static/assets/pth/` 中的文件，以免发生错误。
+在项目初始化时，这些分片文件会被自动重组。**你不需要对分片进行手动重组**，也不要干预 `static/assets/pth/` 中的文件，以免发生错误。
+
+> 另外，由于权重文件导致本仓库较大，你可以使用以下命令来拉取本仓库：
+> ```bash
+> git clone https://ghfast.top/https://github.com/qzddmyc/MammoPearl-IBCDS.git
+> ```

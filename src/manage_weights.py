@@ -32,7 +32,7 @@ def split_files():
                 with open(chunk_name, 'wb') as chunk_file:
                     chunk_file.write(chunk_data)
                 chunk_num += 1
-    print("[Info] Split successfully.")
+    print("[Info] Model weight files split successfully.")
 
 
 def merge_files():
@@ -58,4 +58,4 @@ def merge_files():
             for chunk in chunks:
                 with open(chunk, 'rb') as f:
                     target_file.write(f.read())
-    print("[Info] Merge completed.")
+    print("[Info] Model weight files merge completed.")

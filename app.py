@@ -5,7 +5,7 @@ import threading
 from flask import Flask, render_template, request, jsonify
 
 from src.v1 import detect_if_Breast_Cancer_picture, get_reply_in_ques_by_ai, \
-    init_for_AI_model, get_all_json_data, token_to_crypto_username
+    init_for_AI_model, get_all_json_data, token_to_crypto_username, _get_predictor
 from src.v1 import check_status_or_get_newest_reply, login_for_user, register_for_user
 from src.utils import open_file_in_system, check_web_conn
 from src.utils_db import check_if_server_started
@@ -24,6 +24,16 @@ logging.getLogger('werkzeug').setLevel(logging.ERROR)
 def print_tips():
     print(f" * Running on http://127.0.0.1:{BASE_CONFIG['PORT']}")
     print(f"{BASE_CONFIG['COLORS']['yellow']}Press CTRL+C to quit{BASE_CONFIG['COLORS']['reset']}")
+
+
+def init_model_predictor():
+    try:
+        _get_predictor()
+        Logger.info("Model predictor initialized successfully in background thread.")
+    except FileNotFoundError:
+        Logger.error("Model weight files missing during predictor initialization in background thread.")
+    except Exception as e:
+        Logger.error(f"Unexpected error during predictor initialization in background thread: {e}")
 
 
 @app.route('/')
@@ -291,6 +301,8 @@ def main():
     print("成功")
     _timer = threading.Timer(interval=0.5, function=print_tips)
     _timer.start()
+    _model_init = threading.Timer(interval=3.0, function=init_model_predictor)
+    _model_init.start()
     app.run(debug=False, port=BASE_CONFIG['PORT'])
 
 
