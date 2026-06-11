@@ -16,7 +16,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Union
+from typing import Union, Literal
 
 import cv2
 import numpy as np
@@ -269,3 +269,62 @@ class MammoPearlPredictor:
                 "Asymmetry_Distortion": float(probs[2]),
             },
         )
+
+
+def preprocess_mammogram(
+        image_bytes: bytes,
+        output_format: Literal["png", "jpg", "jpeg"] = "png",
+) -> bytes:
+    """
+    对乳腺X光片执行完整的预处理流水线，包含以下三个步骤：
+        1. 乳腺区域分割 (Otsu阈值 + 最大轮廓提取)：去除背景及人工标记（如标签、箭头等）
+        2. 双边滤波去噪：在去除纹理噪声的同时保留结节/肿块的边缘及钙化点
+        3. CLAHE 对比度增强：提升局部微小病灶的可视对比度
+    参数:
+        image_bytes: PNG/JPEG 等格式编码的原始乳腺X光片图像字节流。
+        output_format: 输出图像的编码格式，
+            可选 "png"、"jpg" 或 "jpeg"。默认为 "png"。
+    返回:
+        bytes: 预处理后的图像字节流，格式由 output_format 指定。处理失败时返回空字节。
+    """
+    # 步骤 0: 参数校验
+    output_format = output_format.lower()
+    if output_format not in ("png", "jpg", "jpeg"):
+        output_format = "png"
+
+    # 步骤 1: 解码
+    img_array = np.frombuffer(image_bytes, dtype=np.uint8)
+    img = cv2.imdecode(img_array, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        return b""
+
+    # 步骤 2: 乳腺区域分割
+    # Otsu 二值化，将前景（乳腺组织）与背景（暗区、标记等）分离
+    _, thresh = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # 形态学开运算：去除孤立小噪点、断开标记与乳腺之间的细连接
+    kernel = np.ones((5, 5), np.uint8)
+    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=2)
+
+    # 提取最大连通区域（即乳腺组织区域）
+    contours, _ = cv2.findContours(opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    if contours:
+        largest_contour = max(contours, key=cv2.contourArea)
+        mask = np.zeros(img.shape, dtype=np.uint8)
+        cv2.drawContours(mask, [largest_contour], -1, 255, -1)
+        img = cv2.bitwise_and(img, img, mask=mask)
+
+    # 步骤 3: 双边滤波去噪
+    # 双边滤波在平滑噪声的同时能保留强边缘（如肿块边界、钙化点）
+    img = cv2.bilateralFilter(img, d=5, sigmaColor=50, sigmaSpace=50)
+
+    # 步骤 4: CLAHE 对比度增强
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    img = clahe.apply(img)
+
+    # 步骤 5: 编码输出
+    ext = f".{output_format}"
+    success, encoded = cv2.imencode(ext, img)
+    if not success:
+        return b""
+    return encoded.tobytes()

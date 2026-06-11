@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Tuple, Union
 
 from src.utils import generate_short_unique_time_str, get_current_time, write_to_file, \
@@ -9,7 +10,7 @@ from src.utils_db import check_if_usr_exist, verify_UserAccount_password, save_U
 from src.utils_crypto import encrypt_data, decrypt_data, generate_random_key_for_crypto
 from config.configs import BASE_CONFIG, AI_CONFIG
 from src.logger_config import Logger
-from src.model import MammoPearlPredictor, PredictionResult
+from src.model import MammoPearlPredictor, PredictionResult, preprocess_mammogram
 from src.manage_weights import merge_files
 
 DOTS = '..' if os.path.basename(os.getcwd()) == 'src' else '.'
@@ -37,10 +38,11 @@ def _get_predictor() -> MammoPearlPredictor:
     return _predictor
 
 
-def v1_inner(pic: bytes) -> Tuple[bool, str, float]:
+def v1_inner(raw_pic: bytes, pic_format: str = "png") -> Tuple[bool, str, float]:
     """
     处理函数。True: 阳性，患病； False: 阴性，不患病
-    :param pic: The picture to check if ill or not.
+    :param raw_pic: The picture to check if ill or not.
+    :param pic_format: The format of the processed image.
     :return: (是否患病, 患病类型（阴性时为空字符串）, 综合置信度)
     """
     try:
@@ -51,7 +53,12 @@ def v1_inner(pic: bytes) -> Tuple[bool, str, float]:
         Logger.error(f"Unexpected error while loading predictor: {e}")
         return True, '模型加载失败', 0.0
 
-    result: PredictionResult = predictor.predict(image=pic)
+    processed_pic: bytes = preprocess_mammogram(raw_pic, output_format=pic_format)
+    if not processed_pic:
+        Logger.error("Error in preprocessing the image.")
+        return True, '图片预处理失败', 0.0
+
+    result: PredictionResult = predictor.predict(image=processed_pic)
 
     if not result.has_lesion:
         # 阴性：综合置信度取 Stage 1 的阴性把握度
@@ -97,7 +104,8 @@ def detect_if_Breast_Cancer_picture(pic: bytes, picName: str, usrToken: str) -> 
         # logs were written in func 'save_a_picture'
         print(f"警告：图片'{output_path}'保存失败。详情见日志")
 
-    RES_TF, RES_TYPE, RES_ACC = v1_inner(pic)
+    suffix = Path(picName).suffix.lstrip('.')
+    RES_TF, RES_TYPE, RES_ACC = v1_inner(pic, pic_format=suffix)
 
     # be careful that func showResultModal() in detect-main.js also uses name "阴性".
     res_A = '阳性' if RES_TF else '阴性'
