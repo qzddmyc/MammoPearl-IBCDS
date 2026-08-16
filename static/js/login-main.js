@@ -246,7 +246,7 @@ async function F() {
             if (result.success) {
                 localStorage.setItem(LocalStorage_DataName, result.token);
                 alert(result.message);
-                window.location.replace('./index.html');
+                window.location.replace('/index.html');
             } else {
                 clearToast();
                 showTopToast(result.message, 5);

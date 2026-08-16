@@ -8,7 +8,7 @@ import { updateScrollIndicator } from "./common/scrollbar.js";
         'title': 'h2',
     }
     // Ensure the visibility of images in all conditions, and use local path here.
-    const baseImgPath = '../static/assets/img/';
+    const baseImgPath = '/static/assets/img/';
     const writeZone = document.getElementById('write');
     writeZone.innerHTML = '';
 
