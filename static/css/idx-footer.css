@@ -149,6 +149,12 @@ footer .contact-item a,
 footer .contact-item span {
     color: inherit;
     text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+footer .contact-item a:hover,
+footer .contact-item span:hover {
+    color: #29b6f6;
 }
 
 footer .contact-icon {
